@@ -9,6 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
 
+/**
+ * Statistics fragment
+ *
+ * @constructor Create empty Statistics fragment
+ *
+ * @author kjy
+ * @since 2024-03-05
+ */
 class StatisticsFragment : Fragment() {
 
     private var _binding: FragmentStatisticsBinding? = null

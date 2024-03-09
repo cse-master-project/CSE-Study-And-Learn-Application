@@ -9,6 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
 
+/**
+ * Setting fragment
+ *
+ * @constructor Create empty Setting fragment
+ *
+ * @author kjy
+ * @since 2024-03-05
+ */
 class SettingFragment : Fragment() {
 
     private var _binding: FragmentSettingBinding? = null

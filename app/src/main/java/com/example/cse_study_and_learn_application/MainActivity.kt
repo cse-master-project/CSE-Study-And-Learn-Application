@@ -1,14 +1,24 @@
 package com.example.cse_study_and_learn_application
 
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.ViewGroup
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.cse_study_and_learn_application.databinding.ActivityMainBinding
 
+/**
+ * Main activity
+ *
+ * @constructor Create empty Main activity
+ * @author kjy
+ * @since 2024-03-05
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -18,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         val navView: BottomNavigationView = binding.navView
 
@@ -31,5 +43,8 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
     }
+
+
 }
