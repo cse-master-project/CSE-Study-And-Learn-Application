@@ -52,12 +52,18 @@
         android:label="fragment_subject_contents"
         tools:layout="@layout/fragment_subject_contents" >
         <action
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/navigation_home"
             android:id="@+id/action_subjectContentsFragment_to_navigation_home"
             app:destination="@id/navigation_home" />
         <action
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/navigation_home"
             android:id="@+id/action_subjectContentsFragment_to_navigation_setting"
             app:destination="@id/navigation_setting" />
         <action
+            app:popUpToInclusive="false"
+            app:popUpTo="@id/navigation_home"
             android:id="@+id/action_subjectContentsFragment_to_navigation_statistics"
             app:destination="@id/navigation_statistics" />
     </fragment>

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.Subject
@@ -33,12 +34,16 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     private val binding get() = _binding!!
     private lateinit var homeViewModel: HomeViewModel
 
+    private lateinit var mainViewModel: MainViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
@@ -52,12 +57,10 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         // 액티비티 레벨의 앱바를 다시 보여주고 마진 적용
         (activity as AppCompatActivity).let {
             it.supportActionBar?.apply {
-                if (!isShowing) {
-                    show()
-                    val navHostFragment = it.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-                    val layoutParams = navHostFragment?.view?.layoutParams as ViewGroup.MarginLayoutParams
-                    layoutParams.topMargin = homeViewModel.appBarHeight
-                }
+                show()
+                val navHostFragment = it.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+                val layoutParams = navHostFragment?.view?.layoutParams as ViewGroup.MarginLayoutParams
+                layoutParams.topMargin = mainViewModel.appBarHeight
             }
         }
     }
@@ -90,14 +93,6 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         // 과목 아이템 클릭하면 액티비티 레벨의 앱바의 크기를 저장하고 숨김
         (activity as AppCompatActivity).let {
             it.supportActionBar?.apply {
-                val typedValue = TypedValue()
-                it.theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)
-                val actionBarSize = TypedValue.complexToDimensionPixelSize(
-                    typedValue.data,
-                    resources.displayMetrics
-                )
-
-                homeViewModel.setAppBarHeight(actionBarSize)
                 hide()
             }
         }

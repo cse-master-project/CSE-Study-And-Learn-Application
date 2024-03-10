@@ -15,12 +15,6 @@ import com.example.cse_study_and_learn_application.model.Subject
  */
 class HomeViewModel : ViewModel() {
 
-    private var _appBarHeight = 0
-    val appBarHeight get() = _appBarHeight
-
-    fun setAppBarHeight(height: Int) {
-        _appBarHeight = height
-    }
 
     private lateinit var _selectedSubject: Subject
     val subject get() = _selectedSubject

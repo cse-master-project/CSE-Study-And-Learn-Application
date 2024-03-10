@@ -54,9 +54,10 @@ class SubjectContentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Toolbar를 앱 바로 설정
-        val toolbar = binding.toolbar
-        toolbar.title = homeViewModel.subject.title
+        binding.tvTitle.text = homeViewModel.subject.title
+        binding.ibBackPres.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         activity?.apply {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)

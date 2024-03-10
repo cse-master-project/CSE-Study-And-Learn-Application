@@ -2,10 +2,9 @@ package com.example.cse_study_and_learn_application
 
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.ViewGroup
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -23,8 +22,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        if (savedInstanceState == null) {
+            val typedValue = TypedValue()
+            theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)
+            val actionBarSize = TypedValue.complexToDimensionPixelSize(
+                typedValue.data,
+                resources.displayMetrics
+            )
+            mainViewModel.setAppBarHeight(actionBarSize)
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -44,7 +57,28 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        // Use setOnItemSelectedListener instead of the deprecated setOnNavigationItemSelectedListener
+        navView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    // Navigate to Home
+                    val action =
+                    navController.navigate(R.id.navigation_home)
+                    true
+                }
+                R.id.navigation_statistics -> {
+                    // Navigate to Statistics
+                    navController.navigate(R.id.navigation_statistics)
+                    true
+                }
+                R.id.navigation_setting -> {
+                    // Navigate to Statistics
+                    navController.navigate(R.id.navigation_setting)
+                    true
+                }
+                // Handle other items...
+                else -> false
+            }
+        }
     }
-
-
 }
