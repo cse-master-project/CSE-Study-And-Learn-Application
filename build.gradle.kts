@@ -2,6 +2,7 @@
 buildscript {
     repositories {
         google() // Google의 Maven 리포지터리에서 종속성을 찾습니다.
+        mavenCentral()
     }
     dependencies {
         val navVersion = "2.7.7" // 사용하고자 하는 Navigation 컴포넌트의 버전을 지정합니다.
