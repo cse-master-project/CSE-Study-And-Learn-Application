@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.setting.EditUserInfoFragment">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        app:elevation="0dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ImageButton
+                android:id="@+id/ib_back_pres"
+                android:layout_marginStart="5dp"
+                android:backgroundTint="@color/white"
+                android:src="@drawable/ic_back_arrow_black_24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/toolbar"
+                android:layout_width="0dp"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:foregroundGravity="center"
+                app:titleTextColor="@android:color/black">
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/TextAppearance.Material3.ActionBar.Title"
+                    android:textSize="18sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="회원 정보 수정"/>
+            </androidx.appcompat.widget.Toolbar>
+
+
+            <TextView
+                android:id="@+id/ib_extend"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/black"
+                android:text="수정"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:id="@+id/tv_nickname_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="닉네임"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/bg_rounded"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="누구누구"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_nickname_title"
+            app:layout_constraintStart_toEndOf="@id/tv_nickname_title"
+            app:layout_constraintTop_toTopOf="@id/tv_nickname_title" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:id="@+id/tv_google_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_nickname_title"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="구글 계정" />
+
+        <TextView
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/bg_rounded"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="asdasd@google.com"
+            app:layout_constraintTop_toBottomOf="@id/tv_google_title"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
