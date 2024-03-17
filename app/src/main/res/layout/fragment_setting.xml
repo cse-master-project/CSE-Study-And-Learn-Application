@@ -1,22 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.setting.SettingFragment">
+    android:orientation="vertical"
+    tools:context=".ui.setting.SettingFragment"
+    android:paddingHorizontal="5dp">
 
-    <TextView
-        android:id="@+id/text_notifications"
+    <LinearLayout
+        android:id="@+id/lin_user_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:padding="10dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_person_24"
+            app:civ_border_overlay="true"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="User Name 님" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_edit_user"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginHorizontal="10dp"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_edit_24"/>
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원 정보 수정" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_logout"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginHorizontal="10dp"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_phonelink_lock_24"/>
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="로그아웃" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_withdraw"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginHorizontal="10dp"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_person_remove_24"/>
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원 탈퇴" />
+
+    </LinearLayout>
+
+</LinearLayout>
