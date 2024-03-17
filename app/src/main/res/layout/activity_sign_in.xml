@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.login.LoginActivity">
+    tools:context=".ui.login.SignInActivity">
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6"/>
+
 
     <ImageView
         android:layout_width="250dp"
@@ -64,6 +66,7 @@
             </LinearLayout>
 
             <com.google.android.gms.common.SignInButton
+                android:id="@+id/btn_sign_in"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"/>
@@ -90,6 +93,5 @@
             android:background="@drawable/ic_launcher_background" />
 
     </androidx.cardview.widget.CardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
