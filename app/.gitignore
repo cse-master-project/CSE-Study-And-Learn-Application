@@ -1,1 +1,4 @@
 /build
+
+build.gradle.kts
+src/main/res/values/string.xml
