@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import com.example.cse_study_and_learn_application.databinding.FragmentMultipleChoiceQuizBinding
 
 /**
- * A simple [Fragment] subclass.
+ *
  * Use the [MultipleChoiceQuizFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
+ * @constructor A simple [Fragment] subclass.
  * @author JYH
  * @since 2024-03-17
  */
