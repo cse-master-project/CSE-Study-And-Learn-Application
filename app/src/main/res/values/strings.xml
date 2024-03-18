@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">CSE-Study-And-Learn-Application</string>
-    <string name="title_home">Home</string>
-    <string name="title_statistics">Statistics</string>
-    <string name="title_setting">Setting</string>
+    <string name="app_name">CSLU</string>
+    <string name="title_home">문제 홈</string>
+    <string name="title_statistics">통계</string>
+    <string name="title_setting">마이페이지</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
