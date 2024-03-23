@@ -6,49 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.study.MultipleChoiceQuizFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar_layout"
-        app:elevation="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <ImageButton
-                android:id="@+id/ib_back_pres"
-                android:layout_weight="1"
-                android:src="@drawable/ic_back_arrow_black_24dp"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_weight="5"
-                    style="@style/TextAppearance.Material3.ActionBar.Title"
-                    android:textSize="20sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:text="타이틀"/>
-
-            <ImageButton
-                android:id="@+id/ib_grading"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_grading_24"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -57,99 +15,179 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <TextView
-        android:id="@+id/tv_quiz_text"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/appbar_layout"
-        android:layout_margin="20dp"
-        android:text="다음중 어쩌고 저쩌고로 올바른 것은?"
-        android:textColor="@color/black"
-        android:textSize="20dp" />
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/material_dynamic_primary90">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/tv_quiz_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:text="다음중 어쩌고 저쩌고로 올바른 것은?"
+                android:textColor="@color/black"
+                android:textSize="20dp" />
+
+            <ImageView
+                android:id="@+id/iv_quiz_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+            </ImageView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 
     <LinearLayout
         android:id="@+id/gl_answer_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_answer_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            app:cardElevation="6dp"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/material_dynamic_primary90">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp">
+                <Button
+                    android:id="@+id/btn_1"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="1"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="어쩌구 저쩌구"
+                    android:layout_marginStart="10dp"
+                    />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_answer_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardElevation="6dp"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/material_dynamic_primary90">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp">
+                <Button
+                    android:id="@+id/btn_2"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="2"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="어쩌구 저쩌구"
+                    android:layout_marginStart="10dp"
+                    />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_answer_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardElevation="6dp"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/material_dynamic_primary90">
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="10dp">
-            <Button
-                android:id="@+id/btn_1"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:text="1"/>
+                <Button
+                    android:id="@+id/btn_3"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="3"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="어쩌구 저쩌구"
-                android:layout_marginStart="10dp"
-                />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="어쩌구 저쩌구"
+                    android:layout_marginStart="10dp"
+                    />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_answer_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardElevation="6dp"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/material_dynamic_primary90">
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="10dp">
-            <Button
-                android:id="@+id/btn_2"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:text="2"/>
+                <Button
+                    android:id="@+id/btn_4"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="4"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="어쩌구 저쩌구"
-                android:layout_marginStart="10dp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="10dp">
-            <Button
-                android:id="@+id/btn_3"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:text="3"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="어쩌구 저쩌구"
-                android:layout_marginStart="10dp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="10dp">
-            <Button
-                android:id="@+id/btn_4"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:text="4"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="어쩌구 저쩌구"
-                android:layout_marginStart="10dp"
-                />
-        </LinearLayout>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="어쩌구 저쩌구"
+                    android:layout_marginStart="10dp"
+                    />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
 
