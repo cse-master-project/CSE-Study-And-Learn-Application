@@ -8,9 +8,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
+import com.example.cse_study_and_learn_application.ui.home.SubjectContentItemAdapter
 
 /**
  * Statistics fragment
@@ -29,6 +31,7 @@ class StatisticsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var statisticsViewModel: StatisticsViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,10 +44,12 @@ class StatisticsFragment : Fragment() {
         val root: View = binding.root
 
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        val textView: TextView = binding.textDashboard
-        statisticsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+
+        val adapter = CategorySuccessRatioAdapter(statisticsViewModel.testRatio, requireContext())
+        binding.rvCategoryRatios.adapter = adapter
+        binding.rvCategoryRatios.layoutManager = LinearLayoutManager(context)
+
+
 
 
         return root

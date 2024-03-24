@@ -24,6 +24,10 @@ import com.example.cse_study_and_learn_application.model.SubjectContent
  * @constructor Create empty Subject contents fragment
  * @author kjy
  * @since 2024-03-09
+ *
+ *
+ * 최근 주요 변경점
+ * - adapter context 매개변수 추가
  */
 class SubjectContentsFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -45,7 +49,7 @@ class SubjectContentsFragment : Fragment() {
             SubjectContent("No. ${it + 1} 큐 스택 아무거나")
         }
 
-        val adapter = SubjectContentItemAdapter(subjectContents)
+        val adapter = SubjectContentItemAdapter(subjectContents, requireContext())
         binding.rvContent.adapter = adapter
         binding.rvContent.layoutManager = LinearLayoutManager(context)
 
