@@ -63,4 +63,6 @@ dependencies {
     implementation("com.google.gms:google-services:4.4.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 }
