@@ -9,7 +9,6 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_layout"
         app:elevation="0dp"
-        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
@@ -23,62 +22,58 @@
 
             <ImageButton
                 android:id="@+id/ib_back_pres"
-                android:layout_marginStart="5dp"
-                android:backgroundTint="@color/white"
+                android:layout_marginStart="10dp"
                 android:src="@drawable/ic_back_arrow_black_24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ImageButton
-                android:id="@+id/ib_prev_subj"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:backgroundTint="@color/white"
-                android:src="@drawable/ic_keyboard_arrow_left_24"
+                android:background="@android:color/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
             <androidx.appcompat.widget.Toolbar
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
                 android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
                 app:layout_constraintTop_toTopOf="parent"
                 android:id="@+id/toolbar"
                 android:layout_width="0dp"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                android:foregroundGravity="center"
-                app:titleTextColor="@android:color/black">
+                app:titleTextColor="@android:color/black"
+                style="@style/Toolbar">
+
+                <ImageButton
+                    android:id="@+id/ib_prev_subj"
+                    android:src="@drawable/ic_keyboard_arrow_left_24"
+                    android:background="@android:color/transparent"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/tv_title"
                     style="@style/TextAppearance.Material3.ActionBar.Title"
-                    android:textSize="18sp"
-                    android:layout_width="match_parent"
+                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textStyle="bold"
                     android:text="타이틀"/>
+
+                <ImageButton
+                    android:id="@+id/ib_next_subj"
+                    android:src="@drawable/ic_keyboard_arrow_right_24"
+                    android:background="@android:color/transparent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
             </androidx.appcompat.widget.Toolbar>
 
             <ImageButton
-                android:id="@+id/ib_next_subj"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:backgroundTint="@color/white"
-                android:src="@drawable/ic_keyboard_arrow_right_24"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ImageButton
                 android:id="@+id/ib_extend"
-                android:layout_marginEnd="5dp"
-                android:layout_marginStart="5dp"
-                android:backgroundTint="@color/white"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_dashboard_black_24dp"
+                android:background="@android:color/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
