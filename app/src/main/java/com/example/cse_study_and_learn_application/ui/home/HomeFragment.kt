@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.content.res.XmlResourceParser
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -17,6 +18,9 @@ import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.Subject
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 
 /**
  * Home fragment
@@ -41,9 +45,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
-
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
@@ -68,9 +70,31 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
     private fun setupRecyclerView() {
         // 임시 Subject 데이터 생성
-        val subjects = List(30) {
-            Subject("Subject ${it + 1}", "images/subjects/test_subject.png", "0문제 / 30문제", if (it % 2 == 0) "💡" else "⭐")
+        val subjects = mutableListOf<Subject>()
+        val parser: XmlResourceParser = requireContext().resources.getXml(R.xml.thumbnails)
+
+        try {
+            var eventType = parser.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && parser.name == "subject") {
+                    val name = parser.getAttributeValue(null, "name")
+                    parser.next()
+                    val imagePath = parser.text.trim()
+                    val subject = Subject(name, "images/subjects/$imagePath", "0문제 / 30문제", if (name.hashCode() % 2 == 0) "💡" else "⭐")
+                    subjects.add(subject)
+                }
+                eventType = parser.next()
+            }
+        } catch (e: XmlPullParserException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            parser.close()
         }
+
+        Log.d("test", subjects.toString())
+
 
         // 어댑터 생성 및 설정
         val adapter = SubjectItemAdapter(subjects, this)

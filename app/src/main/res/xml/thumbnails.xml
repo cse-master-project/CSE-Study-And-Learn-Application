@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subjects>
+    <!-- 과목별 썸네일 매칭 -->
+    <subject name="python">subj_python.jpg</subject>
+    <subject name="python2">subj_python2.jpg</subject>
+    <subject name="c">subj_c.jpg</subject>
+    <subject name="cpp">subj_cpp.jpg</subject>
+    <subject name="android">subj_android.jpg</subject>
+    <subject name="algorithm">subj_algo.jpg</subject>
+    <subject name="ai">subj_ai.jpg</subject>
+    <subject name="sever">subj_sever.jpg</subject>
+    <subject name="seb">subj_web.jpg</subject>
+    <subject name="computer">subj_computer.jpg</subject>
+    <subject name="computer2">subj_computer2.jpg</subject>
+    <subject name="math">subj_math.jpg</subject>
+    <subject name="math2">subj_math2.jpg</subject>
+</subjects>

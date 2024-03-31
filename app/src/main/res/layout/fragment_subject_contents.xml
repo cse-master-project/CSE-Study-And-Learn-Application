@@ -112,6 +112,7 @@
         app:cardCornerRadius="20dp" >
 
         <LinearLayout
+            android:visibility="gone"
             android:background="@color/white"
             android:paddingHorizontal="20dp"
             android:paddingVertical="15dp"
