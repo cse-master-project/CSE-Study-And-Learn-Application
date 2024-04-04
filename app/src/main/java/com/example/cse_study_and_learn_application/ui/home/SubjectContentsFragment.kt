@@ -129,6 +129,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     }
 
                     dialogQuestMessage.show()
+                } else {
+                    // 체크가 되어 있는지 확인
                 }
 
             }
