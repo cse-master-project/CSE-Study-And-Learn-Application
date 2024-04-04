@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:gravity="center"
             android:layout_gravity="center"
             android:orientation="horizontal"
@@ -22,6 +22,9 @@
             android:layout_height="match_parent" >
 
             <ImageButton
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:id="@+id/ib_back_pres"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/ic_back_arrow_black_24dp"
@@ -30,6 +33,9 @@
                 android:layout_height="wrap_content"/>
 
             <androidx.appcompat.widget.Toolbar
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 android:id="@+id/toolbar"
@@ -70,91 +76,124 @@
 
             </androidx.appcompat.widget.Toolbar>
 
-            <ImageButton
+            <com.google.android.material.card.MaterialCardView
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:cardBackgroundColor="@color/light_blue_300"
+                android:background="@color/light_blue_300"
                 android:id="@+id/ib_extend"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_dashboard_black_24dp"
-                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                app:cornerRadius="15dp"
+                android:gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
 
-        </LinearLayout>
+                <ImageView
+                    android:layout_margin="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_remove_red_eye_24" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/rv_content"
         tools:listitem="@layout/item_subject_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_question_exe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabCustomSize="60dp"
-        android:src="@drawable/ic_dashboard_black_24dp"
+        android:src="@drawable/ic_edit_24_white"
+        android:backgroundTint="@color/light_blue_300"
+        app:tint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="20dp" />
+        android:layout_margin="20dp"
+        android:importantForAccessibility="no" />
 
-    <androidx.cardview.widget.CardView
-        android:elevation="1dp"
-        android:layout_width="0dp"
-        android:background="@color/white"
-        android:layout_height="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_dialog_setting"
+        android:elevation="10dp"
+        app:layout_constraintTop_toBottomOf="@id/appbar_layout"
+        android:layout_marginVertical="3dp"
+        android:layout_marginHorizontal="10dp"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar_layout"
-        android:layout_marginVertical="10dp"
-        android:layout_marginHorizontal="15dp"
-        app:cardCornerRadius="20dp" >
+        android:background="@drawable/bg_rounded_gray"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="15dp"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:visibility="gone"
-            android:background="@color/white"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="15dp"
-            android:orientation="vertical"
+        <RadioGroup
+            android:id="@+id/rg_quiz_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content" >
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="사용자 문제" />
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="기본 문제" />
-
-                <RadioButton
-                    android:checked="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="전체" />
-            </RadioGroup>
-
-            <View
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black" />
-
-            <CheckBox
+            <RadioButton
+                android:id="@+id/rb_all_sel"
+                android:buttonTint="@color/light_blue_300"
+                android:paddingStart="5dp"
+                android:checked="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="푼 문제" />
+                android:text="전체" />
 
-        </LinearLayout>
+            <RadioButton
+                android:id="@+id/rb_default_sel"
+                android:buttonTint="@color/light_blue_300"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="기본 문제" />
 
-    </androidx.cardview.widget.CardView>
+            <RadioButton
+                android:id="@+id/rb_custom_sel"
+                android:buttonTint="@color/light_blue_300"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="사용자 문제" />
+        </RadioGroup>
+
+        <View
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray_c5" />
+
+        <CheckBox
+            android:id="@+id/cb_all_random"
+            android:buttonTint="@color/light_blue_300"
+            android:paddingStart="5dp"
+            android:checked="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="랜덤 선택 풀기" />
+
+        <CheckBox
+            android:id="@+id/cb_already"
+            android:buttonTint="@color/light_blue_300"
+            android:paddingStart="5dp"
+            android:checked="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="푼 문제 풀기" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,9 @@ import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +18,7 @@ import com.example.cse_study_and_learn_application.databinding.FragmentHomeBindi
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
 import com.example.cse_study_and_learn_application.model.Subject
 import com.example.cse_study_and_learn_application.model.SubjectContent
+import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 
 /**
@@ -29,7 +32,7 @@ import com.example.cse_study_and_learn_application.model.SubjectContent
  * 최근 주요 변경점
  * - adapter context 매개변수 추가
  */
-class SubjectContentsFragment : Fragment() {
+class SubjectContentsFragment : Fragment(), OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -52,6 +55,9 @@ class SubjectContentsFragment : Fragment() {
         val adapter = SubjectContentItemAdapter(subjectContents, requireContext())
         binding.rvContent.adapter = adapter
         binding.rvContent.layoutManager = LinearLayoutManager(context)
+
+        binding.fabQuestionExe.setOnClickListener(this)
+
 
         return binding.root
     }
@@ -93,6 +99,29 @@ class SubjectContentsFragment : Fragment() {
         fun newInstance() = SubjectContentsFragment()
     }
 
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.fab_question_exe -> {
+                val dialogQuestMessage = DialogQuestMessage(requireContext(),
+                    R.layout.dialog_quest_message_topdown,
+                    "전체 문제 풀기가\n선택되었습니다.\n이대로 진행 하시겠습니까?").apply {
+                        cardMarginInDp = 15f
+                }
+
+                dialogQuestMessage.setPositive {
+                    Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                    dialogQuestMessage.dismiss()
+                }
+
+                dialogQuestMessage.setNegative {
+                    Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+                    dialogQuestMessage.dismiss()
+                }
+
+                dialogQuestMessage.show()
+            }
+        }
+    }
 
 
 }
