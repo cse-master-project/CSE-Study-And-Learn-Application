@@ -23,4 +23,16 @@
         android:textSize="14sp"
         android:text="No. 1 스택, 큐" />
 
+    <CheckBox
+        android:checked="true"
+        android:enabled="false"
+        android:layout_marginStart="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/cb_quiz_sel"
+        android:buttonTint="@color/light_gray_c5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

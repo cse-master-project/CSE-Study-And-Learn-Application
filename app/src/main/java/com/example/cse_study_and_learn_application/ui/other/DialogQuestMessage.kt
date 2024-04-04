@@ -22,8 +22,12 @@ import com.example.cse_study_and_learn_application.R
  *
  * @since 2024-03-17
  * @author KJY
+ *
+ *
+ * 다이얼로그 레이아웃은 긍정, 부정 두 버튼이 있다고 가정
  */
 class DialogQuestMessage(context: Context,
+                         private val layout: Int,
                          private val questText: String = "질문",
                          private val positiveText: String = "예",
                          private val negativeText: String = "아니요") : Dialog(context) {
@@ -31,9 +35,11 @@ class DialogQuestMessage(context: Context,
     private lateinit var positiveAction: (() -> Unit)
     private lateinit var negativeAction: (() -> Unit)
 
+    var cardMarginInDp = 20f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_quest_message, null)
+        val dialogView = LayoutInflater.from(context).inflate(layout, null)
         setContentView(dialogView)
 
         window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -50,7 +56,7 @@ class DialogQuestMessage(context: Context,
 
 
         // 카드뷰 마진 설정
-        val cardMarginInDp = 20f
+
         val cardMarginInPixels = (cardMarginInDp * context.resources.displayMetrics.density).toInt()
         val layoutParams = cardView.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.setMargins(cardMarginInPixels, cardMarginInPixels, cardMarginInPixels, cardMarginInPixels)

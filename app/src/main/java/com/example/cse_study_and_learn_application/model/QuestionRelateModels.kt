@@ -22,4 +22,4 @@ data class Subject(val title: String, val bg: String, val cnt: String, val icon:
  * @author kjy
  * @since 2024-03-09
  */
-data class SubjectContent(val title: String)
+data class SubjectContent(val title: String, val selected: Boolean)

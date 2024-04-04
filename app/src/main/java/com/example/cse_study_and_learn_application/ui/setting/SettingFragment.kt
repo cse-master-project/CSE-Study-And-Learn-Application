@@ -66,7 +66,7 @@ class SettingFragment : Fragment() {
         }
 
         binding.linLogout.setOnClickListener {
-            val dialogQuestMessage = DialogQuestMessage(requireContext(), "정말로 로그아웃 하시겠습니까?")
+            val dialogQuestMessage = DialogQuestMessage(requireContext(), R.layout.dialog_quest_message, "정말로 로그아웃 하시겠습니까?")
 
             dialogQuestMessage.setPositive {
                 Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
@@ -82,7 +82,7 @@ class SettingFragment : Fragment() {
         }
 
         binding.linWithdraw.setOnClickListener {
-            val dialogQuestMessage = DialogQuestMessage(requireContext(), "정말로 탈퇴 하시겠습니까?")
+            val dialogQuestMessage = DialogQuestMessage(requireContext(), R.layout.dialog_quest_message,"정말로 탈퇴 하시겠습니까?")
 
             dialogQuestMessage.setPositive {
                 Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()

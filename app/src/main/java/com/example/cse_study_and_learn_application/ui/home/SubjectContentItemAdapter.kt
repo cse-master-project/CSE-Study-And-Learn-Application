@@ -1,7 +1,9 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +30,8 @@ import com.example.cse_study_and_learn_application.utils.setTextColorAsLinearGra
  */
 class SubjectContentItemAdapter(private val contents: List<SubjectContent>, private val context: Context) :
     RecyclerView.Adapter<SubjectContentViewHolder>() {
+    private var toggleCheckBox = false
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectContentViewHolder {
         val binding = ItemSubjectContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
@@ -38,16 +42,34 @@ class SubjectContentItemAdapter(private val contents: List<SubjectContent>, priv
 
     override fun onBindViewHolder(holder: SubjectContentViewHolder, position: Int) {
         val content = contents[position]
-        holder.bind(content)
+        holder.bind(content, toggleCheckBox)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun toggleCheckBoxVisibility() {
+        toggleCheckBox = !toggleCheckBox
+        notifyDataSetChanged()
+    }
+
+    fun getSelectedItem() {
+
     }
 }
 
 
 class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : ViewHolder(binding.root){
-    fun bind(content: SubjectContent) {
+    fun bind(content: SubjectContent, toggleCheckBox: Boolean) {
         binding.tvContentTitle.text = content.title
+        if (toggleCheckBox) {
+            binding.cbQuizSel.isChecked = content.selected
+            binding.cbQuizSel.isEnabled = true
+            binding.cbQuizSel.buttonTintList = ContextCompat.getColorStateList(context, R.color.light_blue_300)
+        } else {
+            binding.cbQuizSel.isChecked = true
+            binding.cbQuizSel.isEnabled = false
+            binding.cbQuizSel.buttonTintList = ContextCompat.getColorStateList(context, R.color.light_gray_c5)
 
-
+        }
     }
 
 }
