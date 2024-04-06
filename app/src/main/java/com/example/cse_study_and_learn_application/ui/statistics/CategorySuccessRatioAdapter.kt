@@ -1,19 +1,11 @@
 package com.example.cse_study_and_learn_application.ui.statistics
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cse_study_and_learn_application.R
-import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
 import com.example.cse_study_and_learn_application.databinding.ItemEachCategoryRatioBinding
-import com.example.cse_study_and_learn_application.databinding.ItemSubjectContentBinding
 import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
-import com.example.cse_study_and_learn_application.model.SubjectContent
-import com.example.cse_study_and_learn_application.ui.home.SubjectContentViewHolder
-import com.example.cse_study_and_learn_application.utils.setTextColorAsLinearGradient
 
 /**
  * Category success ratio adapter

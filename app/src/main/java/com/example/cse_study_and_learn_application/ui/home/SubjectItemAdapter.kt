@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.cse_study_and_learn_application.databinding.ItemSubjectCatBinding
-import com.example.cse_study_and_learn_application.model.Subject
+import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.utils.dpToPx
 import java.io.IOException
 
@@ -20,7 +20,7 @@ import java.io.IOException
  * @since 2024-03-09
  *
  */
-class SubjectItemAdapter(private val questionRelateModels: List<Subject>, private val listener: OnSubjectItemClickListener) : RecyclerView.Adapter<SubjectViewHolder>() {
+class SubjectItemAdapter(private val questionRelateModels: List<QuizCategory>, private val listener: OnSubjectItemClickListener) : RecyclerView.Adapter<SubjectViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectViewHolder {
         val binding = ItemSubjectCatBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,7 +28,7 @@ class SubjectItemAdapter(private val questionRelateModels: List<Subject>, privat
         // 화면 너비의 절반과 화면 높이의 0.35배로 뷰의 크기를 조정
         val displayMetrics = parent.context.resources.displayMetrics
         val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = (displayMetrics.heightPixels * 0.35).toInt()
+        val height = (displayMetrics.heightPixels * 0.30).toInt()
 
         val layoutParams = RecyclerView.LayoutParams(width, height)
         val margin = parent.context.dpToPx(5)
@@ -68,7 +68,7 @@ class SubjectItemAdapter(private val questionRelateModels: List<Subject>, privat
 }
 
 class SubjectViewHolder(private val binding: ItemSubjectCatBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(subject: Subject) {
+    fun bind(subject: QuizCategory) {
         binding.tvSubjectTitle.text = subject.title
         binding.tvQuestionCnt.text = subject.cnt
         binding.tvIcon.text = subject.icon

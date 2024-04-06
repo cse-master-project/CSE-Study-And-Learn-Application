@@ -3,16 +3,13 @@ package com.example.cse_study_and_learn_application.ui.home
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.cse_study_and_learn_application.R
-import com.example.cse_study_and_learn_application.databinding.ItemSubjectCatBinding
 import com.example.cse_study_and_learn_application.databinding.ItemSubjectContentBinding
-import com.example.cse_study_and_learn_application.model.SubjectContent
-import com.example.cse_study_and_learn_application.utils.setTextColorAsLinearGradient
+import com.example.cse_study_and_learn_application.model.QuizContentCategory
 
 /**
  * Subject content item adapter
@@ -28,7 +25,7 @@ import com.example.cse_study_and_learn_application.utils.setTextColorAsLinearGra
  * - 매개변수 context 추후 그라데이션 넣을지 고민 중
  * - 카드뷰 두 개로 구현했던 뷰를 제거하고 그냥 테두리 bg 넣음
  */
-class SubjectContentItemAdapter(private val contents: List<SubjectContent>, private val context: Context) :
+class SubjectContentItemAdapter(private val contents: List<QuizContentCategory>, private val context: Context) :
     RecyclerView.Adapter<SubjectContentViewHolder>() {
     private var toggleCheckBox = false
 
@@ -58,7 +55,7 @@ class SubjectContentItemAdapter(private val contents: List<SubjectContent>, priv
 
 
 class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : ViewHolder(binding.root){
-    fun bind(content: SubjectContent, toggleCheckBox: Boolean) {
+    fun bind(content: QuizContentCategory, toggleCheckBox: Boolean) {
         binding.tvContentTitle.text = content.title
         if (toggleCheckBox) {
             binding.cbQuizSel.isChecked = content.selected

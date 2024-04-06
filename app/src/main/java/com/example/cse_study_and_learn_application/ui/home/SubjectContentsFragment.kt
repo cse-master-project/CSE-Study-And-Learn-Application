@@ -1,23 +1,17 @@
 package com.example.cse_study_and_learn_application.ui.home
 
 import android.os.Bundle
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
-import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
-import com.example.cse_study_and_learn_application.model.Subject
-import com.example.cse_study_and_learn_application.model.SubjectContent
+import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 
@@ -52,11 +46,11 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         _binding = FragmentSubjectContentsBinding.inflate(inflater, container, false)
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
-        val subjectContents = List(30) {
-            SubjectContent("No. ${it + 1} 큐 스택 아무거나", false)
+        val quizContentCategories = List(30) {
+            QuizContentCategory("No. ${it + 1} 큐 스택 아무거나", false)
         }
 
-        adapter = SubjectContentItemAdapter(subjectContents, requireContext())
+        adapter = SubjectContentItemAdapter(quizContentCategories, requireContext())
         binding.rvContent.adapter = adapter
         binding.rvContent.layoutManager = LinearLayoutManager(context)
 
