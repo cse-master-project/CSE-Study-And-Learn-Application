@@ -1,27 +1,30 @@
 package com.example.cse_study_and_learn_application.ui.login
 
-import android.app.Activity
 import android.content.Intent
+import android.credentials.GetCredentialRequest
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetCredentialResponse
-import androidx.credentials.GetPasswordOption
-import androidx.credentials.PasswordCredential
-import androidx.credentials.exceptions.GetCredentialException
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
+import com.google.android.gms.auth.api.identity.BeginSignInRequest.PasswordRequestOptions
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Sign in activity
@@ -32,25 +35,32 @@ import kotlinx.coroutines.launch
  * @since 2024-03-17
  *
  */
+
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
 
+    private lateinit var signInRequest: BeginSignInRequest
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
+    private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        Log.d("result", result.data.toString())
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
+        try {
+            val account = task.getResult(ApiException::class.java)
+
+            val a = account.idToken
+
+            moveMainActivity()
+
+        } catch (e: ApiException) {
+            Log.e(MainActivity::class.java.simpleName, e.stackTraceToString())
+        }
+    }
+
     private var responseJson: String? = ""
     private val mainScope = MainScope()
-
-    private val getPasswordOption = GetPasswordOption()
-
-    private var googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(false)
-        .setAutoSelectEnabled(false)
-        .setServerClientId(R.string.google_login_client_id.toString())
-        .build()
-
-    private val request: GetCredentialRequest = GetCredentialRequest.Builder()
-        .addCredentialOption(googleIdOption)
-        .addCredentialOption(getPasswordOption)
-        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,55 +71,24 @@ class SignInActivity : AppCompatActivity() {
 
     private fun addListener() {
         _binding.btnSignIn.setOnClickListener {
-            mainScope.launch {
-                signIn()
-            }
+            requestGoogleLogin()
         }
     }
 
-
-    private suspend fun signIn() {
-        coroutineScope {
-            launch {
-                try {
-                    val credentialManager: CredentialManager = CredentialManager.create(context = this@SignInActivity.applicationContext)
-                    val response = credentialManager.getCredential(
-                        context = this@SignInActivity,
-                        request = request
-                    )
-                    handleSignIn(response)
-
-                } catch (e: GetCredentialException) {
-                    Log.e("signIn", "Received an invalid google id token response", e)
-                }
-            }
-        }
+    private fun requestGoogleLogin() {
+        googleSignInClient.signOut()
+        val signInIntent = googleSignInClient.signInIntent
+        googleAuthLauncher.launch(signInIntent)
     }
 
-    private fun handleSignIn(result: GetCredentialResponse) {
-        when(val credential = result.credential) {
-            is PublicKeyCredential -> {
-                responseJson = credential.authenticatorAttachment
-            }
-            is PasswordCredential -> {
-                val userName = credential.id
-                val password = credential.password
-            }
-            is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential
-                            .createFrom(credential.data)
-                    } catch (e: GoogleIdTokenParsingException) {
-                        Log.e("handleSignIn", "Unexpected type of credential", e)
-                    }
-                }
-            }
+    private fun getGoogleClient(): GoogleSignInClient {
+        val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestScopes(Scope("https://www.googleapis.com/auth/pubsub"))
+            .requestServerAuthCode(getString(R.string.google_login_server_client_id))
+            .requestEmail()
+            .build()
 
-            else -> {
-                Log.e("handleSignIn", "Unexpected type of credential")
-            }
-        }
+        return GoogleSignIn.getClient(this, googleSignInOption)
     }
 
     private fun moveMainActivity() {
