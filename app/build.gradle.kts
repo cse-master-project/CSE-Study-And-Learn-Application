@@ -77,5 +77,18 @@ dependencies {
     implementation("com.google.gms:google-services:4.4.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // google login
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.gms:google-services:4.4.1")
+    implementation("androidx.credentials:credentials:1.3.0-alpha02")
+//    implementation("androidx.credentials:credentials:1.2.2")
+//    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
+//    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.6.4")
+    implementation("com.squareup.retrofit2:converter-gson:2.6.4")
+    implementation("com.squareup.retrofit2:converter-scalars:2.6.4")
+
 }
