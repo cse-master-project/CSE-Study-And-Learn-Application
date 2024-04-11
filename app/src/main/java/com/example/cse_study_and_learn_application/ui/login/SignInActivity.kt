@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialException
+import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
@@ -139,7 +140,7 @@ class SignInActivity : AppCompatActivity() {
     private fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(Scope("https://www.googleapis.com/auth/pubsub"))
-            .requestServerAuthCode(getString(R.string.google_login_server_client_id))
+            .requestServerAuthCode(BuildConfig.server_client_id)
             .requestEmail()
             .build()
 
