@@ -1,8 +1,14 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
+}
+
+val properties: Properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
 }
 
 android {
@@ -29,15 +35,20 @@ android {
     }
 
     buildTypes {
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "server_client_id", properties.getProperty("SERVER_CLIENT_ID"))
+            buildConfigField("String", "android_client_id", properties.getProperty("ANDROID_CLIENT_ID"))
             signingConfig = signingConfigs.getByName("release")
         }
         debug {
+            buildConfigField("String", "server_client_id", properties.getProperty("SERVER_CLIENT_ID"))
+            buildConfigField("String", "android_client_id", properties.getProperty("ANDROID_CLIENT_ID"))
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -51,6 +62,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 }
