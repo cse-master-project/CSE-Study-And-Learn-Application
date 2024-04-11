@@ -6,8 +6,11 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.credentials.CredentialManager
+import androidx.credentials.exceptions.GetCredentialException
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
@@ -24,7 +27,12 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
+import java.util.UUID
 
 /**
  * Sign in activity
@@ -40,8 +48,9 @@ class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
 
-    private lateinit var signInRequest: BeginSignInRequest
-    private lateinit var mGoogleSignInClient: GoogleSignInClient
+//    private val context = this
+//    private val coroutineScope = MainScope()
+
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.d("result", result.data.toString())
@@ -50,7 +59,9 @@ class SignInActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
 
-            val a = account.idToken
+            val token = account.serverAuthCode
+
+            Log.d("token", token.toString())
 
             moveMainActivity()
 
@@ -59,13 +70,11 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private var responseJson: String? = ""
-    private val mainScope = MainScope()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivitySignInBinding.inflate(layoutInflater)
         addListener()
+
         setContentView(_binding.root)
     }
 
@@ -76,10 +85,56 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun requestGoogleLogin() {
+/*        try {
+            val credentialManager = CredentialManager.create(context)
+
+            val rawNonce = UUID.randomUUID().toString()
+            val bytes = rawNonce.toByteArray()
+            val md = MessageDigest.getInstance("SHA-256")
+            val digest = md.digest(bytes)
+            val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+
+            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(R.string.google_login_server_client_id.toString())
+                .setNonce(hashedNonce)
+                .build()
+
+            val request: androidx.credentials.GetCredentialRequest =
+                androidx.credentials.GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+
+            coroutineScope.launch {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context,
+                )
+
+                val credential = result.credential
+
+                val googleIdTokenCredential = GoogleIdTokenCredential
+                    .createFrom(credential.data)
+
+                val googleIdToken = googleIdTokenCredential.idToken
+
+                Log.i("a", googleIdToken)
+
+                Toast.makeText(context, "Sign In!", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: GetCredentialException) {
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        } catch (e: GoogleIdTokenParsingException) {
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        }*/
+
         googleSignInClient.signOut()
         val signInIntent = googleSignInClient.signInIntent
         googleAuthLauncher.launch(signInIntent)
     }
+
 
     private fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
