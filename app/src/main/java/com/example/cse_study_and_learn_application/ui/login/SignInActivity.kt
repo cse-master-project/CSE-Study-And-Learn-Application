@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.login
 
+import android.content.Context
 import android.content.Intent
 import android.credentials.GetCredentialRequest
 import android.os.Build
@@ -11,10 +12,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
+import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
+import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.PasswordRequestOptions
@@ -57,8 +61,37 @@ class SignInActivity : AppCompatActivity() {
             val account = task.getResult(ApiException::class.java)
 
             val token = account.serverAuthCode
+            if (token.isNullOrBlank()) {
+                finish()
+                Log.d("token", "토큰 없음?")
+            } else {
+                // 자동 로그인 추가
+                AccountAssistant.setUserToken(this@SignInActivity, token)
+                Log.d("token", token.toString())
+                val testNickName = "a2a2g4"
+                val connectorRepository = ConnectorRepository()
 
-            Log.d("token", token.toString())
+               lifecycleScope.launch {
+                   try {
+                       val responses = connectorRepository.getUserRegistration(token, testNickName)
+                       if (responses) {
+                           Log.d("test", "회원가입 성공")
+                       } else {
+                           Log.d("test", "회원가입 실패?")
+                       }
+                   } catch (e: Exception) {
+                       Log.d("test", "getUserRegistration 서버 연결 실패")
+                       e.printStackTrace()
+                   }
+               }
+
+
+
+                setLoginSuccessful()
+
+            }
+
+
 
             moveMainActivity()
 
@@ -73,6 +106,54 @@ class SignInActivity : AppCompatActivity() {
         addListener()
 
         setContentView(_binding.root)
+
+        // 로그인 성공한적 있으면 자동으로 매인 액티비티 이동
+        if (isLoginSuccessful()) { // SharedPreferences에 저장된 로그인 성공 여부 확인
+            Log.d("test", "isLoginSuccessful: 이미 로그인한적 있음")
+            val testNickName = "a2a2g4"
+            val connectorRepository = ConnectorRepository()
+
+            lifecycleScope.launch {
+                try {
+                    val token = AccountAssistant.getUserToken(this@SignInActivity)
+                    Log.d("test", "token: $token")
+                    val responses = connectorRepository.getUserLogin(token)
+                    if (responses) {
+                        Log.d("test", "회원가입 성공")
+                    } else {
+                        Log.d("test", "회원가입 실패?")
+                    }
+                } catch (e: Exception) {
+                    Log.d("test", "getUserLogin 서버 연결 실패")
+                    e.printStackTrace()
+                }
+            }
+
+
+            moveMainActivity()
+        }
+    }
+
+    /**
+     * Set login successful
+     * 로그인 성공했다고 저장
+     */
+    private fun setLoginSuccessful() {
+        val preferences = getSharedPreferences(AccountAssistant.PREFS_NAME, Context.MODE_PRIVATE)
+        preferences.edit().apply {
+            putBoolean(AccountAssistant.KEY_IS_LOGIN, true)
+            apply()
+        }
+    }
+
+    /**
+     * Is login successful
+     * 로그인 성공한적이 있는지 불러옴
+     * @return
+     */
+    private fun isLoginSuccessful(): Boolean {
+        val preferences = getSharedPreferences(AccountAssistant.PREFS_NAME, Context.MODE_PRIVATE)
+        return preferences.getBoolean(AccountAssistant.KEY_IS_LOGIN, false)
     }
 
     private fun addListener() {

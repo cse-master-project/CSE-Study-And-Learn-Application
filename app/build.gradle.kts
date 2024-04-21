@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
+    id("kotlinx-serialization")
 }
 
 val properties: Properties = Properties().apply {
@@ -103,5 +104,6 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.6.4")
     implementation("com.squareup.retrofit2:converter-gson:2.6.4")
     implementation("com.squareup.retrofit2:converter-scalars:2.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
 }
