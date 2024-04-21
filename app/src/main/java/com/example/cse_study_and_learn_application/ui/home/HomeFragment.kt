@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
+import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
+import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import retrofit2.Retrofit
@@ -59,13 +61,10 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             .load(gifPath)
             .into(binding.ivGnuChar)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://yourserver.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        homeViewModel.connectServerGetUserQuizzes()
+        val userQuizzes = homeViewModel.userQuizResponses.value
+        Log.d("test", "userQuizzes: ${userQuizzes}")
 
-
-        homeViewModel.connectServerGetQuizCategory()
 
         return binding.root
     }
@@ -116,7 +115,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             parser.close()
         }
 
-        Log.d("test", subjects.toString())
+        // Log.d("test", subjects.toString())
 
 
         // 어댑터 생성 및 설정
@@ -125,8 +124,6 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
         // RecyclerView에 LayoutManager 설정
         binding.rvSubjects.layoutManager = GridLayoutManager(context, 2)
-
-
 
     }
 
