@@ -14,6 +14,7 @@ object AccountAssistant {
     const val KEY_AUTH = "google_auth_code"
     const val KEY_IS_LOGIN = "isLoggedIn"
 
+
     fun setAuthCode(context: Context, token: String) {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         preferences.edit().apply {
