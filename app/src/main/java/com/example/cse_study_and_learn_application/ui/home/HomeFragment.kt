@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -43,6 +44,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     private lateinit var homeViewModel: HomeViewModel
 
     private lateinit var mainViewModel: MainViewModel
+
+    private lateinit var adapter: SubjectItemAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,10 +64,19 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             .load(gifPath)
             .into(binding.ivGnuChar)
 
-        homeViewModel.connectServerGetUserQuizzes()
-        val userQuizzes = homeViewModel.userQuizResponses.value
-        Log.d("test", "userQuizzes: ${userQuizzes}")
+        homeViewModel.setCategoryThumbnails(requireContext())   // 썸네일 리스트 초기화
 
+        homeViewModel.quizSubjectCategories.observe(viewLifecycleOwner) { categories ->
+            if (categories.isNotEmpty()) {
+                // 문제 카테고리 정보 사용
+                adapter.updateItem(categories)
+
+            } else {
+                // 카테고리 정보 가져오기 실패 처리
+                // 오류 메시지 표시 등의 동작 수행
+                Toast.makeText(requireContext(), "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         return binding.root
     }
@@ -80,6 +92,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 layoutParams.topMargin = mainViewModel.appBarHeight
             }
         }
+
+        homeViewModel.getQuizSubjects(requireContext()) // 과목 불러오는 코드
     }
 
 
@@ -91,18 +105,20 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
         val imagePath = "subj_all_random.jpg"
 
-        val subject = QuizCategory("문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐")
+        val subject = QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐")
         subjects.add(subject)
 
         try {
             var eventType = parser.eventType
+            var id = 1
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG && parser.name == "subject") {
                     val name = parser.getAttributeValue(null, "name")
                     parser.next()
-                    val imagePath = parser.text.trim()
-                    val subject = QuizCategory(name, "images/subjects/$imagePath", "0문제 / 30문제", if (name.hashCode() % 2 == 0) "💡" else "⭐")
-                    subjects.add(subject)
+                    val imgbg = parser.text.trim()
+                    val subj = QuizCategory(id, name, "images/subjects/$imgbg", "0문제 / 30문제", if (name.hashCode() % 2 == 0) "💡" else "⭐")
+                    subjects.add(subj)
+                    id += 1
 
                 }
                 eventType = parser.next()
@@ -115,16 +131,16 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             parser.close()
         }
 
-        // Log.d("test", subjects.toString())
 
+        homeViewModel.setInitSubjectCategories(subjects)    // 테스트용 init
+        homeViewModel.quizSubjectCategories.value?.let {
+            // 어댑터 생성 및 설정
+            adapter = SubjectItemAdapter(it, this)
+            binding.rvSubjects.adapter = adapter
 
-        // 어댑터 생성 및 설정
-        val adapter = SubjectItemAdapter(subjects, this)
-        binding.rvSubjects.adapter = adapter
-
-        // RecyclerView에 LayoutManager 설정
-        binding.rvSubjects.layoutManager = GridLayoutManager(context, 2)
-
+            // RecyclerView에 LayoutManager 설정
+            binding.rvSubjects.layoutManager = GridLayoutManager(context, 2)
+        }
     }
 
     override fun onDestroyView() {

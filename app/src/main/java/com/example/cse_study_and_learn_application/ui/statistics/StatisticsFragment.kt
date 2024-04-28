@@ -1,18 +1,19 @@
 package com.example.cse_study_and_learn_application.ui.statistics
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
-import com.example.cse_study_and_learn_application.ui.home.SubjectContentItemAdapter
 
 /**
  * Statistics fragment
@@ -37,20 +38,29 @@ class StatisticsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val statisticsViewModel =
-            ViewModelProvider(this).get(StatisticsViewModel::class.java)
 
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        statisticsViewModel = ViewModelProvider(requireActivity())[StatisticsViewModel::class.java]
 
-        val adapter = CategorySuccessRatioAdapter(statisticsViewModel.testRatio, requireContext())
+        val adapter = CategorySuccessRatioAdapter(statisticsViewModel.ratioList, requireContext())
         binding.rvCategoryRatios.adapter = adapter
         binding.rvCategoryRatios.layoutManager = LinearLayoutManager(context)
 
+        statisticsViewModel.userQuizStatistics.observe(viewLifecycleOwner) { statistics ->
+            if (statistics != null) {
+                // UI 업데이트 등의 동작 수행
+                adapter.itemUpdate(statisticsViewModel.ratioList)
+                Log.d("test", "성공?")
 
-
+            } else {
+                // 통계 데이터 가져오기 실패 처리
+                // 오류 메시지 표시 등의 동작 수행
+                Toast.makeText(requireContext(), "정답률을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         return root
     }
@@ -67,6 +77,8 @@ class StatisticsFragment : Fragment() {
                 layoutParams.topMargin = mainViewModel.appBarHeight
             }
         }
+
+        statisticsViewModel.getUserQuizStatistics(requireContext()) // 서버로부터 유저의 과목별 정답률 불러옴
     }
     override fun onDestroyView() {
         super.onDestroyView()

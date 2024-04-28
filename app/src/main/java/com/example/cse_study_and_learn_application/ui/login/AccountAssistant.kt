@@ -15,6 +15,16 @@ object AccountAssistant {
     const val KEY_IS_LOGIN = "isLoggedIn"
 
 
+    fun getUserToken(context: Context): String {
+        // 임시
+        return "token"
+    }
+
+    fun setUserToken(context: Context, token: String): String {
+        // 임시
+        return "token"
+    }
+
     fun setAuthCode(context: Context, token: String) {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         preferences.edit().apply {

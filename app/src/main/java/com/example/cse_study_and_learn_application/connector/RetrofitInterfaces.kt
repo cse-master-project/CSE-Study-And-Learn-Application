@@ -19,6 +19,13 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * Quiz query api
+ *
+ * @constructor Create empty Quiz query api
+ * @author kjy
+ * @since 2024-04-28
+ */
 interface QuizQueryApi {
     @GET("/api/quiz/user")
     suspend fun getUserQuizzes(
