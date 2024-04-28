@@ -2,38 +2,21 @@ package com.example.cse_study_and_learn_application.ui.login
 
 import android.content.Context
 import android.content.Intent
-import android.credentials.GetCredentialRequest
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.credentials.CredentialManager
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
-import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.PasswordRequestOptions
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.tasks.OnSuccessListener
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.security.MessageDigest
-import java.util.UUID
 
 /**
  * Sign in activity
@@ -46,6 +29,11 @@ import java.util.UUID
  */
 
 class SignInActivity : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "SignInActivity"
+        private const val RC_SIGN_IN = 9001
+    }
 
     private lateinit var _binding: ActivitySignInBinding
 
@@ -60,20 +48,25 @@ class SignInActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
 
-            val token = account.serverAuthCode
-            if (token.isNullOrBlank()) {
+            val authCode = account.serverAuthCode
+            if (authCode.isNullOrBlank()) {
                 finish()
-                Log.d("token", "토큰 없음?")
+                // Log.d("token", "토큰 없음?")
             } else {
                 // 자동 로그인 추가
-                AccountAssistant.setUserToken(this@SignInActivity, token)
-                Log.d("token", token.toString())
+                AccountAssistant.setAuthCode(this@SignInActivity, authCode)
+
+
+
+
+
+                Log.d("token", authCode.toString())
                 val testNickName = "a2a2g4"
                 val connectorRepository = ConnectorRepository()
 
                lifecycleScope.launch {
                    try {
-                       val responses = connectorRepository.getUserRegistration(token, testNickName)
+                       val responses = connectorRepository.getUserRegistration(authCode, testNickName)
                        if (responses) {
                            Log.d("test", "회원가입 성공")
                        } else {
@@ -84,14 +77,8 @@ class SignInActivity : AppCompatActivity() {
                        e.printStackTrace()
                    }
                }
-
-
-
                 setLoginSuccessful()
-
             }
-
-
 
             moveMainActivity()
 
@@ -99,6 +86,28 @@ class SignInActivity : AppCompatActivity() {
             Log.e(MainActivity::class.java.simpleName, e.stackTraceToString())
         }
     }
+
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == RC_SIGN_IN) {
+//            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+//            try {
+//                val account = task.getResult(ApiException::class.java)
+//                val authCode = account?.serverAuthCode
+//
+//                if (authCode != null) {
+//                    val tokenResponse = AccountAssistant.exchangeAuthCodeForTokens(
+//                        authCode,
+//                        BuildConfig.server_client_id,
+//                        BuildConfig.server_client_id,
+//                        BuildConfig.server_client_id,
+//                    )
+//                }
+//            }
+//        }
+//    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +124,7 @@ class SignInActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val token = AccountAssistant.getUserToken(this@SignInActivity)
+                    val token = AccountAssistant.getAuthCode(this@SignInActivity)
                     Log.d("test", "token: $token")
                     val responses = connectorRepository.getUserLogin(token)
                     if (responses) {
@@ -128,7 +137,6 @@ class SignInActivity : AppCompatActivity() {
                     e.printStackTrace()
                 }
             }
-
 
             moveMainActivity()
         }
