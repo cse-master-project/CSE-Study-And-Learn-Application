@@ -1,10 +1,14 @@
 package com.example.cse_study_and_learn_application.connector
 
+import com.example.cse_study_and_learn_application.model.AccessTokenResponse
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -34,4 +38,15 @@ interface UserAccountApi {
     suspend fun getUserLogin(
         @Body requestBody: String
     ): Response<Unit>
+}
+
+interface GoogleAuthApi {
+    @POST("token")
+    @FormUrlEncoded
+    suspend fun exchangeAuthToken(
+        @Field("grant_type") grantType: String,
+        @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String,
+        @Field("code") authCode: String
+    ): Call<AccessTokenResponse>
 }

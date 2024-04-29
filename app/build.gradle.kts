@@ -44,11 +44,13 @@ android {
             )
             buildConfigField("String", "server_client_id", properties.getProperty("SERVER_CLIENT_ID"))
             buildConfigField("String", "android_client_id", properties.getProperty("ANDROID_CLIENT_ID"))
+            buildConfigField("String", "server_client_secret", properties.getProperty("SERVER_CLIENT_SECRET"))
             signingConfig = signingConfigs.getByName("release")
         }
         debug {
             buildConfigField("String", "server_client_id", properties.getProperty("SERVER_CLIENT_ID"))
             buildConfigField("String", "android_client_id", properties.getProperty("ANDROID_CLIENT_ID"))
+            buildConfigField("String", "server_client_secret", properties.getProperty("SERVER_CLIENT_SECRET"))
             signingConfig = signingConfigs.getByName("release")
         }
     }

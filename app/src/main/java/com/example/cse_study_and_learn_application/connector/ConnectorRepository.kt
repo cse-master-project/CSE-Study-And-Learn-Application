@@ -1,15 +1,15 @@
 package com.example.cse_study_and_learn_application.connector
 
-import android.content.Context
 import android.util.Log
-import com.example.cse_study_and_learn_application.model.QuizCategory
+import com.example.cse_study_and_learn_application.model.AccessTokenResponse
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
-import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class ConnectorRepository {
     suspend fun getUserQuizzes(token: String, userQuizRequest: UserQuizRequest): List<UserQuizResponse> {
@@ -47,5 +47,43 @@ class ConnectorRepository {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to user login: ${response.message()}\n$errorBody")
         }
+    }
+
+    suspend fun getAccessToken(grantType: String, clientId: String, clientSecret: String, authCode: String?): String? {
+
+        if (authCode.isNullOrBlank()) {
+            throw NullPointerException("server auth code is null or blank")
+        }
+
+        var accessToken: String? = null
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://auth2.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val googleAuthApi = retrofit.create(GoogleAuthApi::class.java)
+
+        val response = googleAuthApi.exchangeAuthToken(grantType, clientId, clientSecret, authCode)
+        response.enqueue(object : Callback<AccessTokenResponse> {
+            override fun onResponse(
+                call: Call<AccessTokenResponse>,
+                response: Response<AccessTokenResponse>
+            ) {
+                if(response.isSuccessful) {
+                    accessToken = response.body()?.accessToken
+                    Log.d("test", "get access token 성공!")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    throw  Exception("Failed get access token: ${response.message()}\n$errorBody")
+                }
+            }
+
+            override fun onFailure(call: Call<AccessTokenResponse>, t: Throwable) {
+                throw Exception("Failed get access token: failed call back")
+            }
+        })
+
+        return accessToken
     }
 }

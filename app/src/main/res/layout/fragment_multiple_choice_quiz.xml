@@ -40,6 +40,7 @@
                 android:layout_margin="20dp"
                 android:text="다음중 어쩌고 저쩌고로 올바른 것은?"
                 android:textColor="@color/black"
+                android:textStyle="bold"
                 android:textSize="20dp" />
 
             <ImageView
@@ -90,6 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="어쩌구 저쩌구"
+                    android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     />
             </LinearLayout>
@@ -122,6 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="어쩌구 저쩌구"
+                    android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     />
             </LinearLayout>
@@ -153,6 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="어쩌구 저쩌구"
+                    android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     />
             </LinearLayout>
@@ -184,6 +188,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="어쩌구 저쩌구"
+                    android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     />
             </LinearLayout>

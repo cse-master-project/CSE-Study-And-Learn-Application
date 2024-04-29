@@ -2,6 +2,7 @@ package com.example.cse_study_and_learn_application.connector
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 object RetrofitInstance {
     private const val BASE_URL = "http://43.203.19.235"

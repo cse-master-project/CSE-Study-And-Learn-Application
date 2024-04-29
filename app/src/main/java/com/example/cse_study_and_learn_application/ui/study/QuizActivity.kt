@@ -25,11 +25,13 @@ class QuizActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val multipleChoiceQuizFragment = MultipleChoiceQuizFragment()
-        var shortAnswerQuizFragment = ShortAnswerQuizFragment()
-        var trueFalseQuizFragment = TrueFalseQuizFragment()
+        val shortAnswerQuizFragment = ShortAnswerQuizFragment()
+        val trueFalseQuizFragment = TrueFalseQuizFragment()
+        val matingQuizFragment = MatingQuizFragment()
+        val fillBlankQuizFragment = FillBlankQuizFragment()
 
         fragmentManager.beginTransaction()
-            .add(binding.fragmentContainerView.id, shortAnswerQuizFragment)
+            .add(binding.fragmentContainerView.id, fillBlankQuizFragment)
             .addToBackStack(null)
             .commit()
     }

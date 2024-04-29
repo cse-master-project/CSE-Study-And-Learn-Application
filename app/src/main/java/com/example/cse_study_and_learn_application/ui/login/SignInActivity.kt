@@ -2,45 +2,28 @@ package com.example.cse_study_and_learn_application.ui.login
 
 import android.content.Context
 import android.content.Intent
-import android.credentials.GetCredentialRequest
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.credentials.CredentialManager
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
-import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.PasswordRequestOptions
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.tasks.OnSuccessListener
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.security.MessageDigest
-import java.util.UUID
 
 /**
  * Sign in activity
  * 기능은 미구현
  *
  * @constructor Create empty Sign in activity
- * @author JYH
+ * @author JYH, KJY
  * @since 2024-03-17
  *
  */
@@ -60,20 +43,43 @@ class SignInActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
 
-            val token = account.serverAuthCode
-            if (token.isNullOrBlank()) {
+            val grantType = "authorization_code"
+            val clientId = BuildConfig.server_client_id
+            val clientSecret = BuildConfig.server_client_secret
+            val authCode = account.serverAuthCode
+
+            lifecycleScope.launch {
+                try {
+                    Log.d("test", "client ID: $clientId")
+                    Log.d("test", "client Secret: $clientSecret")
+                    Log.d("test", "serverAuthToken: $authCode")
+
+                    val accessTokenResponse = ConnectorRepository().getAccessToken(grantType, clientId, clientSecret, authCode)
+                    if (!accessTokenResponse.isNullOrBlank()) {
+                        Log.d("test", "access token : $accessTokenResponse")
+                    } else {
+                        Log.d("test", "토큰 발급 실패")
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("getAccessToken", "getAccessToken 호출 실패", e)
+                }
+            }
+
+
+            if (authCode.isNullOrBlank()) {
                 finish()
                 Log.d("token", "토큰 없음?")
             } else {
                 // 자동 로그인 추가
-                AccountAssistant.setUserToken(this@SignInActivity, token)
-                Log.d("token", token.toString())
+                AccountAssistant.setUserToken(this@SignInActivity, authCode)
+                Log.d("token", authCode.toString())
                 val testNickName = "a2a2g4"
                 val connectorRepository = ConnectorRepository()
 
                lifecycleScope.launch {
                    try {
-                       val responses = connectorRepository.getUserRegistration(token, testNickName)
+                       val responses = connectorRepository.getUserRegistration(authCode, testNickName)
                        if (responses) {
                            Log.d("test", "회원가입 성공")
                        } else {
