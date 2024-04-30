@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.connector
 
+import androidx.annotation.Keep
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
@@ -40,10 +41,11 @@ interface UserAccountApi {
     ): Response<Unit>
 }
 
+@Keep
 interface GoogleAuthApi {
     @POST("token")
     @FormUrlEncoded
-    suspend fun exchangeAuthToken(
+    fun exchangeAuthToken(
         @Field("grant_type") grantType: String,
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.Keep
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
  *
  */
 
+@Keep
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
@@ -55,11 +57,6 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("test", "serverAuthToken: $authCode")
 
                     val accessTokenResponse = ConnectorRepository().getAccessToken(grantType, clientId, clientSecret, authCode)
-                    if (!accessTokenResponse.isNullOrBlank()) {
-                        Log.d("test", "access token : $accessTokenResponse")
-                    } else {
-                        Log.d("test", "토큰 발급 실패")
-                    }
 
                 } catch (e: Exception) {
                     Log.e("getAccessToken", "getAccessToken 호출 실패", e)
@@ -90,8 +87,6 @@ class SignInActivity : AppCompatActivity() {
                        e.printStackTrace()
                    }
                }
-
-
 
                 setLoginSuccessful()
 
@@ -134,8 +129,6 @@ class SignInActivity : AppCompatActivity() {
                     e.printStackTrace()
                 }
             }
-
-
             moveMainActivity()
         }
     }
@@ -222,7 +215,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestScopes(Scope("https://www.googleapis.com/auth/pubsub"))
+            .requestScopes(Scope("openid"))
             .requestServerAuthCode(BuildConfig.server_client_id)
             .requestEmail()
             .build()

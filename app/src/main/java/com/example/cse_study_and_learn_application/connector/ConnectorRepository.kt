@@ -49,7 +49,7 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getAccessToken(grantType: String, clientId: String, clientSecret: String, authCode: String?): String? {
+    fun getAccessToken(grantType: String, clientId: String, clientSecret: String, authCode: String?): String? {
 
         if (authCode.isNullOrBlank()) {
             throw NullPointerException("server auth code is null or blank")
@@ -58,21 +58,28 @@ class ConnectorRepository {
         var accessToken: String? = null
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://auth2.googleapis.com/")
+            .baseUrl("https://accounts.google.com/o/oauth2/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val googleAuthApi = retrofit.create(GoogleAuthApi::class.java)
 
+        Log.d("test1", "grantType: $grantType")
+        Log.d("test1", "client ID: $clientId")
+        Log.d("test1", "client Secret: $clientSecret")
+        Log.d("test1", "serverAuthToken: $authCode")
+
         val response = googleAuthApi.exchangeAuthToken(grantType, clientId, clientSecret, authCode)
+        Log.d("^^ㅣ발", "좀 돼라3")
         response.enqueue(object : Callback<AccessTokenResponse> {
             override fun onResponse(
                 call: Call<AccessTokenResponse>,
                 response: Response<AccessTokenResponse>
             ) {
+
                 if(response.isSuccessful) {
                     accessToken = response.body()?.accessToken
-                    Log.d("test", "get access token 성공!")
+                    Log.d("test", "get access token 성공! $accessToken")
                 } else {
                     val errorBody = response.errorBody()?.string()
                     throw  Exception("Failed get access token: ${response.message()}\n$errorBody")
