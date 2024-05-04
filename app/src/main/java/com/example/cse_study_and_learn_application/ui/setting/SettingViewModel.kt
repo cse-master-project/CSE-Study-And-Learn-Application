@@ -39,12 +39,12 @@ class SettingViewModel : ViewModel() {
     fun logout(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getUserToken(context)
+                val token = AccountAssistant.getAccessToken(context)
                 val isSuccess = connectorRepository.logoutUser(token)
                 if (isSuccess) {
                     // 로그아웃 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    AccountAssistant.setUserToken(context, "")
+                    AccountAssistant.getAccessToken(context)
                     _logoutResult.value = true
                 } else {
                     // 로그아웃 실패 처리
@@ -60,12 +60,12 @@ class SettingViewModel : ViewModel() {
     fun deactivate(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getUserToken(context)
+                val token = AccountAssistant.getAccessToken(context)
                 val isSuccess = connectorRepository.deactivateUser(token)
                 if (isSuccess) {
                     // 회원탈퇴 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    AccountAssistant.setUserToken(context, "")
+                    AccountAssistant.getAccessToken(context)
                     _deactivateResult.value = true
                 } else {
                     // 회원탈퇴 실패 처리
@@ -81,7 +81,7 @@ class SettingViewModel : ViewModel() {
     fun updateUserInfo(context: Context, nickname: String) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getUserToken(context)
+                val token = AccountAssistant.getAccessToken(context)
                 val isSuccess = connectorRepository.setUserNickname(token, nickname)
                 if (isSuccess) {
                     // 회원정보 수정 성공 처리

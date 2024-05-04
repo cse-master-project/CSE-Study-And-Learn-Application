@@ -8,6 +8,7 @@ import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.model.ServerLoginResponse
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
@@ -95,10 +96,10 @@ interface UserAccountApi {
         @Body requestBody: UserRegistrationRequest
     ): Response<Unit>
 
-    @POST("/api/user/auth/google/sign-up")
+    @POST("/api/user/auth/google/login")
     suspend fun getUserLogin(
         @Body requestBody: String
-    ): Response<Unit>
+    ): Response<ServerLoginResponse>
 
     @PUT("/api/user/info/nickname")
     suspend fun setUserNickname(

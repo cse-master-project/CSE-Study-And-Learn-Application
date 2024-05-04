@@ -46,19 +46,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private var subjectThumbnailMap = mutableMapOf<String, String>()
 
-    fun connectServerGetUserQuizzes() {
-        viewModelScope.launch {
-            val userQuizRequest = UserQuizRequest(page = 2, size = 2, sort = listOf("string"))
-            try {
-                val token = AccountAssistant.getAuthCode(context)
-                val responses = connectorRepository.getUserQuizzes(token, userQuizRequest)
-                _userQuizResponses.value = responses
-            } catch (e: Exception) {
-                Log.d("test", "connectServerGetUserQuizzes 서버 연결 실패")
-                e.printStackTrace()
-            }
-        }
-    }
+
 
     fun setCategoryThumbnails(context: Context) {
         val subjectThumbnailMap = mutableMapOf<String, String>()
@@ -92,7 +80,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun getQuizSubjects(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getUserToken(context)
+                val token = AccountAssistant.getServerAccessToken(context)
                 val subjects = connectorRepository.getQuizSubjects(token)
 
                 // 문제 선택 풀기 칸 추가
@@ -111,9 +99,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 _quizSubjectCategories.value = newCategories
                 _quizSubjects.value = subjects
 
+                Log.d("tes", "getQuizSubjects 성공")
             } catch (e: Exception) {
                 // 예외 처리
                 _quizSubjects.value = emptyList()
+                Log.e("tes", "getQuizSubjects error: $e")
             }
         }
     }

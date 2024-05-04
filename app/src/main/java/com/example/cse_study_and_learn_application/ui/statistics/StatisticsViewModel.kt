@@ -10,6 +10,7 @@ import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.convertToIntOrZero
 import kotlinx.coroutines.launch
 
 /**
@@ -39,23 +40,23 @@ class StatisticsViewModel : ViewModel() {
     fun getUserQuizStatistics(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getUserToken(context)
+                val token = AccountAssistant.getServerAccessToken(context)
                 val statistics = connectorRepository.getUserQuizStatistics(token)
                 _userQuizStatistics.value = statistics
 
                 // 서버 연결 성공시 리스트에 각 과목별 정답률 저장
                 userQuizStatistics.value?.correctRateBySubject?.let {
                     _ratioList.clear()
-                    _ratioList.add(CategorySuccessRatio("전체", statistics.totalCorrectRate))
+                    _ratioList.add(CategorySuccessRatio("전체", convertToIntOrZero(statistics.totalCorrectRate)))
                     for (ratio in it) {
-                        val ratioBySubject = CategorySuccessRatio(ratio.key, ratio.value)
+                        val ratioBySubject = CategorySuccessRatio(ratio.key, convertToIntOrZero(ratio.value))
                         _ratioList.add(ratioBySubject)
                     }
                 }
 
             } catch (e: Exception) {
                 // 예외 처리
-                Log.d("test", "연결 실패 예외")
+                Log.e("test", "getUserQuizStatistics error: $e")
             }
         }
     }

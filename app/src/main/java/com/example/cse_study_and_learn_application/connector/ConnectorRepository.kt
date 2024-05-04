@@ -45,24 +45,34 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getUserLogin(token: String): Boolean {
+    suspend fun getUserLogin(token: String): String {
         val response = RetrofitInstance.userAccountQueryApi.getUserLogin(token)
         if (response.isSuccessful) {
-            Log.d("test", "user login 성공!")
-            return true
+            val serverLoginResponse = response.body()
+            if (serverLoginResponse != null) {
+                Log.d("test", "user login 성공!")
+                return serverLoginResponse.accessToken
+            } else {
+                throw Exception("Empty response body")
+            }
         } else {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to user login: ${response.message()}\n$errorBody")
         }
     }
 
-    fun getAccessToken(grantType: String, clientId: String, clientSecret: String, authCode: String?): String? {
+    fun getAccessToken(
+        grantType: String,
+        clientId: String,
+        clientSecret: String,
+        authCode: String?,
+        callback: (String?, Exception?) -> Unit
+    ) {
 
         if (authCode.isNullOrBlank()) {
-            throw NullPointerException("server auth code is null or blank")
+            callback(null, NullPointerException("server auth code is null or blank"))
+            return
         }
-
-        var accessToken: String? = null
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://accounts.google.com/o/oauth2/")
@@ -71,35 +81,27 @@ class ConnectorRepository {
 
         val googleAuthApi = retrofit.create(GoogleAuthApi::class.java)
 
-        Log.d("test1", "grantType: $grantType")
-        Log.d("test1", "client ID: $clientId")
-        Log.d("test1", "client Secret: $clientSecret")
-        Log.d("test1", "serverAuthToken: $authCode")
-
-        val response = googleAuthApi.exchangeAuthToken(grantType, clientId, clientSecret, authCode)
-        Log.d("^^ㅣ발", "좀 돼라3")
-        response.enqueue(object : Callback<AccessTokenResponse> {
-            override fun onResponse(
-                call: Call<AccessTokenResponse>,
-                response: Response<AccessTokenResponse>
-            ) {
-
-                if(response.isSuccessful) {
-                    accessToken = response.body()?.accessToken
-                    Log.d("test", "get access token 성공! $accessToken")
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    throw  Exception("Failed get access token: ${response.message()}\n$errorBody")
+        googleAuthApi.exchangeAuthToken(grantType, clientId, clientSecret, authCode)
+            .enqueue(object : Callback<AccessTokenResponse> {
+                override fun onResponse(
+                    call: Call<AccessTokenResponse>,
+                    response: Response<AccessTokenResponse>
+                ) {
+                    if(response.isSuccessful) {
+                        val accessToken = response.body()?.accessToken
+                        callback(accessToken, null)
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        callback(null, Exception("Failed get access token: ${response.message()}\n$errorBody"))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<AccessTokenResponse>, t: Throwable) {
-                throw Exception("Failed get access token: failed call back")
-            }
-        })
-
-        return accessToken
+                override fun onFailure(call: Call<AccessTokenResponse>, t: Throwable) {
+                    callback(null, Exception("Failed get access token: failed call back"))
+                }
+            })
     }
+
 
     suspend fun submitQuizResult(token: String, quizId: Int, isCorrect: Boolean): Boolean {
         val requestBody = mapOf(
@@ -181,7 +183,7 @@ class ConnectorRepository {
             return response.body() ?: throw Exception("Empty response body")
         } else {
             val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get user quiz statistics: ${response.message()}\n$errorBody")
+            throw Exception("Failed to get user quiz statistics: ${response.code()} ${response.message()}\n$errorBody")
         }
     }
 
