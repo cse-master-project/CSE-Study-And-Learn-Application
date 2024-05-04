@@ -94,6 +94,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         }
 
         homeViewModel.getQuizSubjects(requireContext()) // 과목 불러오는 코드
+        homeViewModel.getQuizAll(requireContext())
     }
 
 

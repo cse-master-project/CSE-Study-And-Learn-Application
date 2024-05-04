@@ -61,7 +61,9 @@ interface QuizQueryApi {
     @GET("/api/quiz")
     suspend fun getAllQuizzes(
         @Header("Authorization") token: String,
-        @Query("pageable") pageable: Map<String, Any>
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String
     ): Response<QuizResponse>
 
     @GET("/api/quiz/{quizId}/image")

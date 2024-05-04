@@ -137,8 +137,8 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getAllQuizzes(token: String, pageable: Map<String, Any>): QuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getAllQuizzes(token, pageable)
+    suspend fun getAllQuizzes(token: String, page: Int, size: Int, sort: String): QuizResponse {
+        val response = RetrofitInstance.quizQueryApi.getAllQuizzes(token, page, size, sort)
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")
         } else {
