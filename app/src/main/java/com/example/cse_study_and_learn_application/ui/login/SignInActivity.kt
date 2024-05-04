@@ -56,45 +56,22 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("test", "client Secret: $clientSecret")
                     Log.d("test", "serverAuthToken: $authCode")
 
+                    // 액세스 토큰을 받으면 저장함
                     val accessTokenResponse = ConnectorRepository().getAccessToken(grantType, clientId, clientSecret, authCode)
+                    accessTokenResponse?.let {
+                        AccountAssistant.setAccessToken(this@SignInActivity, it)
+
+                        // 서버에 로그인
+                        Log.d("test", "accessTokenResponse: $accessTokenResponse")
+
+                    }
 
                 } catch (e: Exception) {
-                    Log.e("getAccessToken", "getAccessToken 호출 실패", e)
+                    Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", e)
                 }
             }
 
-
-            if (authCode.isNullOrBlank()) {
-                finish()
-                Log.d("token", "토큰 없음?")
-            } else {
-                // 자동 로그인 추가
-                AccountAssistant.setUserToken(this@SignInActivity, authCode)
-                Log.d("token", authCode.toString())
-                val testNickName = "a2a2g4"
-                val connectorRepository = ConnectorRepository()
-
-               lifecycleScope.launch {
-                   try {
-                       val responses = connectorRepository.getUserRegistration(authCode, testNickName)
-                       if (responses) {
-                           Log.d("test", "회원가입 성공")
-                       } else {
-                           Log.d("test", "회원가입 실패?")
-                       }
-                   } catch (e: Exception) {
-                       Log.d("test", "getUserRegistration 서버 연결 실패")
-                       e.printStackTrace()
-                   }
-               }
-
-                setLoginSuccessful()
-
-            }
-
-
-
-            moveMainActivity()
+            moveMainActivity()  // 메인 액티비티로 이동
 
         } catch (e: ApiException) {
             Log.e(MainActivity::class.java.simpleName, e.stackTraceToString())
@@ -108,52 +85,13 @@ class SignInActivity : AppCompatActivity() {
 
         setContentView(_binding.root)
 
-        // 로그인 성공한적 있으면 자동으로 매인 액티비티 이동
-        if (isLoginSuccessful()) { // SharedPreferences에 저장된 로그인 성공 여부 확인
-            Log.d("test", "isLoginSuccessful: 이미 로그인한적 있음")
-            val testNickName = "a2a2g4"
-            val connectorRepository = ConnectorRepository()
-
-            lifecycleScope.launch {
-                try {
-                    val token = AccountAssistant.getUserToken(this@SignInActivity)
-                    Log.d("test", "token: $token")
-                    val responses = connectorRepository.getUserLogin(token)
-                    if (responses) {
-                        Log.d("test", "회원가입 성공")
-                    } else {
-                        Log.d("test", "회원가입 실패?")
-                    }
-                } catch (e: Exception) {
-                    Log.d("test", "getUserLogin 서버 연결 실패")
-                    e.printStackTrace()
-                }
-            }
-            moveMainActivity()
+        val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
+        if (accessToken.isNotBlank()) {
+            moveMainActivity()  // Access token이 저장되어 있으면 바로 메인 액티비티로 넘어감
         }
+
     }
 
-    /**
-     * Set login successful
-     * 로그인 성공했다고 저장
-     */
-    private fun setLoginSuccessful() {
-        val preferences = getSharedPreferences(AccountAssistant.PREFS_NAME, Context.MODE_PRIVATE)
-        preferences.edit().apply {
-            putBoolean(AccountAssistant.KEY_IS_LOGIN, true)
-            apply()
-        }
-    }
-
-    /**
-     * Is login successful
-     * 로그인 성공한적이 있는지 불러옴
-     * @return
-     */
-    private fun isLoginSuccessful(): Boolean {
-        val preferences = getSharedPreferences(AccountAssistant.PREFS_NAME, Context.MODE_PRIVATE)
-        return preferences.getBoolean(AccountAssistant.KEY_IS_LOGIN, false)
-    }
 
     private fun addListener() {
         _binding.btnSignIn.setOnClickListener {

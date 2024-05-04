@@ -1,25 +1,38 @@
 package com.example.cse_study_and_learn_application.ui.login
 
 import android.content.Context
-import android.util.Log
 
 object AccountAssistant {
     const val PREFS_NAME = "auth"
-    const val KEY_TOKEN = "google_token"
+    private const val KEY_AUTH_CODE = "google_auth_code"
+    private const val KEY_ACCESS_TOKEN = "google_access_token"
     const val KEY_IS_LOGIN = "isLoggedIn"
 
-    fun setUserToken(context: Context, token: String) {
+    fun setAuthCode(context: Context, token: String) {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         preferences.edit().apply {
-            putString(KEY_TOKEN, token)
+            putString(KEY_AUTH_CODE, token)
             apply()
         }
     }
 
-    fun getUserToken(context: Context): String {
+    fun getAuthCode(context: Context): String {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val token = preferences.getString(KEY_TOKEN, "") ?: ""
-        // Log.d("test", "token: $token")
-        return token
+        return preferences.getString(KEY_AUTH_CODE, "") ?: ""
     }
+
+    fun setAccessToken(context: Context, token: String) {
+        val preferences = context.getSharedPreferences(KEY_ACCESS_TOKEN, Context.MODE_PRIVATE)
+        preferences.edit().apply {
+            putString(KEY_ACCESS_TOKEN, token)
+            apply()
+        }
+    }
+
+
+    fun getAccessToken(context: Context): String {
+        val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(KEY_ACCESS_TOKEN, "") ?: ""
+    }
+
 }
