@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.cse_study_and_learn_application.MainViewModel
@@ -27,6 +28,7 @@ import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
  *
  * @author kjy
  * @since 2024-03-05
+ *
  */
 class SettingFragment : Fragment() {
 
@@ -54,6 +56,32 @@ class SettingFragment : Fragment() {
 
         val root: View = binding.root
 
+        settingViewModel.logoutResult.observe(viewLifecycleOwner, Observer { isSuccess ->
+            if (isSuccess) {
+                requireActivity().finish()
+            } else {
+                Toast.makeText(requireContext(), "로그아웃에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        settingViewModel.deactivateResult.observe(viewLifecycleOwner, Observer { isSuccess ->
+            if (isSuccess) {
+                // 회원탈퇴 성공 처리
+                requireActivity().finish()
+            } else {
+                // 회원탈퇴 실패 처리
+                Toast.makeText(requireContext(), "회원탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
+
+            }
+        })
+
+        initClickListener(settingViewModel)
+
+
+        return root
+    }
+
+    private fun initClickListener(settingViewModel: SettingViewModel) {
         binding.linEditUser.setOnClickListener {
             (activity as AppCompatActivity).let {
                 it.supportActionBar?.apply {
@@ -66,15 +94,20 @@ class SettingFragment : Fragment() {
         }
 
         binding.linLogout.setOnClickListener {
-            val dialogQuestMessage = DialogQuestMessage(requireContext(), R.layout.dialog_quest_message, "정말로 로그아웃 하시겠습니까?")
+            val dialogQuestMessage = DialogQuestMessage(
+                requireContext(),
+                R.layout.dialog_quest_message,
+                "정말로 로그아웃 하시겠습니까?"
+            )
 
             dialogQuestMessage.setPositive {
-                Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                settingViewModel.logout(requireContext())   // 로그아웃 메서드
                 dialogQuestMessage.dismiss()
             }
 
             dialogQuestMessage.setNegative {
-                Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
                 dialogQuestMessage.dismiss()
             }
 
@@ -82,23 +115,25 @@ class SettingFragment : Fragment() {
         }
 
         binding.linWithdraw.setOnClickListener {
-            val dialogQuestMessage = DialogQuestMessage(requireContext(), R.layout.dialog_quest_message,"정말로 탈퇴 하시겠습니까?")
+            val dialogQuestMessage = DialogQuestMessage(
+                requireContext(),
+                R.layout.dialog_quest_message,
+                "정말로 탈퇴 하시겠습니까?"
+            )
 
             dialogQuestMessage.setPositive {
-                Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                settingViewModel.deactivate(requireContext())   // 회원탈퇴 메서드
                 dialogQuestMessage.dismiss()
             }
 
             dialogQuestMessage.setNegative {
-                Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
                 dialogQuestMessage.dismiss()
             }
 
             dialogQuestMessage.show()
         }
-
-
-        return root
     }
 
     override fun onResume() {

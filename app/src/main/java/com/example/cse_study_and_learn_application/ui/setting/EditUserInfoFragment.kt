@@ -5,9 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentEditUserInfoBinding
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
+import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,6 +34,7 @@ class EditUserInfoFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var settingViewModel: SettingViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -57,12 +63,48 @@ class EditUserInfoFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentEditUserInfoBinding.inflate(inflater, container, false)
+        settingViewModel = ViewModelProvider(this).get(SettingViewModel::class.java)
 
         binding.ibBackPres.setOnClickListener {
             requireActivity().onBackPressed()
         }
 
+        settingViewModel.updateUserInfoResult.observe(viewLifecycleOwner, Observer { isSuccess ->
+            if (isSuccess) {
+                // 회원정보 수정 성공 처리
+                settingViewModel.closeEditFragment()
+                requireActivity().onBackPressed()
+            } else {
+                // 회원정보 수정 실패 처리
+                Toast.makeText(requireContext(), "닉네임을 변경하지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        // 회원 정보 수정 하는 버튼
+        initClickListener()
+
         return binding.root
+    }
+
+    private fun initClickListener() {
+        binding.ibExtend.setOnClickListener {
+            val dialogQuestMessage = DialogQuestMessage(
+                requireContext(),
+                R.layout.dialog_quest_message,
+                "회원 정보를 수정하시겠습니까?"
+            )
+
+            dialogQuestMessage.setPositive {
+                settingViewModel.updateUserInfo(requireContext(), binding.etNickname.text.toString())
+                dialogQuestMessage.dismiss()
+            }
+
+            dialogQuestMessage.setNegative {
+                dialogQuestMessage.dismiss()
+            }
+
+            dialogQuestMessage.show()
+        }
     }
 
     companion object {
