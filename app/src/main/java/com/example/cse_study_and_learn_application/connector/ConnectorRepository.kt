@@ -9,6 +9,7 @@ import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
@@ -187,10 +188,15 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getUserInfo(token: String): Boolean {
+    suspend fun getUserInfo(token: String): UserInfo {
         val response = RetrofitInstance.userAccountQueryApi.getUserInfo(token)
         if (response.isSuccessful) {
-            return true
+            val userInfo = response.body()
+            if (userInfo != null) {
+                return userInfo
+            } else {
+                throw Exception("Empty response body")
+            }
         } else {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to get user info: ${response.message()}\n$errorBody")

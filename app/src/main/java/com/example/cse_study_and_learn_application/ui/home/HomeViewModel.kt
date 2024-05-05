@@ -10,13 +10,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
+import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.QuizCategory
+import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -47,9 +47,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val quizSubjectCategories: LiveData<MutableList<QuizCategory>> = _quizSubjectCategories
 
     private var subjectThumbnailMap = mutableMapOf<String, String>()
+//
+//    private val _quizResponseLiveData = MutableLiveData<QuizResponse>()
+//    val quizLiveData: LiveData<QuizResponse> = _quizResponseLiveData
 
-    private val _quizLiveData = MutableLiveData<QuizResponse>()
-    val quizLiveData: LiveData<QuizResponse> = _quizLiveData     // 여기 데이터 파싱해서 쓰면 됨*****
+    private val _quizList = MutableLiveData<List<Quiz>>()
+    val quizList: LiveData<List<Quiz>> = _quizList
+
+    private val _detailSubjects = MutableLiveData<MutableMap<String, MutableSet<QuizContentCategory>>>()
+    val detailSubjects: LiveData<MutableMap<String, MutableSet<QuizContentCategory>>> = _detailSubjects
 
     fun setCategoryThumbnails(context: Context) {
         val subjectThumbnailMap = mutableMapOf<String, String>()
@@ -121,16 +127,31 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
                 val page = 0
-                val size = 1
+                val size = 100
                 val sort = "desc"
 
                 val quizResponse = connectorRepository.getAllQuizzes(token, page, size, sort)
-                _quizLiveData.value = quizResponse
+
+                _quizList.value = quizResponse.content
+                quizList.value?.let {
+                    _detailSubjects.value = mutableMapOf()
+                    for (quiz in it) {
+                        _detailSubjects.value?.getOrPut(quiz.subject) { mutableSetOf() }?.add(
+                            QuizContentCategory(quiz.detailSubject, true)
+                        )
+                    }
+                }
+
+                Log.d("test", detailSubjects.value!!.toString())
 
             } catch (e: Exception) {
                 Log.e("test", "getAllQuizzes error: $e")
             }
         }
+    }
+
+    fun getCurrentDetailSubjects(): MutableSet<QuizContentCategory>? {
+        return _detailSubjects.value?.get(_selectedSubject.title)
     }
 
 }

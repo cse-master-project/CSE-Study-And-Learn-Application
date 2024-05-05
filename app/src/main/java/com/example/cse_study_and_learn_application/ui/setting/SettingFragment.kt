@@ -40,15 +40,14 @@ class SettingFragment : Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
 
-
+    private lateinit var settingViewModel: SettingViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val settingViewModel =
-            ViewModelProvider(this).get(SettingViewModel::class.java)
+        settingViewModel = ViewModelProvider(requireActivity())[SettingViewModel::class.java]
 
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
 
@@ -74,6 +73,10 @@ class SettingFragment : Fragment() {
 
             }
         })
+
+        settingViewModel.userInfo.observe(viewLifecycleOwner) {
+            binding.tvUserName.text = "${it.nickname} 님"
+        }
 
         initClickListener(settingViewModel)
 
@@ -149,6 +152,8 @@ class SettingFragment : Fragment() {
                 }
             }
         }
+
+        settingViewModel.getUserInfo(requireContext())
     }
 
     override fun onDestroyView() {

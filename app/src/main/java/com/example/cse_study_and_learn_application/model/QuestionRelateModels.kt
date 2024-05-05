@@ -29,4 +29,5 @@ data class QuizCategory(val id: Int, val title: String, val bg: String, val cnt:
  * (2024-04-06)
  * SubjectContent -> QuizContentCategory 클래스 이름 변경
  */
-data class QuizContentCategory(val title: String, val selected: Boolean)
+data class QuizContentCategory(val title: String, var selected: Boolean)
+

@@ -1,11 +1,13 @@
 package com.example.cse_study_and_learn_application.ui.setting
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
+import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import kotlinx.coroutines.launch
 
@@ -36,15 +38,16 @@ class SettingViewModel : ViewModel() {
     private val _updateUserInfoResult = MutableLiveData<Boolean>()
     val updateUserInfoResult: LiveData<Boolean> = _updateUserInfoResult
 
+    private var _userInfo = MutableLiveData<UserInfo>()
+    val userInfo: LiveData<UserInfo> = _userInfo
+
     fun logout(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getAccessToken(context)
+                val token = AccountAssistant.getServerAccessToken(context)
                 val isSuccess = connectorRepository.logoutUser(token)
                 if (isSuccess) {
                     // 로그아웃 성공 처리
-                    // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    AccountAssistant.getAccessToken(context)
                     _logoutResult.value = true
                 } else {
                     // 로그아웃 실패 처리
@@ -60,12 +63,11 @@ class SettingViewModel : ViewModel() {
     fun deactivate(context: Context) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getAccessToken(context)
+                val token = AccountAssistant.getServerAccessToken(context)
                 val isSuccess = connectorRepository.deactivateUser(token)
                 if (isSuccess) {
                     // 회원탈퇴 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    AccountAssistant.getAccessToken(context)
                     _deactivateResult.value = true
                 } else {
                     // 회원탈퇴 실패 처리
@@ -81,7 +83,7 @@ class SettingViewModel : ViewModel() {
     fun updateUserInfo(context: Context, nickname: String) {
         viewModelScope.launch {
             try {
-                val token = AccountAssistant.getAccessToken(context)
+                val token = AccountAssistant.getServerAccessToken(context)
                 val isSuccess = connectorRepository.setUserNickname(token, nickname)
                 if (isSuccess) {
                     // 회원정보 수정 성공 처리
@@ -99,5 +101,18 @@ class SettingViewModel : ViewModel() {
 
     fun closeEditFragment() {
         _updateUserInfoResult.value = false
+    }
+
+    fun getUserInfo(context: Context) {
+        viewModelScope.launch {
+            try {
+                val token = AccountAssistant.getServerAccessToken(context)
+                val userInfo = connectorRepository.getUserInfo(token)
+                _userInfo.value = userInfo
+
+            } catch (e: Exception) {
+                Log.e("test", "getUserInfo: $e")
+            }
+        }
     }
 }

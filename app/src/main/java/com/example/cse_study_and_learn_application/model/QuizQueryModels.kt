@@ -23,13 +23,13 @@ data class UserQuizResponse(
 )
 
 data class Quiz(
-    val quizId: Int,
-    val subject: String,
-    val detailSubject: String,
-    val correctRate: Int,
-    val jsonContent: String,
-    val createAt: String,
-    val hasImage: Boolean
+    @SerializedName("quizId") val quizId: Int,
+    @SerializedName("subject") val subject: String,
+    @SerializedName("detailSubject") val detailSubject: String,
+    @SerializedName("correctRate") val correctRate: Int,
+    @SerializedName("jsonContent") val jsonContent: String,
+    @SerializedName("createAt") val createAt: String,
+    @SerializedName("hasImage") val hasImage: Boolean
 )
 
 data class Sort(
@@ -121,7 +121,7 @@ data class QuizResponse(
     @SerializedName("size")
     val size: Int,
     @SerializedName("content")
-    val content: List<DefaultQuiz>,
+    val content: List<Quiz>,
     @SerializedName("number")
     val number: Int,
     @SerializedName("sort")

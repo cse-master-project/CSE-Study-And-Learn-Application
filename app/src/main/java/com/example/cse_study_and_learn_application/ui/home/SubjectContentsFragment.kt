@@ -1,6 +1,7 @@
 package com.example.cse_study_and_learn_application.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -46,18 +47,20 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         _binding = FragmentSubjectContentsBinding.inflate(inflater, container, false)
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
-        val quizContentCategories = List(30) {
-            QuizContentCategory("No. ${it + 1} 큐 스택 아무거나", false)
+        val detailSubjects = homeViewModel.getCurrentDetailSubjects()
+        if (detailSubjects == null) {
+            Toast.makeText(requireContext(), "잘못 선택하였습니다.", Toast.LENGTH_SHORT).show()
         }
 
-        adapter = SubjectContentItemAdapter(quizContentCategories, requireContext())
-        binding.rvContent.adapter = adapter
-        binding.rvContent.layoutManager = LinearLayoutManager(context)
+        detailSubjects?.let {
+            adapter = SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
+            binding.rvContent.adapter = adapter
+            binding.rvContent.layoutManager = LinearLayoutManager(context)
 
-        binding.fabQuestionExe.setOnClickListener(this)
-        binding.cdvExtendQuizSetting.setOnClickListener(this)
-        binding.cbAllRandom.setOnClickListener(this)
-
+            binding.fabQuestionExe.setOnClickListener(this)
+            binding.cdvExtendQuizSetting.setOnClickListener(this)
+            binding.cbAllRandom.setOnClickListener(this)
+        }
 
         return binding.root
     }
@@ -114,17 +117,19 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     dialogQuestMessage.setPositive {
                         Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
                         dialogQuestMessage.dismiss()
+                        checkDetailQuizSend()
                     }
 
                     dialogQuestMessage.setNegative {
                         Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+                        quizSettingDialogFlag = true
                         binding.llDialogSetting.visibility = View.VISIBLE   // 퀴즈 설정 다이얼로그 표시
                         dialogQuestMessage.dismiss()
                     }
 
                     dialogQuestMessage.show()
                 } else {
-                    // 체크가 되어 있는지 확인
+                    checkDetailQuizSend()
                 }
 
             }
@@ -146,5 +151,16 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
     }
 
+    private fun checkDetailQuizSend() {
+        val detailsAdapter = binding.rvContent.adapter as SubjectContentItemAdapter
+        val selectedDetails = detailsAdapter.getSelectedItems()
+        Log.d("test", selectedDetails.toString())
 
+        if (selectedDetails.isNotEmpty()) {
+            Log.d("test", "비어있지 않음")
+            // 여기서 이어서 작성하면 됨
+        } else {
+            Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.cse_study_and_learn_application.ui.setting
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +64,7 @@ class EditUserInfoFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentEditUserInfoBinding.inflate(inflater, container, false)
-        settingViewModel = ViewModelProvider(this).get(SettingViewModel::class.java)
+        settingViewModel = ViewModelProvider(requireActivity())[SettingViewModel::class.java]
 
         binding.ibBackPres.setOnClickListener {
             requireActivity().onBackPressed()
@@ -84,6 +85,13 @@ class EditUserInfoFragment : Fragment() {
         initClickListener()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val userNickname = settingViewModel.userInfo.value?.nickname
+        binding.etNickname.setText(userNickname)
+        Log.d("test", "userNickname: $userNickname")
     }
 
     private fun initClickListener() {

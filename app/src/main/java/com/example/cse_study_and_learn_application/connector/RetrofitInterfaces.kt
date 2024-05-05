@@ -9,6 +9,7 @@ import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.ServerLoginResponse
+import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
@@ -117,7 +118,7 @@ interface UserAccountApi {
     @GET("/api/user/info")
     suspend fun getUserInfo(
         @Header("Authorization") token: String
-    ): Response<Unit>
+    ): Response<UserInfo>
 
     @POST("/api/user/deactivate")
     suspend fun deactivateUser(

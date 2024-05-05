@@ -27,7 +27,7 @@ import com.example.cse_study_and_learn_application.model.QuizContentCategory
  */
 class SubjectContentItemAdapter(private val contents: List<QuizContentCategory>, private val context: Context) :
     RecyclerView.Adapter<SubjectContentViewHolder>() {
-    private var toggleCheckBox = false
+    private var toggleCheckBox = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectContentViewHolder {
         val binding = ItemSubjectContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -48,25 +48,31 @@ class SubjectContentItemAdapter(private val contents: List<QuizContentCategory>,
         notifyDataSetChanged()
     }
 
-    fun getSelectedItem() {
-
+    fun getSelectedItems(): List<QuizContentCategory> {
+        return contents.filter { it.selected }
     }
 }
 
 
-class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : ViewHolder(binding.root){
+class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : ViewHolder(binding.root) {
     fun bind(content: QuizContentCategory, toggleCheckBox: Boolean) {
         binding.tvContentTitle.text = content.title
         if (toggleCheckBox) {
-            binding.cbQuizSel.isChecked = content.selected
-            binding.cbQuizSel.isEnabled = true
-            binding.cbQuizSel.buttonTintList = ContextCompat.getColorStateList(context, R.color.light_blue_300)
-        } else {
             binding.cbQuizSel.isChecked = true
             binding.cbQuizSel.isEnabled = false
-            binding.cbQuizSel.buttonTintList = ContextCompat.getColorStateList(context, R.color.light_gray_c5)
+            content.selected = true
+            binding.cbQuizSel.buttonTintList =
+                ContextCompat.getColorStateList(context, R.color.light_gray_c5)
+        } else {
+            binding.cbQuizSel.isChecked = false
+            binding.cbQuizSel.isEnabled = true
+            content.selected = false
+            binding.cbQuizSel.buttonTintList =
+                ContextCompat.getColorStateList(context, R.color.light_blue_300)
+        }
 
+        binding.cbQuizSel.setOnClickListener {
+            content.selected = binding.cbQuizSel.isChecked
         }
     }
-
 }
