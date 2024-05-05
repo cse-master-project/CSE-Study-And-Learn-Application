@@ -21,14 +21,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ConnectorRepository {
-    suspend fun getUserQuizzes(token: String, userQuizRequest: UserQuizRequest): List<UserQuizResponse> {
+    suspend fun getUserQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
         val response = RetrofitInstance.quizQueryApi.getUserQuizzes(
             token,
             userQuizRequest.page,
             userQuizRequest.size,
             userQuizRequest.sort)
         if (response.isSuccessful) {
-            return response.body() ?: emptyList()
+            return response.body() ?: throw Exception("Empty response body")
         } else {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to get user quizzes: ${response.message()}\n$errorBody")
@@ -128,8 +128,12 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getDefaultQuizzes(token: String, pageable: Map<String, Any>): DefaultQuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getDefaultQuizzes(token, pageable)
+    suspend fun getDefaultQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
+        val response = RetrofitInstance.quizQueryApi.getDefaultQuizzes(
+            token,
+            userQuizRequest.page,
+            userQuizRequest.size,
+            userQuizRequest.sort)
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")
         } else {
@@ -138,8 +142,12 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getAllQuizzes(token: String, page: Int, size: Int, sort: String): QuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getAllQuizzes(token, page, size, sort)
+    suspend fun getAllQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
+        val response = RetrofitInstance.quizQueryApi.getAllQuizzes(
+            token,
+            userQuizRequest.page,
+            userQuizRequest.size,
+            userQuizRequest.sort)
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")
         } else {

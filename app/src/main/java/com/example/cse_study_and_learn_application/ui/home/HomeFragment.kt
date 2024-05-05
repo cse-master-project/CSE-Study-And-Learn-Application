@@ -20,6 +20,7 @@ import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
+import com.example.cse_study_and_learn_application.utils.QuizType
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import retrofit2.Retrofit
@@ -94,7 +95,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         }
 
         homeViewModel.getQuizSubjects(requireContext()) // 과목 불러오는 코드
-        homeViewModel.getQuizAll(requireContext())
+        homeViewModel.getQuizLoad(requireContext(), QuizType.ALL)
     }
 
 

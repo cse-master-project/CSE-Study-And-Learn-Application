@@ -15,8 +15,10 @@ import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
+import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.QuizType
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -122,26 +124,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _selectedSubject = subject
     }
 
-    fun getQuizAll(context: Context) {
+
+    // 현재 선택한 대분류의 중분류 불러오기
+    fun getCurrentDetailSubjects(): MutableSet<QuizContentCategory>? {
+        return _detailSubjects.value?.get(_selectedSubject.title)
+    }
+
+    fun getQuizLoad(context: Context, quizType: QuizType) {
         viewModelScope.launch {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
-                val page = 0
-                val size = 100
-                val sort = "desc"
 
-                val quizResponse = connectorRepository.getAllQuizzes(token, page, size, sort)
+                val userQuizResponse = UserQuizRequest(page = 0, size = 1000, sort = listOf("desc"))
 
-                _quizList.value = quizResponse.content
-                quizList.value?.let {
-                    _detailSubjects.value = mutableMapOf()
-                    for (quiz in it) {
-                        _detailSubjects.value?.getOrPut(quiz.subject) { mutableSetOf() }?.add(
-                            QuizContentCategory(quiz.detailSubject, true)
-                        )
-                    }
+                val quizResponse = when(quizType) {
+                    QuizType.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
+                    QuizType.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
+                    QuizType.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
                 }
 
+                _quizList.value = quizResponse.content
+                val detailSubject = mutableMapOf<String, MutableSet<QuizContentCategory>>()
+                for (quiz in _quizList.value!!) {
+                    detailSubject.getOrPut(quiz.subject) { mutableSetOf() }.add(
+                    QuizContentCategory(quiz.detailSubject, true))
+                }
+
+                _detailSubjects.value = detailSubject
                 Log.d("test", detailSubjects.value!!.toString())
 
             } catch (e: Exception) {
@@ -149,9 +158,4 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    fun getCurrentDetailSubjects(): MutableSet<QuizContentCategory>? {
-        return _detailSubjects.value?.get(_selectedSubject.title)
-    }
-
 }

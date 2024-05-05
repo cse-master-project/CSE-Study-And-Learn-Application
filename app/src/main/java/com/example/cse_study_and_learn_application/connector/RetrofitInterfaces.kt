@@ -40,7 +40,7 @@ interface QuizQueryApi {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: List<String>
-    ): Response<List<UserQuizResponse>>
+    ): Response<QuizResponse>
 
     @POST("/api/quiz/submit")
     suspend fun submitQuizResult(
@@ -56,15 +56,17 @@ interface QuizQueryApi {
     @GET("/api/quiz/default")
     suspend fun getDefaultQuizzes(
         @Header("Authorization") token: String,
-        @Query("pageable") pageable: Map<String, Any>
-    ): Response<DefaultQuizResponse>
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: List<String>
+    ): Response<QuizResponse>
 
     @GET("/api/quiz")
     suspend fun getAllQuizzes(
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("sort") sort: String
+        @Query("sort") sort: List<String>
     ): Response<QuizResponse>
 
     @GET("/api/quiz/{quizId}/image")

@@ -15,6 +15,7 @@ import com.example.cse_study_and_learn_application.databinding.FragmentSubjectCo
 import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
+import com.example.cse_study_and_learn_application.utils.QuizType
 
 
 /**
@@ -49,18 +50,34 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        if (detailSubjects == null) {
-            Toast.makeText(requireContext(), "잘못 선택하였습니다.", Toast.LENGTH_SHORT).show()
+        if (detailSubjects.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+            adapter = SubjectContentItemAdapter(emptyList(), requireContext())
+        } else {
+            adapter = SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
         }
 
-        detailSubjects?.let {
-            adapter = SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
-            binding.rvContent.adapter = adapter
-            binding.rvContent.layoutManager = LinearLayoutManager(context)
+        binding.rvContent.adapter = adapter
+        binding.rvContent.layoutManager = LinearLayoutManager(context)
 
-            binding.fabQuestionExe.setOnClickListener(this)
-            binding.cdvExtendQuizSetting.setOnClickListener(this)
-            binding.cbAllRandom.setOnClickListener(this)
+        binding.fabQuestionExe.setOnClickListener(this)
+        binding.cdvExtendQuizSetting.setOnClickListener(this)
+        binding.cbAllRandom.setOnClickListener(this)
+        binding.rbAllSel.setOnClickListener(this)
+        binding.rbCustomSel.setOnClickListener(this)
+        binding.rbDefaultSel.setOnClickListener(this)
+
+        // 소분류 (전체, 기본, 사용자 문제) 선택
+        // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
+        homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
+            var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
+            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
+            if (currentDetailSubjects.isNullOrEmpty()) {
+               Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                currentDetailSubjects = mutableSetOf()
+                Log.d("test", "NULL인데")
+            }
+            adapter.changeDetailSubjects(currentDetailSubjects.toList())
         }
 
         return binding.root
@@ -151,18 +168,24 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             }
 
             R.id.rb_all_sel-> {
+                homeViewModel.getQuizLoad(requireContext(), QuizType.ALL)
+                Log.d("test", "rb_all_sel click")
 
             }
 
             R.id.rb_custom_sel -> {
-
+                Log.d("test", "rb_custom_sel click")
+                homeViewModel.getQuizLoad(requireContext(), QuizType.USER)
             }
 
             R.id.rb_default_sel -> {
-
+                Log.d("test", "rb_default_sel click")
+                homeViewModel.getQuizLoad(requireContext(), QuizType.DEFAULT)
             }
         }
     }
+
+
 
     private fun checkDetailQuizSend() {
         val detailsAdapter = binding.rvContent.adapter as SubjectContentItemAdapter

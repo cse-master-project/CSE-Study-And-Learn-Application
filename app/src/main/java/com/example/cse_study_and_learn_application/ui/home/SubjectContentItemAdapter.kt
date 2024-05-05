@@ -25,7 +25,7 @@ import com.example.cse_study_and_learn_application.model.QuizContentCategory
  * - 매개변수 context 추후 그라데이션 넣을지 고민 중
  * - 카드뷰 두 개로 구현했던 뷰를 제거하고 그냥 테두리 bg 넣음
  */
-class SubjectContentItemAdapter(private val contents: List<QuizContentCategory>, private val context: Context) :
+class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>, private val context: Context) :
     RecyclerView.Adapter<SubjectContentViewHolder>() {
     private var toggleCheckBox = true
 
@@ -50,6 +50,12 @@ class SubjectContentItemAdapter(private val contents: List<QuizContentCategory>,
 
     fun getSelectedItems(): List<QuizContentCategory> {
         return contents.filter { it.selected }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun changeDetailSubjects(currentDetailSubjects: List<QuizContentCategory>) {
+        contents = currentDetailSubjects
+        notifyDataSetChanged()
     }
 }
 
