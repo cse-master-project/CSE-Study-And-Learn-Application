@@ -159,6 +159,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         if (selectedDetails.isNotEmpty()) {
             Log.d("test", "비어있지 않음")
             // 여기서 이어서 작성하면 됨
+            // selectedDetails ex. {자료구조=[QuizContentCategory(title=큐, selected=true)], 자바=[QuizContentCategory(title=자료형, selected=true)]}
         } else {
             Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
         }
