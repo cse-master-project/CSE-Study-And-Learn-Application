@@ -20,6 +20,14 @@ data class UserQuizResponse(
     val empty: Boolean
 )
 
+data class QuizRandom(
+    val quizId: Int,
+    val subject: String,
+    val detailSubject: String,
+    val jsonContent: String,
+    val hasImage: Boolean
+)
+
 data class Quiz(
     val quizId: Int,
     val subject: String,
@@ -28,6 +36,44 @@ data class Quiz(
     val jsonContent: String,
     val createAt: String,
     val hasImage: Boolean
+)
+
+data class MultipleChoiceQuizJsonContent(
+    val type: Int,
+    val quiz: String,
+    val option: List<String>,
+    val answer: String,
+    val commentary: String
+)
+
+data class ShortAnswerQuizJsonContent(
+    val type: Int,
+    val quiz: String,
+    val answer: String,
+    val commentary: String
+)
+
+data class MatingQuizJsonContent(
+    val type: Int,
+    val quiz: String,
+    val leftOption: List<String>,
+    val rightOption: List<String>,
+    val answer: List<String>,
+    val commentary: String
+)
+
+data class TrueFalseQuizJsonContent(
+    val type: Int,
+    val quiz: String,
+    val answer: Int,
+    val commentary: String
+)
+
+data class FillBlankQuizFragment(
+    val type: Int,
+    val quiz: String,
+    val answer: List<String>,
+    val commentary: String
 )
 
 data class Sort(
