@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -20,7 +21,7 @@ import java.io.IOException
  * @since 2024-03-09
  *
  */
-class SubjectItemAdapter(private val questionRelateModels: List<QuizCategory>, private val listener: OnSubjectItemClickListener) : RecyclerView.Adapter<SubjectViewHolder>() {
+class SubjectItemAdapter(private var questionRelateModels: MutableList<QuizCategory>, private val listener: OnSubjectItemClickListener) : RecyclerView.Adapter<SubjectViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectViewHolder {
         val binding = ItemSubjectCatBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -65,7 +66,15 @@ class SubjectItemAdapter(private val questionRelateModels: List<QuizCategory>, p
     }
 
     override fun getItemCount(): Int = questionRelateModels.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateItem(contents: MutableList<QuizCategory>) {
+        questionRelateModels = contents
+        notifyDataSetChanged()
+    }
 }
+
+
 
 class SubjectViewHolder(private val binding: ItemSubjectCatBinding) : RecyclerView.ViewHolder(binding.root) {
     fun bind(subject: QuizCategory) {

@@ -1,23 +1,28 @@
 package com.example.cse_study_and_learn_application.ui.home
 
 import android.app.Application
+import android.content.Context
+import android.content.res.XmlResourceParser
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
+import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.QuizCategory
+import com.example.cse_study_and_learn_application.model.QuizContentCategory
+import com.example.cse_study_and_learn_application.model.QuizResponse
+import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.cse_study_and_learn_application.utils.QuizType
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 
 /**
  * Home view model
@@ -37,16 +42,79 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private lateinit var _selectedSubject: QuizCategory
     val subject get() = _selectedSubject
 
-    fun connectServerGetUserQuizzes() {
+    private val _quizSubjects = MutableLiveData<List<QuizSubject>>()
+    val quizSubjects: LiveData<List<QuizSubject>> = _quizSubjects
+
+    private val _quizSubjectCategories = MutableLiveData<MutableList<QuizCategory>>()
+    val quizSubjectCategories: LiveData<MutableList<QuizCategory>> = _quizSubjectCategories
+
+    private var subjectThumbnailMap = mutableMapOf<String, String>()
+//
+//    private val _quizResponseLiveData = MutableLiveData<QuizResponse>()
+//    val quizLiveData: LiveData<QuizResponse> = _quizResponseLiveData
+
+    private val _quizList = MutableLiveData<List<Quiz>>()
+    val quizList: LiveData<List<Quiz>> = _quizList
+
+    private val _detailSubjects = MutableLiveData<MutableMap<String, MutableSet<QuizContentCategory>>>()
+    val detailSubjects: LiveData<MutableMap<String, MutableSet<QuizContentCategory>>> = _detailSubjects
+
+    fun setCategoryThumbnails(context: Context) {
+        val subjectThumbnailMap = mutableMapOf<String, String>()
+        val parser: XmlResourceParser = context.resources.getXml(R.xml.thumbnails)
+        try {
+            var eventType = parser.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && parser.name == "subject") {
+                    val name = parser.getAttributeValue(null, "name")
+                    parser.next()
+                    val imagePath = parser.text.trim()
+                    subjectThumbnailMap[name] = "images/subjects/$imagePath"
+                }
+                eventType = parser.next()
+            }
+            this.subjectThumbnailMap = subjectThumbnailMap
+
+        } catch (e: XmlPullParserException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            parser.close()
+        }
+    }
+
+    fun setInitSubjectCategories(contents: MutableList<QuizCategory>) {
+        _quizSubjectCategories.value = contents
+    }
+
+    fun getQuizSubjects(context: Context) {
         viewModelScope.launch {
-            val userQuizRequest = UserQuizRequest(page = 2, size = 2, sort = listOf("string"))
             try {
-                val token = AccountAssistant.getUserToken(context)
-                val responses = connectorRepository.getUserQuizzes(token, userQuizRequest)
-                _userQuizResponses.value = responses
+                val token = AccountAssistant.getServerAccessToken(context)
+                val subjects = connectorRepository.getQuizSubjects(token)
+
+                // 문제 선택 풀기 칸 추가
+                val imagePath = "subj_all_random.jpg"
+
+                val newCategories = mutableListOf<QuizCategory>()
+                newCategories.add(QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐"))
+
+                for (subject in subjects) {
+                    val id = subject.subjectId
+                    val title = subject.subject
+                    val bg = if (subjectThumbnailMap[title].isNullOrBlank()) "오류" else subjectThumbnailMap[title]
+                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString(), if (id % 2 == 0) "⭐" else "💡")
+                    newCategories.add(sub)  // 카테고리 추가
+                }
+                _quizSubjectCategories.value = newCategories
+                _quizSubjects.value = subjects
+
+                Log.d("tes", "getQuizSubjects 성공")
             } catch (e: Exception) {
-                Log.d("test", "connectServerGetUserQuizzes 서버 연결 실패")
-                e.printStackTrace()
+                // 예외 처리
+                _quizSubjects.value = emptyList()
+                Log.e("tes", "getQuizSubjects error: $e")
             }
         }
     }
@@ -56,4 +124,38 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _selectedSubject = subject
     }
 
+
+    // 현재 선택한 대분류의 중분류 불러오기
+    fun getCurrentDetailSubjects(): MutableSet<QuizContentCategory>? {
+        return _detailSubjects.value?.get(_selectedSubject.title)
+    }
+
+    fun getQuizLoad(context: Context, quizType: QuizType) {
+        viewModelScope.launch {
+            try {
+                val token = AccountAssistant.getServerAccessToken(context)
+
+                val userQuizResponse = UserQuizRequest(page = 0, size = 1000, sort = listOf("desc"))
+
+                val quizResponse = when(quizType) {
+                    QuizType.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
+                    QuizType.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
+                    QuizType.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
+                }
+
+                _quizList.value = quizResponse.content
+                val detailSubject = mutableMapOf<String, MutableSet<QuizContentCategory>>()
+                for (quiz in _quizList.value!!) {
+                    detailSubject.getOrPut(quiz.subject) { mutableSetOf() }.add(
+                    QuizContentCategory(quiz.detailSubject, true))
+                }
+
+                _detailSubjects.value = detailSubject
+                Log.d("test", detailSubjects.value!!.toString())
+
+            } catch (e: Exception) {
+                Log.e("test", "getAllQuizzes error: $e")
+            }
+        }
+    }
 }

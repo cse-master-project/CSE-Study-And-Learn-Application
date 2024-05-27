@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.statistics
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
  * @since 2024-03-24
  * @author kjy
  */
-class CategorySuccessRatioAdapter(private val contents: List<CategorySuccessRatio>, private val context: Context):
+class CategorySuccessRatioAdapter(private var contents: List<CategorySuccessRatio>, private val context: Context):
     RecyclerView.Adapter<CategorySuccessRatioAdapter.RatioViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatioViewHolder {
         val binding = ItemEachCategoryRatioBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,6 +28,12 @@ class CategorySuccessRatioAdapter(private val contents: List<CategorySuccessRati
 
     override fun onBindViewHolder(holder: RatioViewHolder, position: Int) {
         holder.bind(contents[position])
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun itemUpdate(contents: List<CategorySuccessRatio>) {
+        this.contents = contents
+        notifyDataSetChanged()
     }
 
     class RatioViewHolder(private val binding: ItemEachCategoryRatioBinding, private val context: Context) :
