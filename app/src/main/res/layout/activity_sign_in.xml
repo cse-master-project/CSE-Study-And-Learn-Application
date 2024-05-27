@@ -94,8 +94,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/gnu_hi"
-            android:background="#d2f3f8"
-            android:backgroundTint="@drawable/bg_circle"/>
+            android:background="#d2f3f8"/>
 
     </androidx.cardview.widget.CardView>
 
