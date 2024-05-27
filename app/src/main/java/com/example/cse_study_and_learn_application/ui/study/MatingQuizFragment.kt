@@ -26,4 +26,15 @@ class MatingQuizFragment : Fragment() {
         return binding.root
     }
 
+    companion object {
+        fun newInstance(contents: String): MatingQuizFragment {
+            val args = Bundle()
+
+            val fragment = MatingQuizFragment()
+            args.putString("contents", contents)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
 }

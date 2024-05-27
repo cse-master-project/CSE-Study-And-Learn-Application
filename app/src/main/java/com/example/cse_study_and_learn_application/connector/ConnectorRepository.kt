@@ -2,8 +2,6 @@ package com.example.cse_study_and_learn_application.connector
 
 import android.util.Log
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
-import com.example.cse_study_and_learn_application.model.DefaultQuizResponse
-import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse
@@ -167,7 +165,10 @@ class ConnectorRepository {
     }
 
     suspend fun getRandomQuiz(token: String, subject: String, detailSubject: String): RandomQuiz {
-        val response = RetrofitInstance.quizQueryApi.getRandomQuiz(token, subject, detailSubject)
+        val response = RetrofitInstance.quizQueryApi.getRandomQuiz(
+            token = token,
+            subject = subject,
+            detailSubject = detailSubject)
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")
         } else {

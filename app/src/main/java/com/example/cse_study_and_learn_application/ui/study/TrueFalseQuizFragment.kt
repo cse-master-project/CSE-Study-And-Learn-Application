@@ -28,4 +28,15 @@ class TrueFalseQuizFragment : Fragment() {
         binding = FragmentTrueFalseQuizBinding.inflate(inflater)
         return binding.root
     }
+
+    companion object {
+        fun newInstance(contents: String): TrueFalseQuizFragment {
+            val args = Bundle()
+
+            val fragment = TrueFalseQuizFragment()
+            args.putString("contents", contents)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }

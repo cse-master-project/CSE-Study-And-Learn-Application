@@ -13,9 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
 import com.example.cse_study_and_learn_application.model.Quiz
-import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
-import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.Subcategory
 
 
 /**
@@ -30,10 +29,6 @@ import com.example.cse_study_and_learn_application.utils.QuizType
  * - adapter context 매개변수 추가
  */
 class SubjectContentsFragment : Fragment(), OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
     private var _binding: FragmentSubjectContentsBinding? = null
     private val binding get() = _binding!!
     private lateinit var homeViewModel: HomeViewModel
@@ -168,19 +163,19 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             }
 
             R.id.rb_all_sel-> {
-                homeViewModel.getQuizLoad(requireContext(), QuizType.ALL)
+                homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
                 Log.d("test", "rb_all_sel click")
 
             }
 
             R.id.rb_custom_sel -> {
                 Log.d("test", "rb_custom_sel click")
-                homeViewModel.getQuizLoad(requireContext(), QuizType.USER)
+                homeViewModel.getQuizLoad(requireContext(), Subcategory.USER)
             }
 
             R.id.rb_default_sel -> {
                 Log.d("test", "rb_default_sel click")
-                homeViewModel.getQuizLoad(requireContext(), QuizType.DEFAULT)
+                homeViewModel.getQuizLoad(requireContext(), Subcategory.DEFAULT)
             }
         }
     }
@@ -202,10 +197,13 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     }
                 }
             }
+
+
+
             // quizContentList 이걸로 사용하면 됨
             // 현재 대분류(카테고리, subject)에 그리고 선택된 중분류(detail subject)와 일치하는 quiz 만 모아서반환
             //  [Quiz(quizId=40, subject=자바, detailSubject=자료형, correctRate=0, jsonContent={"type" : "2","quiz" : "현재 계절은?","answer" : "봄","commentary" : "해설"}, createAt=2024-04-10T20:10:43.259407, hasImage=false)]
-            Log.d("test", quizContentList.toString())
+            Log.d("test1", quizContentList.toString())
         } else {
             Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
         }

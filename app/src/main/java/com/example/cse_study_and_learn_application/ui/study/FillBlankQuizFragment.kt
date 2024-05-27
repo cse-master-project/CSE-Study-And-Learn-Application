@@ -28,4 +28,15 @@ class FillBlankQuizFragment : Fragment() {
         return binding.root
     }
 
+    companion object {
+        fun newInstance(contents: String): FillBlankQuizFragment {
+            val args = Bundle()
+
+            val fragment = FillBlankQuizFragment()
+            args.putString("contents", contents)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
 }

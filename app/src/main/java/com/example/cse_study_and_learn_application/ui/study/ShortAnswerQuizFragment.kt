@@ -25,6 +25,16 @@ class ShortAnswerQuizFragment : Fragment() {
         return binding.root
     }
 
+    companion object {
+        fun newInstance(contents: String): ShortAnswerQuizFragment {
+            val args = Bundle()
+
+            val fragment = ShortAnswerQuizFragment()
+            args.putString("contents", contents)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
 
 }

@@ -1,5 +1,5 @@
 package com.example.cse_study_and_learn_application.utils
 
-enum class QuizType {
+enum class Subcategory {
     ALL, USER, DEFAULT
 }

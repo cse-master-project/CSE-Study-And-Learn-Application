@@ -2,29 +2,23 @@ package com.example.cse_study_and_learn_application.ui.home
 
 import android.content.res.XmlResourceParser
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
-import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.Subcategory
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 
@@ -95,7 +89,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         }
 
         homeViewModel.getQuizSubjects(requireContext()) // 과목 불러오는 코드
-        homeViewModel.getQuizLoad(requireContext(), QuizType.ALL)
+        homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
     }
 
 

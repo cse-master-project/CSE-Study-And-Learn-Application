@@ -13,12 +13,11 @@ import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.model.QuizContentCategory
-import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.Subcategory
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -130,7 +129,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         return _detailSubjects.value?.get(_selectedSubject.title)
     }
 
-    fun getQuizLoad(context: Context, quizType: QuizType) {
+    fun getQuizLoad(context: Context, quizType: Subcategory) {
         viewModelScope.launch {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
@@ -138,9 +137,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val userQuizResponse = UserQuizRequest(page = 0, size = 1000, sort = listOf("desc"))
 
                 val quizResponse = when(quizType) {
-                    QuizType.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
-                    QuizType.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
-                    QuizType.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
+                    Subcategory.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
+                    Subcategory.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
+                    Subcategory.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
                 }
 
                 _quizList.value = quizResponse.content

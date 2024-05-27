@@ -19,6 +19,10 @@ object RetrofitInstance {
         retrofit.create(QuizQueryApi::class.java)
     }
 
+    val quizRandomQueryApi : QuizQueryApi by lazy {
+        retrofit.create(QuizQueryApi::class.java)
+    }
+
     val userAccountQueryApi : UserAccountApi by lazy {
         retrofit.create(UserAccountApi::class.java)
     }

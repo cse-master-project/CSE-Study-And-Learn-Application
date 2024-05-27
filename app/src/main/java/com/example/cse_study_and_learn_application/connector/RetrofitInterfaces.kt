@@ -2,7 +2,6 @@ package com.example.cse_study_and_learn_application.connector
 
 import androidx.annotation.Keep
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
-import com.example.cse_study_and_learn_application.model.DefaultQuizResponse
 import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse

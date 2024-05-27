@@ -22,14 +22,6 @@ data class UserQuizResponse(
     val empty: Boolean
 )
 
-data class QuizRandom(
-    val quizId: Int,
-    val subject: String,
-    val detailSubject: String,
-    val jsonContent: String,
-    val hasImage: Boolean
-)
-
 data class Quiz(
     @SerializedName("quizId") val quizId: Int,
     @SerializedName("subject") val subject: String,
@@ -41,7 +33,6 @@ data class Quiz(
 )
 
 data class MultipleChoiceQuizJsonContent(
-    val type: Int,
     val quiz: String,
     val option: List<String>,
     val answer: String,
@@ -49,14 +40,12 @@ data class MultipleChoiceQuizJsonContent(
 )
 
 data class ShortAnswerQuizJsonContent(
-    val type: Int,
     val quiz: String,
     val answer: String,
     val commentary: String
 )
 
 data class MatingQuizJsonContent(
-    val type: Int,
     val quiz: String,
     val leftOption: List<String>,
     val rightOption: List<String>,
@@ -65,14 +54,12 @@ data class MatingQuizJsonContent(
 )
 
 data class TrueFalseQuizJsonContent(
-    val type: Int,
     val quiz: String,
     val answer: Int,
     val commentary: String
 )
 
-data class FillBlankQuizFragment(
-    val type: Int,
+data class FillBlankQuizJsonContent(
     val quiz: String,
     val answer: List<String>,
     val commentary: String
@@ -187,6 +174,8 @@ data class RandomQuiz(
     val subject: String,
     @SerializedName("detailSubject")
     val detailSubject: String,
+    @SerializedName("quizType")
+    val quizType: Int,
     @SerializedName("jsonContent")
     val jsonContent: String,
     @SerializedName("hasImage")
