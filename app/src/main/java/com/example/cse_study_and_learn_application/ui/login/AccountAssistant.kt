@@ -33,7 +33,6 @@ object AccountAssistant {
         //Log.d("test", "token 저장함: $token")
     }
 
-
     fun getAccessToken(context: Context): String {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val token = preferences.getString(KEY_ACCESS_TOKEN, "") ?: ""

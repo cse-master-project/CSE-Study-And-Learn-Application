@@ -9,12 +9,18 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
 import com.example.cse_study_and_learn_application.model.Quiz
+import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
+import com.example.cse_study_and_learn_application.ui.study.QuizUtils
 import com.example.cse_study_and_learn_application.utils.Subcategory
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 /**
@@ -189,7 +195,15 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         if (detailSubject.isNotEmpty()) {
             Log.d("test", "subject: $subject, detailSubject: $detailSubject")   // 나중에 변경 예정
             val temporaryDetailSubject = detailSubject[0]   // 리스트에서 첫 번째 것 고름
-            Log.d("test", "subject: $subject, temporaryDetailSubject: ${temporaryDetailSubject.title}")
+            Log.d("test", "subject: $subject, temporaryDetailSubject: ${temporaryDetailSubject.title}, accessToken: $AccountAssistant")
+            var response: RandomQuiz? = null
+
+            lifecycleScope.launch {
+                response = QuizUtils.loadQuizData(AccountAssistant.getServerAccessToken(requireContext()), subject, temporaryDetailSubject.title)
+                Log.d("test", response.toString())
+            }
+
+
 
         } else {
             Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
