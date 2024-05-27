@@ -23,8 +23,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@drawable/ic_launcher_foreground"
-        android:background="@drawable/ic_launcher_background"
+        android:background="@drawable/gnu_sinna"
         />
 
     <androidx.cardview.widget.CardView
@@ -61,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="안녕하세요!\n우리 앱은 어쩌고 저쩌고 블라 블라\n이것 저것을 하는 앱 입니다." />
+                    android:text="이 앱은 경상국립대학교 학생을 위해 만들었어요!" />
 
             </LinearLayout>
 
@@ -87,10 +86,9 @@
         app:cardUseCompatPadding="true">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_launcher_foreground"
-            android:background="@drawable/ic_launcher_background" />
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/gnu_hi"/>
 
     </androidx.cardview.widget.CardView>
 
