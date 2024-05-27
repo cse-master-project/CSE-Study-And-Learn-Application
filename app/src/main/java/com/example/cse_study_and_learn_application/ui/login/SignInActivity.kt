@@ -22,9 +22,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Sign in activity
- * 기능은 미구현
  *
- * @constructor Create empty Sign in activity
+ * @constructor 로그인을 담당하는 액티비티
  * @author JYH, KJY
  * @since 2024-03-17
  *
@@ -109,6 +108,7 @@ class SignInActivity : AppCompatActivity() {
         Log.d("test", "accessToken auto login test: $accessToken")
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
+
             lifecycleScope.launch {
                 try {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
@@ -120,6 +120,7 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("test", "로그인 실패 $e")
                 }
             }
+            moveMainActivity()
         }
     }
 
@@ -131,56 +132,10 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun requestGoogleLogin() {
-/*        try {
-            val credentialManager = CredentialManager.create(context)
-
-            val rawNonce = UUID.randomUUID().toString()
-            val bytes = rawNonce.toByteArray()
-            val md = MessageDigest.getInstance("SHA-256")
-            val digest = md.digest(bytes)
-            val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
-
-            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(R.string.google_login_server_client_id.toString())
-                .setNonce(hashedNonce)
-                .build()
-
-            val request: androidx.credentials.GetCredentialRequest =
-                androidx.credentials.GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
-
-            coroutineScope.launch {
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = context,
-                )
-
-                val credential = result.credential
-
-                val googleIdTokenCredential = GoogleIdTokenCredential
-                    .createFrom(credential.data)
-
-                val googleIdToken = googleIdTokenCredential.idToken
-
-                Log.i("a", googleIdToken)
-
-                Toast.makeText(context, "Sign In!", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: GetCredentialException) {
-            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-        } catch (e: GoogleIdTokenParsingException) {
-            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-        }*/
-
         googleSignInClient.signOut()
         val signInIntent = googleSignInClient.signInIntent
         googleAuthLauncher.launch(signInIntent)
     }
-
 
     private fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
