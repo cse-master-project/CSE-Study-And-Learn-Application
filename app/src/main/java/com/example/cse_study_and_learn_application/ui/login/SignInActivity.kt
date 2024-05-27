@@ -39,7 +39,7 @@ class SignInActivity : AppCompatActivity() {
 
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        Log.d("result", result.data.toString())
+//        Log.d("result", result.data.toString())
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
         try {
@@ -52,9 +52,9 @@ class SignInActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    Log.d("test", "client ID: $clientId")
-                    Log.d("test", "client Secret: $clientSecret")
-                    Log.d("test", "serverAuthToken: $authCode")
+//                    Log.d("test", "client ID: $clientId")
+//                    Log.d("test", "client Secret: $clientSecret")
+//                    Log.d("test", "serverAuthToken: $authCode")
 
                     // 여기 액세스 토큰 받아오는 구조 변경함
                     // 원래 구조는 비동기 데이터를 받아올 수 없음
