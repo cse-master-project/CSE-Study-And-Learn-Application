@@ -180,32 +180,20 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
     }
 
-
-
     private fun checkDetailQuizSend() {
+        val subject = homeViewModel.subject.title
         val detailsAdapter = binding.rvContent.adapter as SubjectContentItemAdapter
-        val selectedDetails = detailsAdapter.getSelectedItems()
-        Log.d("test", selectedDetails.toString())
+        val detailSubject = detailsAdapter.getSelectedItems()
+        // Log.d("test", detailSubject.toString())
 
-        if (selectedDetails.isNotEmpty()) {
-            Log.d("test", "비어있지 않음")
-            val quizContentList = mutableListOf<Quiz>()
-            for (detail in selectedDetails) {
-                for (quiz in homeViewModel.quizList.value!!) {
-                    if (quiz.subject == homeViewModel.subject.title && quiz.detailSubject == detail.title) {
-                        quizContentList.add(quiz)
-                    }
-                }
-            }
+        if (detailSubject.isNotEmpty()) {
+            Log.d("test", "subject: $subject, detailSubject: $detailSubject")   // 나중에 변경 예정
+            val temporaryDetailSubject = detailSubject[0]   // 리스트에서 첫 번째 것 고름
+            Log.d("test", "subject: $subject, temporaryDetailSubject: ${temporaryDetailSubject.title}")
 
-
-
-            // quizContentList 이걸로 사용하면 됨
-            // 현재 대분류(카테고리, subject)에 그리고 선택된 중분류(detail subject)와 일치하는 quiz 만 모아서반환
-            //  [Quiz(quizId=40, subject=자바, detailSubject=자료형, correctRate=0, jsonContent={"type" : "2","quiz" : "현재 계절은?","answer" : "봄","commentary" : "해설"}, createAt=2024-04-10T20:10:43.259407, hasImage=false)]
-            Log.d("test1", quizContentList.toString())
         } else {
             Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
         }
+
     }
 }
