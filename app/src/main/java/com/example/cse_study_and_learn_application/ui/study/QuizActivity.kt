@@ -31,21 +31,23 @@ import kotlin.properties.Delegates
  * @author JYH
  * @since 2024-03-22
  */
-class QuizActivity(quizType: Int) : AppCompatActivity() {
+class QuizActivity() : AppCompatActivity() {
     private lateinit var binding: ActivityQuizBinding;
-
-    private val fragmentManager: FragmentManager = supportFragmentManager
-    private val multipleChoiceQuizFragment = MultipleChoiceQuizFragment()
-    private val shortAnswerQuizFragment = ShortAnswerQuizFragment()
-    private val trueFalseQuizFragment = TrueFalseQuizFragment()
-    private val matingQuizFragment = MatingQuizFragment()
-    private val fillBlankQuizFragment = FillBlankQuizFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val subject = intent.getStringExtra("subject")
+        val detailSubject = intent.getStringExtra("detailSubject")
+
+        lifecycleScope.launch {
+            val response = QuizUtils.loadQuizData(AccountAssistant.getServerAccessToken(applicationContext), subject!!, detailSubject!!)
+            showQuiz(response!!)
+        }
+
     }
 
     private fun showQuiz(response: RandomQuiz) {

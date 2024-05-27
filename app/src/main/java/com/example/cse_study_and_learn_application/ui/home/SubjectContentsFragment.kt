@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
+import com.example.cse_study_and_learn_application.ui.study.QuizActivity
 import com.example.cse_study_and_learn_application.ui.study.QuizUtils
 import com.example.cse_study_and_learn_application.utils.Subcategory
 import kotlinx.coroutines.coroutineScope
@@ -197,6 +199,12 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             val temporaryDetailSubject = detailSubject[0]   // 리스트에서 첫 번째 것 고름
             Log.d("test", "subject: $subject, temporaryDetailSubject: ${temporaryDetailSubject.title}, accessToken: $AccountAssistant")
             var response: RandomQuiz? = null
+
+            var i = Intent(requireContext(), QuizActivity::class.java)
+            i.putExtra("subject", subject)
+            i.putExtra("detailSubject", temporaryDetailSubject.title)
+
+            startActivity(i)
 
             lifecycleScope.launch {
                 response = QuizUtils.loadQuizData(AccountAssistant.getServerAccessToken(requireContext()), subject, temporaryDetailSubject.title)

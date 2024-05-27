@@ -30,7 +30,7 @@ class MultipleChoiceQuizFragment : Fragment() {
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
 
-        val jsonString = arguments?.getString("content")
+        val jsonString = arguments?.getString("contents")
         val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
         val quiz = content.quiz
         val options = content.option
