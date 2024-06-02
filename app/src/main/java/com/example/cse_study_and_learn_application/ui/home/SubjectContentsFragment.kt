@@ -52,7 +52,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        if (detailSubjects.isNullOrEmpty()) {
+        adapter = if (detailSubjects.isEmpty()) {
             Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
             SubjectContentItemAdapter(emptyList(), requireContext())
         } else {
