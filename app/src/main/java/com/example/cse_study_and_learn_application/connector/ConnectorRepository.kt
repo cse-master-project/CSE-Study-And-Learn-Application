@@ -2,6 +2,7 @@ package com.example.cse_study_and_learn_application.connector
 
 import android.util.Log
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
+import com.example.cse_study_and_learn_application.model.NicknameRequest
 import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse
@@ -178,7 +179,8 @@ class ConnectorRepository {
     }
 
     suspend fun setUserNickname(token: String, nickname: String): Boolean {
-        val response = RetrofitInstance.userAccountQueryApi.setUserNickname(token, nickname)
+        val nicknameRequest = NicknameRequest(nickname)
+        val response = RetrofitInstance.userAccountQueryApi.setUserNickname(token, nicknameRequest)
         if (response.isSuccessful) {
             return true
         } else {

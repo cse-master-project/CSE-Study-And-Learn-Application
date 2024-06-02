@@ -45,6 +45,11 @@ data class UserQuizStatistics(
     val correctRateBySubject: Map<String, String>
 )
 
+data class NicknameRequest(
+    val nickname: String
+)
+
+
 
 data class UserInfo(
     @SerializedName("nickname") val nickname: String,

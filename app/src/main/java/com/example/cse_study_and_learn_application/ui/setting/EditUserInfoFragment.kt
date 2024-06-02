@@ -75,9 +75,6 @@ class EditUserInfoFragment : Fragment() {
                 // 회원정보 수정 성공 처리
                 settingViewModel.closeEditFragment()
                 requireActivity().onBackPressed()
-            } else {
-                // 회원정보 수정 실패 처리
-                Toast.makeText(requireContext(), "닉네임을 변경하지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         })
 

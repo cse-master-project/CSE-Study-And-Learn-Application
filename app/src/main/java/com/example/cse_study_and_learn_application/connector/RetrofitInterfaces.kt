@@ -2,6 +2,7 @@ package com.example.cse_study_and_learn_application.connector
 
 import androidx.annotation.Keep
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
+import com.example.cse_study_and_learn_application.model.NicknameRequest
 import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
 import com.example.cse_study_and_learn_application.model.QuizResponse
@@ -108,7 +109,7 @@ interface UserAccountApi {
     @PUT("/api/user/info/nickname")
     suspend fun setUserNickname(
         @Header("Authorization") token: String,
-        @Body nickname: String
+        @Body nicknameRequest: NicknameRequest
     ): Response<Unit>
 
     @GET("/api/user/quiz-results")
