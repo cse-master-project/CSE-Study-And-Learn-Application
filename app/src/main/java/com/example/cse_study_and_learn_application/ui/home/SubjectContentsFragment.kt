@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
+import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
@@ -51,11 +52,11 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        if (detailSubjects.isEmpty()) {
+        adapter = if (detailSubjects.isEmpty()) {
             Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-            adapter = SubjectContentItemAdapter(emptyList(), requireContext())
+            SubjectContentItemAdapter(emptyList(), requireContext())
         } else {
-            adapter = SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
+            SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
         }
 
         binding.rvContent.adapter = adapter
@@ -68,18 +69,18 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
 
-        // 아래 소분류, 중분류 코드가 바뀌어서 나중에 다시 수정해야됨
         // 소분류 (전체, 기본, 사용자 문제) 선택
         // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
-        // homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
-        //     var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
-        //     Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
-        //     if (currentDetailSubjects.isEmpty()) {
-        //        Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-        //         Log.d("test", "NULL인데")
-        //     }
-        //     adapter.changeDetailSubjects(currentDetailSubjects.toList())
-        // }
+        homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
+            var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
+            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
+            if (currentDetailSubjects.isNullOrEmpty()) {
+               Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                currentDetailSubjects = mutableListOf()
+                Log.d("test", "NULL인데")
+            }
+            adapter.changeDetailSubjects(currentDetailSubjects.toList())
+        }
 
         return binding.root
     }
@@ -168,8 +169,6 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 adapter.toggleCheckBoxVisibility()
             }
 
-            // 아래 부분 다시 수정해야됨
-
             R.id.rb_all_sel-> {
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
                 Log.d("test", "rb_all_sel click")
@@ -195,24 +194,19 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         // Log.d("test", detailSubject.toString())
 
         if (detailSubject.isNotEmpty()) {
-            Log.d("test", "subject: $subject, detailSubject: $detailSubject")   // 나중에 변경 예정
-            val temporaryDetailSubject = detailSubject[0]   // 리스트에서 첫 번째 것 고름
-            Log.d("test", "subject: $subject, temporaryDetailSubject: ${temporaryDetailSubject.title}, accessToken: $AccountAssistant")
-            var response: RandomQuiz? = null
+            val temporaryDetailSubject = arrayListOf<String>()
 
-            var i = Intent(requireContext(), QuizActivity::class.java)
-            i.putExtra("subject", subject)
-            i.putExtra("detailSubject", temporaryDetailSubject.title)
-
-            startActivity(i)
-
-            lifecycleScope.launch {
-                response = QuizUtils.loadQuizData(AccountAssistant.getServerAccessToken(requireContext()), subject, temporaryDetailSubject.title)
-                Log.d("test", response.toString())
+            detailSubject.forEach {
+                temporaryDetailSubject.add(it.title)
             }
 
+            Log.d("detail", temporaryDetailSubject.toString())
 
+            val i = Intent(requireContext(), QuizActivity::class.java)
+            i.putExtra("subject", subject)
+            i.putExtra("detailSubject", temporaryDetailSubject.joinToString(","))
 
+            startActivity(i)
         } else {
             Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
         }
