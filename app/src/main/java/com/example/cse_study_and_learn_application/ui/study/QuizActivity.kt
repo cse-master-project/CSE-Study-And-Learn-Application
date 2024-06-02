@@ -30,11 +30,16 @@ class QuizActivity() : AppCompatActivity() {
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val subject = intent.getStringExtra("subject")
+        val subjects = intent.getStringExtra("subject")
         val detailSubject = intent.getStringExtra("detailSubject")
+        Log.d("detailSubject", detailSubject.toString())
 
         lifecycleScope.launch {
-            val response = QuizUtils.loadQuizData(AccountAssistant.getServerAccessToken(applicationContext), subject!!, detailSubject!!)
+            val response = QuizUtils.loadQuizData(
+                AccountAssistant.getServerAccessToken(applicationContext),
+                subjects!!,
+                detailSubject!!
+            )
             showQuiz(response!!)
         }
 
@@ -51,7 +56,7 @@ class QuizActivity() : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
         val fragment = when (getQuizTypeFromInt(response.quizType)) {
-            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage)
+            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage, response.quizId)
             QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response.jsonContent)
             QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response.jsonContent)
             QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response.jsonContent)

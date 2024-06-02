@@ -104,8 +104,8 @@ class ConnectorRepository {
 
     suspend fun submitQuizResult(token: String, quizId: Int, isCorrect: Boolean): Boolean {
         val requestBody = mapOf(
-            "quizId" to quizId,
-            "isCorrect" to isCorrect
+            "quizId" to quizId.toString(),
+            "isCorrect" to isCorrect.toString()
         )
         val response = RetrofitInstance.quizQueryApi.submitQuizResult(token, requestBody)
         if (response.isSuccessful) {

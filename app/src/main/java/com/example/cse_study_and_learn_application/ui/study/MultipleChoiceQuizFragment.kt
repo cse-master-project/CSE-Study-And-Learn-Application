@@ -1,6 +1,7 @@
 package com.example.cse_study_and_learn_application.ui.study
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMultipleChoiceQuizBinding
 import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 
@@ -30,7 +32,7 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
     private var userAnswer: String? = null
     private lateinit var answer: String
     private lateinit var commentary: String
-
+    private var quizId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,8 +45,10 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
         val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
         val quiz = content.quiz
         val options = content.option
+        quizId = arguments?.getInt("quizId")
         answer = content.answer
         commentary = content.commentary
+
 
         // 이미지 유무 판별
         if (hasImg!!) {
@@ -98,25 +102,32 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
         if(userAnswer == null) {
             Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
         } else {
-            val bundle = Bundle().apply {
-                putString("userAnswer", userAnswer)
-                putString("answer", answer)
-                putString("commentary", commentary)
+            try {
+                val bundle = Bundle().apply {
+                    putString("userAnswer", userAnswer)
+                    putString("answer", answer)
+                    putString("commentary", commentary)
+                    putInt("quizId", quizId!!)
+                }
+                parentFragmentManager.commit {
+                    replace(R.id.fragmentContainerView, GradingFragment().apply {
+                        arguments = bundle
+                    })
+                    addToBackStack(null)
+                }
+            } catch (e: Exception) {
+                Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
             }
-            parentFragmentManager.commit {
-                replace(R.id.fragmentContainerView, GradingFragment().apply {
-                    arguments = bundle
-                })
-                addToBackStack(null)
-            }
+
         }
     }
 
     companion object {
-        fun newInstance(contents: String, hasImg: Boolean): MultipleChoiceQuizFragment {
+        fun newInstance(contents: String, hasImg: Boolean, quizId: Int): MultipleChoiceQuizFragment {
             val args = Bundle()
 
             val fragment = MultipleChoiceQuizFragment()
+            args.putInt("quizId", quizId)
             args.putString("contents", contents)
             args.putBoolean("hasImg", hasImg)
             fragment.arguments = args

@@ -44,7 +44,7 @@ interface QuizQueryApi {
     @POST("/api/quiz/submit")
     suspend fun submitQuizResult(
         @Header("Authorization") token: String,
-        @Body requestBody: Map<String, Any>
+        @Body requestBody: Map<String, String>
     ): Response<Unit>
 
     @GET("/api/quiz/report")
