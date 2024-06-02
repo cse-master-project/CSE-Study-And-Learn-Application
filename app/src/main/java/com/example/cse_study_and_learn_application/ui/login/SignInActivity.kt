@@ -86,7 +86,6 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivitySignInBinding.inflate(layoutInflater)
 
-
         addListener()
 
         setContentView(_binding.root)
@@ -99,7 +98,7 @@ class SignInActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
-                    Log.d("test", "serverAccessToken auto login test: $serverAccessToken")
+
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
                     Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     moveMainActivity()
@@ -107,6 +106,7 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("test", "로그인 실패 $e")
                 }
             }
+            Log.d("token", "serverAccessToken auto login test: ${AccountAssistant.getServerAccessToken(this)}")
         }
     }
 
