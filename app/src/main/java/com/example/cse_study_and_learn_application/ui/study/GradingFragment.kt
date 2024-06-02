@@ -77,10 +77,10 @@ class GradingFragment : Fragment() {
             QuizType.MULTIPLE_CHOICE_QUIZ -> {
                 binding.btnAnswer.text = answer
                 binding.tvAnswer.text = answerString
-                binding.tvCommentary.text = commentary
             }
             QuizType.SHORT_ANSWER_QUIZ -> {
-
+                binding.btnAnswer.text = "답"
+                binding.tvAnswer.text = answer
             }
             QuizType.MATING_QUIZ -> {
 
@@ -95,7 +95,7 @@ class GradingFragment : Fragment() {
                 Log.d("test", quizType.toString())
             }
         }
-
+        binding.tvCommentary.text = commentary
 
     }
 
