@@ -103,13 +103,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val id = subject.subjectId
                     val title = subject.subject
                     val bg = if (subjectThumbnailMap[title].isNullOrBlank()) "오류" else subjectThumbnailMap[title]
-                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString(), if (id % 2 == 0) "⭐" else "💡")
+                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString() + " 목록", if (id % 2 == 0) "⭐" else "💡")
                     newCategories.add(sub)  // 카테고리 추가
                 }
                 _quizSubjectCategories.value = newCategories
                 _quizSubjects.value = subjects
 
-                Log.d("tes", "getQuizSubjects 성공")
+                // Log.d("test", "_quizSubjectCategories.value: ${_quizSubjectCategories.value}")
+                // Log.d("tes", "getQuizSubjects 성공")
             } catch (e: Exception) {
                 // 예외 처리
                 _quizSubjects.value = emptyList()
@@ -125,8 +126,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // 현재 선택한 대분류의 중분류 불러오기
-    fun getCurrentDetailSubjects(): MutableSet<QuizContentCategory>? {
-        return _detailSubjects.value?.get(_selectedSubject.title)
+    fun getCurrentDetailSubjects(): MutableList<QuizContentCategory> {
+        val quizContentCategoryList = mutableListOf<QuizContentCategory>()
+        val detailSubjects = _quizSubjects.value?.find { it.subjectId == _selectedSubject.id && it.subject == _selectedSubject.title }
+        detailSubjects?.let {
+            for (detailSubject in it.detailSubject) {
+                quizContentCategoryList.add(QuizContentCategory(detailSubject, false))
+            }
+        }
+
+        return quizContentCategoryList
     }
 
     fun getQuizLoad(context: Context, quizType: Subcategory) {

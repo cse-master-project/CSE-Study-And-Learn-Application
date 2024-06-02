@@ -51,7 +51,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        if (detailSubjects.isNullOrEmpty()) {
+        if (detailSubjects.isEmpty()) {
             Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
             adapter = SubjectContentItemAdapter(emptyList(), requireContext())
         } else {
@@ -68,18 +68,18 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
 
+        // 아래 소분류, 중분류 코드가 바뀌어서 나중에 다시 수정해야됨
         // 소분류 (전체, 기본, 사용자 문제) 선택
         // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
-        homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
-            var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
-            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
-            if (currentDetailSubjects.isNullOrEmpty()) {
-               Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-                currentDetailSubjects = mutableSetOf()
-                Log.d("test", "NULL인데")
-            }
-            adapter.changeDetailSubjects(currentDetailSubjects.toList())
-        }
+        // homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
+        //     var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
+        //     Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
+        //     if (currentDetailSubjects.isEmpty()) {
+        //        Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+        //         Log.d("test", "NULL인데")
+        //     }
+        //     adapter.changeDetailSubjects(currentDetailSubjects.toList())
+        // }
 
         return binding.root
     }
@@ -167,6 +167,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             R.id.cb_all_random -> {
                 adapter.toggleCheckBoxVisibility()
             }
+
+            // 아래 부분 다시 수정해야됨
 
             R.id.rb_all_sel-> {
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)

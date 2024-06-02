@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -17,6 +18,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.utils.Subcategory
+import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -89,7 +91,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         }
 
         homeViewModel.getQuizSubjects(requireContext()) // 과목 불러오는 코드
-        homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
+        // homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
     }
 
 
@@ -97,7 +99,6 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         // 임시 Subject 데이터 생성
         val subjects = mutableListOf<QuizCategory>()
         val parser: XmlResourceParser = requireContext().resources.getXml(R.xml.thumbnails)
-
 
         val imagePath = "subj_all_random.jpg"
 
@@ -117,6 +118,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                     id += 1
 
                 }
+
                 eventType = parser.next()
             }
         } catch (e: XmlPullParserException) {
@@ -133,6 +135,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             // 어댑터 생성 및 설정
             adapter = SubjectItemAdapter(it, this)
             binding.rvSubjects.adapter = adapter
+
 
             // RecyclerView에 LayoutManager 설정
             binding.rvSubjects.layoutManager = GridLayoutManager(context, 2)
