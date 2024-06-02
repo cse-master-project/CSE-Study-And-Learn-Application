@@ -3,7 +3,6 @@ package com.example.cse_study_and_learn_application.ui.study
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
@@ -40,12 +39,13 @@ class QuizActivity() : AppCompatActivity() {
                 subjects!!,
                 detailSubject!!
             )
+            Log.d("response", response.toString())
             showQuiz(response!!)
         }
 
         binding.ibGrading.setOnClickListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
-            if(currentFragment is OnAnswerSubmitListener) {
+            if(currentFragment is AppBarImageButtonListener) {
                 currentFragment.onAnswerSubmit()
             }
         }
@@ -56,7 +56,7 @@ class QuizActivity() : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
         val fragment = when (getQuizTypeFromInt(response.quizType)) {
-            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage, response.quizId)
+            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage, response.quizId, response.quizType)
             QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response.jsonContent)
             QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response.jsonContent)
             QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response.jsonContent)
