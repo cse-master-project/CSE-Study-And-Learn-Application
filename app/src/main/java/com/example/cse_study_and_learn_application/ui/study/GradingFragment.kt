@@ -12,6 +12,8 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import kotlinx.coroutines.launch
 
 /**
@@ -23,25 +25,31 @@ class GradingFragment : Fragment() {
 
     private lateinit var binding: FragmentGradingBinding
 
+    private var quizId: Int? = null
+    private var quizType: Int? = null
+    private lateinit var userAnswer: String
+    private lateinit var answer: String
+    private lateinit var answerString: String
+    private lateinit var commentary: String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGradingBinding.inflate(inflater)
-        val userAnswer = arguments?.getString("userAnswer")
-        val answer = arguments?.getString("answer")
-        val commentary = arguments?.getString("commentary")
-        val quizId = arguments?.getInt("quizId")
 
-        if (userAnswer == answer) {
-            Log.d("test", "정답")
-            Log.d("test", commentary.toString())
-        } else {
-            Log.d("test", "오답")
-            Log.d("test", commentary.toString())
+        arguments?.let {
+            quizId = it.getInt("quizId")
+            quizType = it.getInt("quizType")
+            userAnswer = it.getString("userAnswer").toString()
+            answer = it.getString("answer").toString()
+            answerString = it.getString("answerString").toString()
+            commentary = it.getString("commentary").toString()
         }
 
-        resultSubmit(quizId!!, userAnswer == answer)
+        grading()
+
+        //resultSubmit(quizId!!, userAnswer == answer)
 
         return binding.root
     }
@@ -54,6 +62,40 @@ class GradingFragment : Fragment() {
                 isCorrect = isCorrect
             )
         }
+    }
+
+    private fun grading() {
+        if (userAnswer == answer) {
+            // 정답
+            binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+        } else {
+            // 오답
+            binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+        }
+
+        when (getQuizTypeFromInt(quizType!!)) {
+            QuizType.MULTIPLE_CHOICE_QUIZ -> {
+                binding.btnAnswer.text = answer
+                binding.tvAnswer.text = answerString
+                binding.tvCommentary.text = commentary
+            }
+            QuizType.SHORT_ANSWER_QUIZ -> {
+
+            }
+            QuizType.MATING_QUIZ -> {
+
+            }
+            QuizType.TRUE_FALSE_QUIZ -> {
+
+            }
+            QuizType.FILL_BLANK_QUIZ -> {
+
+            }
+            else -> {
+                Log.d("test", quizType.toString())
+            }
+        }
+
 
     }
 

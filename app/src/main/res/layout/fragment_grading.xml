@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                android:src="@drawable/gnu_ok"/>
+                android:src="@drawable/gnu_hei"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -51,7 +51,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cv_answer_1"
+            android:id="@+id/cv_answer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -68,19 +68,52 @@
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
                 <Button
-                    android:id="@+id/btn_1"
+                    android:id="@+id/btn_answer"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="1"/>
+                    android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/tv_answer_1"
+                    android:id="@+id/tv_answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="어쩌구 저쩌구"
+                    android:text="답"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_commentary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            app:cardElevation="6dp"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/material_dynamic_primary90">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="10dp">
+                <Button
+                    android:id="@+id/btn_commentary"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="해설"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tv_commentary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="해설......"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="10dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

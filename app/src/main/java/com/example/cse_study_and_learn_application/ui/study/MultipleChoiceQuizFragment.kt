@@ -11,8 +11,6 @@ import androidx.fragment.app.commit
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMultipleChoiceQuizBinding
 import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonContent
-import com.example.cse_study_and_learn_application.model.RandomQuiz
-import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 
@@ -25,14 +23,16 @@ import com.google.gson.Gson
  * @author JYH
  * @since 2024-03-17
  */
-class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
+class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private lateinit var binding: FragmentMultipleChoiceQuizBinding
     private val cards: ArrayList<MaterialCardView> = ArrayList()
     private var userAnswer: String? = null
     private lateinit var answer: String
+    private lateinit var answerString: String
     private lateinit var commentary: String
     private var quizId: Int? = null
+    private var quizType: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +40,13 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
 
+        quizId = arguments?.getInt("quizId")
+        quizType = arguments?.getInt("quizType")
         val hasImg = arguments?.getBoolean("hasImg")
         val jsonString = arguments?.getString("contents")
         val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
         val quiz = content.quiz
         val options = content.option
-        quizId = arguments?.getInt("quizId")
         answer = content.answer
         commentary = content.commentary
 
@@ -70,18 +71,22 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
         cards[0].setOnClickListener {
             onlyOneCardViewToggle(cards[0])
             userAnswer = "1"
+            answerString = binding.tvAnswer1.text.toString()
         }
         cards[1].setOnClickListener {
             onlyOneCardViewToggle(cards[1])
             userAnswer = "2"
+            answerString = binding.tvAnswer2.text.toString()
         }
         cards[2].setOnClickListener {
             onlyOneCardViewToggle(cards[2])
             userAnswer = "3"
+            answerString = binding.tvAnswer3.text.toString()
         }
         cards[3].setOnClickListener {
             onlyOneCardViewToggle(cards[3])
             userAnswer = "4"
+            answerString = binding.tvAnswer4.text.toString()
         }
 
         return binding.root
@@ -106,9 +111,12 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
                 val bundle = Bundle().apply {
                     putString("userAnswer", userAnswer)
                     putString("answer", answer)
+                    putString("answerString", answerString)
                     putString("commentary", commentary)
                     putInt("quizId", quizId!!)
+                    putInt("quizType", quizType!!)
                 }
+                Log.d("test","ua: ${userAnswer}, a: $answer, as: $answerString, c: $commentary, qi: $quizId, qt: $quizType")
                 parentFragmentManager.commit {
                     replace(R.id.fragmentContainerView, GradingFragment().apply {
                         arguments = bundle
@@ -123,10 +131,11 @@ class MultipleChoiceQuizFragment : Fragment(), OnAnswerSubmitListener {
     }
 
     companion object {
-        fun newInstance(contents: String, hasImg: Boolean, quizId: Int): MultipleChoiceQuizFragment {
+        fun newInstance(contents: String, hasImg: Boolean, quizId: Int, quizType: Int): MultipleChoiceQuizFragment {
             val args = Bundle()
 
             val fragment = MultipleChoiceQuizFragment()
+            args.putInt("quizType", quizType)
             args.putInt("quizId", quizId)
             args.putString("contents", contents)
             args.putBoolean("hasImg", hasImg)
