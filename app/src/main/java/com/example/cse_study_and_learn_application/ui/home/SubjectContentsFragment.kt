@@ -14,14 +14,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
-import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
-import com.example.cse_study_and_learn_application.ui.study.QuizUtils
+import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.example.cse_study_and_learn_application.utils.Subcategory
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 

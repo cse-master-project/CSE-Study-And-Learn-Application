@@ -1,4 +1,4 @@
-package com.example.cse_study_and_learn_application.ui.study
+package com.example.cse_study_and_learn_application.utils
 
 import android.util.Log
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository

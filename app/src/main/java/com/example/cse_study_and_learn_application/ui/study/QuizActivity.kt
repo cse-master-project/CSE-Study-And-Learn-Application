@@ -2,27 +2,16 @@ package com.example.cse_study_and_learn_application.ui.study
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.JsonToken
 import android.util.Log
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
-import com.example.cse_study_and_learn_application.connector.ConnectorRepository
-import com.example.cse_study_and_learn_application.connector.RetrofitInstance
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
-import com.example.cse_study_and_learn_application.model.FillBlankQuizJsonContent
-import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
-import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
-import com.example.cse_study_and_learn_application.model.ShortAnswerQuizJsonContent
-import com.example.cse_study_and_learn_application.model.TrueFalseQuizJsonContent
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlin.properties.Delegates
 
 /**
  * Quiz activity
