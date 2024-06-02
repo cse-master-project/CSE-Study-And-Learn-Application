@@ -35,42 +35,43 @@ class QuizActivity() : AppCompatActivity() {
 
         subjects = intent.getStringExtra("subject").toString()
         detailSubject = intent.getStringExtra("detailSubject").toString()
-        Log.d("detailSubject", detailSubject.toString())
-
+        Log.d("detailSubject", detailSubject)
 
 
         binding.ibGrading.setOnClickListener {
             when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                 is GradingFragment -> {
-                    showQuiz(subjects, detailSubject)
+                    requestQuiz(subjects, detailSubject)
                 }
                 is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
             }
 
         }
+        requestQuiz(subjects, detailSubject)
 
     }
 
-    private fun showQuiz(subjects: String, detailSubject: String) {
-        var response: RandomQuiz? = null
+    private fun requestQuiz(subjects: String, detailSubject: String){
         lifecycleScope.launch {
-            response = QuizUtils.loadQuizData(
+            val response = QuizUtils.loadQuizData(
                 AccountAssistant.getServerAccessToken(applicationContext),
                 subjects,
                 detailSubject
             )
             Log.d("response", response.toString())
+            showQuiz(response)
         }
+    }
 
+    private fun showQuiz(response: RandomQuiz?) {
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-
         val fragment = when (getQuizTypeFromInt(response!!.quizType)) {
-            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response!!.jsonContent, response!!.hasImage, response!!.quizId, response!!.quizType)
-            QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response!!.jsonContent, response!!.hasImage, response!!.quizId, response!!.quizType)
-            QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response!!.jsonContent)
-            QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response!!.jsonContent)
-            QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response!!.jsonContent)
+            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage, response!!.quizId, response!!.quizType)
+            QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response.jsonContent, response.hasImage, response!!.quizId, response!!.quizType)
+            QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response.jsonContent)
+            QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response.jsonContent)
+            QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response.jsonContent)
             else-> {
                 Log.e("QuizActivity", "showQuiz : Not Found fragment")
                 throw NullPointerException()
