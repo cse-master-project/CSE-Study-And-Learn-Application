@@ -75,22 +75,18 @@ class SignInActivity : AppCompatActivity() {
                                     val registrationResponse = connectorRepository.getUserRegistration(accessToken, "테스트 121")
                                     if (registrationResponse) {
                                         Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                        moveMainActivity()  // 메인 액티비티로 이동
                                     }
-
                                 } catch (e: Exception) {
                                     Log.e("test", "registrationResponse 호출 실패", e)
                                 }
                             }
-
                         }
                     }
-
+                    moveMainActivity()  // 메인 액티비티로 이동
                 } catch (e: Exception) {
                     Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", e)
                 }
             }
-
         } catch (e: ApiException) {
             Log.e(MainActivity::class.java.simpleName, e.stackTraceToString())
         }
@@ -105,7 +101,7 @@ class SignInActivity : AppCompatActivity() {
 
         val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
 
-        Log.d("test", "accessToken auto login test: $accessToken")
+        // Log.d("test", "accessToken auto login test: $accessToken")
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
 
