@@ -13,6 +13,7 @@ import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentEditUserInfoBinding
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
+import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 // TODO: Rename parameter arguments, choose names that match
@@ -69,6 +70,8 @@ class EditUserInfoFragment : Fragment() {
         binding.ibBackPres.setOnClickListener {
             requireActivity().onBackPressed()
         }
+
+        binding.tvEmail.text = AccountAssistant.getUserEmail(requireContext())
 
         settingViewModel.updateUserInfoResult.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {

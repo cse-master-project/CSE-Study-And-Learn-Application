@@ -8,11 +8,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
+import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -24,26 +26,23 @@ import kotlinx.coroutines.launch
  * Sign in activity
  *
  * @constructor 로그인을 담당하는 액티비티
- * @author JYH, KJY
- * @since 2024-03-17
- *
  */
-
 @Keep
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
-
-//    private val context = this
-//    private val coroutineScope = MainScope()
+    private lateinit var settingViewModel: SettingViewModel
 
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//        Log.d("result", result.data.toString())
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
         try {
             val account = task.getResult(ApiException::class.java)
+            val email = account.email
+
+            AccountAssistant.setUserEmail(this, email!!)
+            Log.d("test", "User Email: $email")
 
             val grantType = "authorization_code"
             val clientId = BuildConfig.server_client_id
@@ -52,37 +51,28 @@ class SignInActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-//                    Log.d("test", "client ID: $clientId")
-//                    Log.d("test", "client Secret: $clientSecret")
-//                    Log.d("test", "serverAuthToken: $authCode")
-
-                    // 여기 액세스 토큰 받아오는 구조 변경함
-                    // 원래 구조는 비동기 데이터를 받아올 수 없음
-                    // 액세스 토큰을 받으면 저장함
                     val connectorRepository = ConnectorRepository()
                     connectorRepository.getAccessToken(grantType, clientId, clientSecret, authCode) { accessToken, error ->
                         if (error != null) {
-                            // Handle error
                             Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", error)
                         } else {
-                            // Use accessToken
                             Log.d("test", "accessToken response: $accessToken")
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
 
-                            // 액세스 토큰으로 서버 회원가입
                             lifecycleScope.launch {
                                 try {
                                     val registrationResponse = connectorRepository.getUserRegistration(accessToken, "테스트 121")
                                     if (registrationResponse) {
                                         Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                        moveMainActivity()
                                     }
                                 } catch (e: Exception) {
                                     Log.e("test", "registrationResponse 호출 실패", e)
+                                    moveMainActivity()
                                 }
                             }
                         }
                     }
-                    moveMainActivity()  // 메인 액티비티로 이동
                 } catch (e: Exception) {
                     Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", e)
                 }
@@ -95,13 +85,14 @@ class SignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivitySignInBinding.inflate(layoutInflater)
+
+
         addListener()
 
         setContentView(_binding.root)
 
         val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
 
-        // Log.d("test", "accessToken auto login test: $accessToken")
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
 
@@ -111,15 +102,13 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("test", "serverAccessToken auto login test: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
                     Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                    moveMainActivity()  // Access token이 저장되어 있으면 바로 메인 액티비티로 넘어감
+                    moveMainActivity()
                 } catch (e: Exception) {
                     Log.d("test", "로그인 실패 $e")
                 }
             }
-            moveMainActivity()
         }
     }
-
 
     private fun addListener() {
         _binding.btnSignIn.setOnClickListener {
@@ -144,9 +133,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun moveMainActivity() {
-        this.run {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
