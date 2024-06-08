@@ -6,9 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMatingQuizBinding
 import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
+import com.example.cse_study_and_learn_application.utils.QuizType
+import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.google.gson.Gson
 
 /**
@@ -24,6 +29,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     private lateinit var binding: FragmentMatingQuizBinding
 
+    private var quizId = -1
     private var hasImg = false
     private lateinit var jsonString: String
     private lateinit var content: MatingQuizJsonContent
@@ -42,6 +48,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         binding = FragmentMatingQuizBinding.inflate(inflater)
 
         arguments?.let {
+            quizId = it.getInt("quizId")
             hasImg = it.getBoolean("hasImg")
             jsonString = it.getString("contents", "")
             content = Gson().fromJson(jsonString, MatingQuizJsonContent::class.java)
@@ -134,8 +141,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             val endYInView = endY - lineDrawingViewLocation[1]
 
             binding.lineDrawingView.addLine(startXInView.toFloat(), startYInView.toFloat(), endXInView.toFloat(), endYInView.toFloat())
-            Log.d("test", "Screen coordinates: $startX, $startY, $endX, $endY")
-            Log.d("test", "View coordinates: $startXInView, $startYInView, $endXInView, $endYInView")
+            // Log.d("test", "Screen coordinates: $startX, $startY, $endX, $endY")
+            // Log.d("test", "View coordinates: $startXInView, $startYInView, $endXInView, $endYInView")
         }
     }
 
@@ -164,8 +171,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             val endYInView = endY - lineDrawingViewLocation[1]
 
             binding.lineDrawingView.removeLine(startXInView.toFloat(), startYInView.toFloat(), endXInView.toFloat(), endYInView.toFloat())
-            Log.d("test", "Removing line: Screen coordinates: $startX, $startY, $endX, $endY")
-            Log.d("test", "Removing line: View coordinates: $startXInView, $startYInView, $endXInView, $endYInView")
+            // Log.d("test", "Removing line: Screen coordinates: $startX, $startY, $endX, $endY")
+            // Log.d("test", "Removing line: View coordinates: $startXInView, $startYInView, $endXInView, $endYInView")
         }
     }
 
@@ -186,5 +193,27 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         val answerList = connectedPairs.map { pair -> "${pair.first}t${pair.second}" }
         Log.d("test", answerList.toString())
 
+        if(answerList.isEmpty()) {
+            Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+        } else {
+            try {
+                val bundle = Bundle().apply {
+                    putStringArrayList("userAnswer", ArrayList(answerList))
+                    putStringArrayList("answer", ArrayList(content.answer))
+                    putString("commentary", content.commentary)
+                    putInt("quizId", quizId)
+                    putInt("quizType", QuizType.MATING_QUIZ.ordinal)
+                }
+                parentFragmentManager.commit {
+                    replace(R.id.fragmentContainerView, GradingFragment().apply {
+                        arguments = bundle
+                    })
+                    addToBackStack(null)
+                }
+            } catch (e: Exception) {
+                Log.e("MatingQuizFragment", "onAnswerSubmit", e)
+            }
+
+        }
     }
 }

@@ -12,6 +12,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.QuizType
 import kotlinx.coroutines.launch
 
 /**
@@ -28,20 +29,38 @@ class GradingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGradingBinding.inflate(inflater)
-        val userAnswer = arguments?.getString("userAnswer")
-        val answer = arguments?.getString("answer")
+
         val commentary = arguments?.getString("commentary")
         val quizId = arguments?.getInt("quizId")
+        val quizType = arguments?.getInt("quizType")
 
-        if (userAnswer == answer) {
-            Log.d("test", "정답")
-            Log.d("test", commentary.toString())
+        if (quizType == QuizType.MATING_QUIZ.ordinal) {
+            val userAnswer = arguments?.getStringArrayList("userAnswer")
+            val answer = arguments?.getStringArrayList("answer")
+
+            if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
+                Log.d("test", "정답")
+                Log.d("test", commentary.toString())
+                resultSubmit(quizId!!, true)
+            } else {
+                Log.d("test", "오답")
+                Log.d("test", commentary.toString())
+                resultSubmit(quizId!!, false)
+            }
+
         } else {
-            Log.d("test", "오답")
-            Log.d("test", commentary.toString())
+            val userAnswer = arguments?.getString("userAnswer")
+            val answer = arguments?.getString("answer")
+            if (userAnswer == answer) {
+                Log.d("test", "정답")
+                Log.d("test", commentary.toString())
+                resultSubmit(quizId!!, true)
+            } else {
+                Log.d("test", "오답")
+                Log.d("test", commentary.toString())
+                resultSubmit(quizId!!, false)
+            }
         }
-
-        resultSubmit(quizId!!, userAnswer == answer)
 
         return binding.root
     }
@@ -54,7 +73,5 @@ class GradingFragment : Fragment() {
                 isCorrect = isCorrect
             )
         }
-
     }
-
 }

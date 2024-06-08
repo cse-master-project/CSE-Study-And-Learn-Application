@@ -32,39 +32,38 @@ class QuizActivity() : AppCompatActivity() {
 
 
         // 테스트용 RandomQuiz 객체 생성
-        // val response = RandomQuiz(
-        //     quizId = 48,
-        //     subject = "C",
-        //     detailSubject = "배열",
-        //     quizType = 3, // 선잇기 퀴즈 타입
-        //     jsonContent = """
-        //         {
-        //             "quiz": "선을 그어주세요.",
-        //             "left_option": ["aaa", "bbb", "ccc"],
-        //             "right_option": ["ddd", "eee"],
-        //             "answer": ["0t1", "1t0", "0t0"],
-        //             "commentary": "해설"
-        //         }
-        //     """.trimIndent(),
-        //     hasImage = false
-        // )
+         // val response = RandomQuiz(
+         //     quizId = 48,
+         //     subject = "C",
+         //     detailSubject = "배열",
+         //     quizType = 3, // 선잇기 퀴즈 타입
+         //     jsonContent = """
+         //         {
+         //             "quiz": "선을 그어주세요.",
+         //             "left_option": ["aaa", "bbb", "ccc"],
+         //             "right_option": ["ddd", "eee"],
+         //             "answer": ["0t1", "1t0", "0t0"],
+         //             "commentary": "해설"
+         //         }
+         //     """.trimIndent(),
+         //     hasImage = false
+         // )
+         //showQuiz 메서드 호출하여 프래그먼트 표시
+         //showQuiz(response)
 
-        // showQuiz 메서드 호출하여 프래그먼트 표시
-        //  showQuiz(response)
+          // 테스트 임시 주석
+          val subjects = intent.getStringExtra("subject")
+          val detailSubject = intent.getStringExtra("detailSubject")
+          Log.d("detailSubject", detailSubject.toString())
 
-        // 테스트 임시 주석
-         val subjects = intent.getStringExtra("subject")
-         val detailSubject = intent.getStringExtra("detailSubject")
-         Log.d("detailSubject", detailSubject.toString())
-
-         lifecycleScope.launch {
-             val response = QuizUtils.loadQuizData(
-                 AccountAssistant.getServerAccessToken(applicationContext),
-                 subjects!!,
-                 detailSubject!!
-             )
-             showQuiz(response!!)
-         }
+          lifecycleScope.launch {
+              val response = QuizUtils.loadQuizData(
+                  AccountAssistant.getServerAccessToken(applicationContext),
+                  subjects!!,
+                  detailSubject!!
+              )
+              showQuiz(response!!)
+          }
 
         binding.ibGrading.setOnClickListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
