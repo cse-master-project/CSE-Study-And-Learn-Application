@@ -4,61 +4,95 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.study.MatingQuizFragment">
+    tools:context=".ui.study.MultipleChoiceQuizFragment">
 
-    <RadioGroup
-        android:id="@+id/rg_left"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AAAAAA"
-            android:layout_margin="10dp"
-            android:background="@drawable/bg_mating_object_left_group"
-            android:padding="10dp"
-            android:button="@null" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" BBBBBB"
-            android:background="@drawable/bg_mating_object_left_group"
-            android:padding="10dp"
-            android:button="@null"
-            android:layout_margin="10dp"/>
-    </RadioGroup>
-
-    <RadioGroup
-        android:id="@+id/rg_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/material_dynamic_primary90">
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/bg_mating_object_right_group"
-            android:padding="10dp"
-            android:button="@null"
-            android:text="aaaaaaa" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/tv_quiz_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:text="다음중 어쩌고 저쩌고로 올바른 것은?"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="20dp" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/bg_mating_object_right_group"
-            android:padding="10dp"
-            android:text="bbbbbbb"
-            android:button="@null" />
+            <ImageView
+                android:id="@+id/iv_quiz_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
-    </RadioGroup>
+            </ImageView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gl_answer_group"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline">
+
+        <com.example.cse_study_and_learn_application.ui.view.LineDrawingView
+            android:id="@+id/line_drawing_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/left_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_btn_mating" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/right_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            tools:listitem="@layout/item_btn_mating" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
