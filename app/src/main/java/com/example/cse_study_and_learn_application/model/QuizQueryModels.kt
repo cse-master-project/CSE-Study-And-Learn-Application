@@ -46,10 +46,15 @@ data class ShortAnswerQuizJsonContent(
 )
 
 data class MatingQuizJsonContent(
+    @SerializedName("quiz")
     val quiz: String,
+    @SerializedName("left_option")
     val leftOption: List<String>,
+    @SerializedName("right_option")
     val rightOption: List<String>,
+    @SerializedName("answer")
     val answer: List<String>,
+    @SerializedName("commentary")
     val commentary: String
 )
 

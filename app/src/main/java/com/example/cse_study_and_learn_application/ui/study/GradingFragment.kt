@@ -12,8 +12,6 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import com.example.cse_study_and_learn_application.utils.QuizType
-import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import kotlinx.coroutines.launch
 
 /**
@@ -83,7 +81,18 @@ class GradingFragment : Fragment() {
                 binding.tvAnswer.text = answer
             }
             QuizType.MATING_QUIZ -> {
+                val userAnswer = arguments?.getStringArrayList("userAnswer")
+                val answer = arguments?.getStringArrayList("answer")
 
+                if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
+                    Log.d("test", "정답")
+                    Log.d("test", commentary.toString())
+                    resultSubmit(quizId!!, true)
+                } else {
+                    Log.d("test", "오답")
+                    Log.d("test", commentary.toString())
+                    resultSubmit(quizId!!, false)
+                }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
 

@@ -13,66 +13,68 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:gravity="center"
             android:id="@+id/tv_quest"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/view_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="@color/black"
-            android:paddingHorizontal="35dp"
             android:layout_margin="15dp"
-            android:text="애플리케이션을 종료하시겠습니까?" />
+            android:gravity="center"
+            android:paddingHorizontal="35dp"
+            android:text="애플리케이션을 종료하시겠습니까?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@id/view_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/view_horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tv_quest"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/view_vertical"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="#C5C5C5" />
+            android:background="#C5C5C5"
+            app:layout_constraintBottom_toTopOf="@id/view_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_quest" />
 
         <View
             android:id="@+id/view_vertical"
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="#C5C5C5"
-            app:layout_constraintTop_toBottomOf="@id/view_horizontal"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_horizontal" />
 
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/view_horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/view_vertical"
+            android:paddingHorizontal="50dp"
             android:id="@+id/tv_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="네"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:layout_margin="15dp"
-            android:text="네" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/view_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_horizontal" />
 
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/view_horizontal"
-            app:layout_constraintStart_toEndOf="@id/view_vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+
+            android:paddingHorizontal="50dp"
             android:id="@+id/tv_negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:layout_margin="15dp"
+            android:text="아니요"
+            android:textColor="@color/black"
             android:textSize="18sp"
-            android:text="아니요" />
-
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/view_vertical"
+            app:layout_constraintTop_toBottomOf="@id/view_horizontal" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.example.cse_study_and_learn_application.ui.study
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
@@ -12,7 +13,6 @@ import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import kotlinx.coroutines.launch
-import javax.security.auth.Subject
 
 /**
  * Quiz activity
@@ -80,6 +80,7 @@ class QuizActivity() : AppCompatActivity() {
 
         fragmentTransaction.replace(R.id.fragmentContainerView, fragment)
         fragmentTransaction.commit()
-
     }
+
+
 }
