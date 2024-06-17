@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,18 +11,12 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
-import com.example.cse_study_and_learn_application.model.QuizContentCategory
-import com.example.cse_study_and_learn_application.model.RandomQuiz
-import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
-import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.example.cse_study_and_learn_application.utils.Subcategory
-import kotlinx.coroutines.launch
 
 
 /**
@@ -51,46 +46,12 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         _binding = FragmentSubjectContentsBinding.inflate(inflater, container, false)
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
 
-        val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        adapter = if (detailSubjects.isEmpty()) {
-            Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-            SubjectContentItemAdapter(emptyList(), requireContext())
-        } else {
-            SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
-        }
-
-        binding.rvContent.adapter = adapter
-        binding.rvContent.layoutManager = LinearLayoutManager(context)
-
         binding.fabQuestionExe.setOnClickListener(this)
         binding.cdvExtendQuizSetting.setOnClickListener(this)
         binding.cbAllRandom.setOnClickListener(this)
         binding.rbAllSel.setOnClickListener(this)
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
-
-        // 소분류 (전체, 기본, 사용자 문제) 선택
-        // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
-        homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
-            var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
-            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
-            if (currentDetailSubjects.isNullOrEmpty()) {
-               Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-                currentDetailSubjects = mutableListOf()
-                Log.d("test", "NULL인데")
-            }
-            adapter.changeDetailSubjects(currentDetailSubjects.toList())
-        }
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.tvTitle.text = homeViewModel.subject.title
-        binding.ibBackPres.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
 
         activity?.apply {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
@@ -101,6 +62,90 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
 
 
+
+        // 소분류 (전체, 기본, 사용자 문제) 선택
+        // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
+        // homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
+        //     var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
+        //     if (currentDetailSubjects.isEmpty()) {
+        //        Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+        //         currentDetailSubjects = mutableListOf()
+
+        //     }
+        //     adapter.changeDetailSubjects(currentDetailSubjects.toList())
+        // }
+
+        initToolbarListener()
+
+        initSubjectContents()   // 이 메서드에서 퀴즈 중분류 구성하기
+
+        return binding.root
+    }
+
+    private fun initToolbarListener() {
+        binding.ibBackPres.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.ibNextSubj.setOnClickListener {
+            changeQuizSubject("NEXT")
+        }
+
+        binding.ibPrevSubj.setOnClickListener {
+            changeQuizSubject("PREV")
+        }
+    }
+
+    private fun changeQuizSubject(type: String) {
+        val quizSubjects = homeViewModel.quizSubjectCategories.value
+        val currentSubject = homeViewModel.subject
+        val currentSubjectIndex = quizSubjects?.indexOfFirst { it.title == currentSubject.title }
+
+        if (currentSubjectIndex != null) {
+            val nextSubject = when (type) {
+                "NEXT" -> {
+                    if (currentSubjectIndex == quizSubjects.size - 1) {
+                        quizSubjects[0]
+                    } else {
+                        quizSubjects[currentSubjectIndex + 1]
+                    }
+                }
+                "PREV" -> {
+                    if (currentSubjectIndex == 0) {
+                        quizSubjects[quizSubjects.size - 1]
+                    } else {
+                        quizSubjects[currentSubjectIndex - 1]
+                    }
+                }
+                else -> {
+                    currentSubject
+                }
+            }
+            homeViewModel.setSubject(nextSubject)
+            initSubjectContents()
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun initSubjectContents() {
+        val currentSubject = homeViewModel.subject
+        binding.tvTitle.text = currentSubject.title
+
+        val detailSubjects = homeViewModel.getCurrentDetailSubjects()
+        adapter = if (detailSubjects.isEmpty()) {
+            Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+            SubjectContentItemAdapter(emptyList(), requireContext())
+        } else {
+            SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
+        }
+
+        if (binding.rvContent.adapter == null) {
+            binding.rvContent.adapter = adapter
+            binding.rvContent.layoutManager = LinearLayoutManager(context)
+        } else {
+            adapter.changeDetailSubjects(detailSubjects.toList())
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroy() {

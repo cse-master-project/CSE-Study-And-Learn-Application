@@ -42,10 +42,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val subject get() = _selectedSubject
 
     private val _quizSubjects = MutableLiveData<List<QuizSubject>>()
-    val quizSubjects: LiveData<List<QuizSubject>> = _quizSubjects
+    val quizSubjects: LiveData<List<QuizSubject>> = _quizSubjects       // 통신할때 쓰는 클래스
 
     private val _quizSubjectCategories = MutableLiveData<MutableList<QuizCategory>>()
-    val quizSubjectCategories: LiveData<MutableList<QuizCategory>> = _quizSubjectCategories
+    val quizSubjectCategories: LiveData<MutableList<QuizCategory>> = _quizSubjectCategories     // 내부적으로 사용하는 클래스
 
     private var subjectThumbnailMap = mutableMapOf<String, String>()
 //
@@ -101,7 +101,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val imagePath = "subj_all_random.jpg"
 
                 val newCategories = mutableListOf<QuizCategory>()
-                newCategories.add(QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐"))
+                newCategories.add(QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐"))
 
                 for (subject in subjects) {
                     val id = subject.subjectId
@@ -141,6 +141,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         return quizContentCategoryList
     }
+
 
     fun getQuizLoad(context: Context, quizType: Subcategory) {
         viewModelScope.launch {

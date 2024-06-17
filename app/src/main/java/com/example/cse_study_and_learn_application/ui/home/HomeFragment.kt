@@ -114,7 +114,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         val imagePath = "subj_all_random.jpg"
 
         val subject =
-            QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐")
+            QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐")
         temporalSubjects.add(subject)
 
         try {
@@ -212,28 +212,9 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
 }
 
-
-
-    interface OnSubjectItemClickListener {
-        fun onSubjectItemClick(subject: QuizCategory)
-    }
-
-class CustomSpinnerAdapter(context: Context, resource: Int, objects: Array<String>) :
-    ArrayAdapter<String>(context, resource, objects) {
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = super.getView(position, convertView, parent) as TextView
-        view.text = getItem(position)
-        return view
-    }
-
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = super.getDropDownView(position, convertView, parent) as TextView
-        view.text = getItem(position)
-        return view
-    }
+interface OnSubjectItemClickListener {
+    fun onSubjectItemClick(subject: QuizCategory)
 }
-
 
 
 
