@@ -58,6 +58,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _detailSubjects = MutableLiveData<MutableMap<String, MutableSet<QuizContentCategory>>>()
     val detailSubjects: LiveData<MutableMap<String, MutableSet<QuizContentCategory>>> = _detailSubjects
 
+    val flexboxSelectedSubjects: MutableLiveData<MutableList<String>> by lazy {
+        MutableLiveData<MutableList<String>>(mutableListOf())
+    }
+
     fun setCategoryThumbnails(context: Context) {
         val subjectThumbnailMap = mutableMapOf<String, String>()
         val parser: XmlResourceParser = context.resources.getXml(R.xml.thumbnails)
@@ -166,4 +170,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+
 }

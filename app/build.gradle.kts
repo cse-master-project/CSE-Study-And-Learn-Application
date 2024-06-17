@@ -108,4 +108,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:2.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
+    // flex box
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
 }
