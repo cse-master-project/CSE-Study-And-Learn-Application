@@ -69,7 +69,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                     putInt("quizId", quizId!!)
                     putInt("quizType", quizType!!)
                 }
-                Log.d("test","ua: ${userAnswer}, a: $answer, c: $commentary, qi: $quizId, qt: $quizType")
+//                Log.d("test","ua: ${userAnswer}, a: $answer, c: $commentary, qi: $quizId, qt: $quizType")
                 parentFragmentManager.commit {
                     replace(R.id.fragmentContainerView, GradingFragment().apply {
                         arguments = bundle

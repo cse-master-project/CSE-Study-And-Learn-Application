@@ -73,11 +73,11 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
         homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
             var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
-            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
+//            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
             if (currentDetailSubjects.isNullOrEmpty()) {
                Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
                 currentDetailSubjects = mutableListOf()
-                Log.d("test", "NULL인데")
+//                Log.d("test", "NULL인데")
             }
             adapter.changeDetailSubjects(currentDetailSubjects.toList())
         }
@@ -135,13 +135,13 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     }
 
                     dialogQuestMessage.setPositive {
-                        Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
                         dialogQuestMessage.dismiss()
                         checkDetailQuizSend()
                     }
 
                     dialogQuestMessage.setNegative {
-                        Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
                         quizSettingDialogFlag = true
                         binding.llDialogSetting.visibility = View.VISIBLE   // 퀴즈 설정 다이얼로그 표시
                         dialogQuestMessage.dismiss()

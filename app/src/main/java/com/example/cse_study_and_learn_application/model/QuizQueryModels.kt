@@ -202,3 +202,10 @@ data class QuizSubject(
     @SerializedName("detailSubject")
     val detailSubject: List<String>
 )
+
+data class ErrorResponse(
+    @SerializedName("error")
+    val error: String,
+    @SerializedName("description")
+    val description: String
+)

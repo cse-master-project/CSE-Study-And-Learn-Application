@@ -42,7 +42,7 @@ class SignInActivity : AppCompatActivity() {
             val email = account.email
 
             AccountAssistant.setUserEmail(this, email!!)
-            Log.d("test", "User Email: $email")
+//            Log.d("test", "User Email: $email")
 
             val grantType = "authorization_code"
             val clientId = BuildConfig.server_client_id
@@ -56,7 +56,7 @@ class SignInActivity : AppCompatActivity() {
                         if (error != null) {
                             Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", error)
                         } else {
-                            Log.d("test", "accessToken response: $accessToken")
+//                            Log.d("test", "accessToken response: $accessToken")
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
 
                             lifecycleScope.launch {
@@ -98,15 +98,17 @@ class SignInActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
-
+                    Log.i("Server Response", "Get User Login: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     moveMainActivity()
                 } catch (e: Exception) {
                     Log.d("test", "로그인 실패 $e")
                 }
             }
-            Log.d("token", "serverAccessToken auto login test: ${AccountAssistant.getServerAccessToken(this)}")
+//            Log.d("token", "serverAccessToken auto login test: ${AccountAssistant.getServerAccessToken(this)}")
+            Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
+
         }
     }
 
