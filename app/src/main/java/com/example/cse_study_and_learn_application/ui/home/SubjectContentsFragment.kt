@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
@@ -52,29 +53,6 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.rbAllSel.setOnClickListener(this)
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
-
-        // 소분류 (전체, 기본, 사용자 문제) 선택
-        // 소분류 불러오기에 따른 중분류 선택하는 리사이클러뷰 바꾸기
-        homeViewModel.detailSubjects.observe(viewLifecycleOwner) {
-            var currentDetailSubjects = homeViewModel.getCurrentDetailSubjects()
-            Log.d("test", "getCurrentDetailSubjects: ${currentDetailSubjects.toString()}")
-            if (currentDetailSubjects.isNullOrEmpty()) {
-               Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-                currentDetailSubjects = mutableListOf()
-                Log.d("test", "NULL인데")
-            }
-            adapter.changeDetailSubjects(currentDetailSubjects.toList())
-        }
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.tvTitle.text = homeViewModel.subject.title
-        binding.ibBackPres.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
 
         activity?.apply {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
