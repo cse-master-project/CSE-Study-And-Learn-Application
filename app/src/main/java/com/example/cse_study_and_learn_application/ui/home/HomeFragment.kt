@@ -1,15 +1,21 @@
 package com.example.cse_study_and_learn_application.ui.home
 
+import android.content.Context
 import android.content.res.XmlResourceParser
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ListPopupWindow
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -17,11 +23,12 @@ import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
-import com.example.cse_study_and_learn_application.utils.Subcategory
-import kotlinx.coroutines.launch
+import com.example.cse_study_and_learn_application.ui.other.DialogQuizSelect
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import java.lang.reflect.Field
 
 
 /**
@@ -43,6 +50,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     private lateinit var mainViewModel: MainViewModel
 
     private lateinit var adapter: SubjectItemAdapter
+
+    private lateinit var temporalSubjects: MutableList<QuizCategory>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -84,8 +93,10 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         (activity as AppCompatActivity).let {
             it.supportActionBar?.apply {
                 show()
-                val navHostFragment = it.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-                val layoutParams = navHostFragment?.view?.layoutParams as ViewGroup.MarginLayoutParams
+                val navHostFragment =
+                    it.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+                val layoutParams =
+                    navHostFragment?.view?.layoutParams as ViewGroup.MarginLayoutParams
                 layoutParams.topMargin = mainViewModel.appBarHeight
             }
         }
@@ -97,13 +108,14 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
     private fun setupRecyclerView() {
         // 임시 Subject 데이터 생성
-        val subjects = mutableListOf<QuizCategory>()
+        temporalSubjects = mutableListOf<QuizCategory>()
         val parser: XmlResourceParser = requireContext().resources.getXml(R.xml.thumbnails)
 
         val imagePath = "subj_all_random.jpg"
 
-        val subject = QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "눌러서 문제를 고르세요", "⭐")
-        subjects.add(subject)
+        val subject =
+            QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐")
+        temporalSubjects.add(subject)
 
         try {
             var eventType = parser.eventType
@@ -113,8 +125,14 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                     val name = parser.getAttributeValue(null, "name")
                     parser.next()
                     val imgbg = parser.text.trim()
-                    val subj = QuizCategory(id, name, "images/subjects/$imgbg", "0문제 / 30문제", if (name.hashCode() % 2 == 0) "💡" else "⭐")
-                    subjects.add(subj)
+                    val subj = QuizCategory(
+                        id,
+                        name,
+                        "images/subjects/$imgbg",
+                        "0문제 / 30문제",
+                        if (name.hashCode() % 2 == 0) "💡" else "⭐"
+                    )
+                    temporalSubjects.add(subj)
                     id += 1
 
                 }
@@ -130,7 +148,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         }
 
 
-        homeViewModel.setInitSubjectCategories(subjects)    // 테스트용 init
+        homeViewModel.setInitSubjectCategories(temporalSubjects)    // 테스트용 init
         homeViewModel.quizSubjectCategories.value?.let {
             // 어댑터 생성 및 설정
             adapter = SubjectItemAdapter(it, this)
@@ -148,27 +166,60 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     }
 
     override fun onSubjectItemClick(subject: QuizCategory) {
-        // Toast.makeText(context, subject.title, Toast.LENGTH_SHORT).show()
         homeViewModel.setSubject(subject)
 
         if (subject.title == "문제 선택 풀기") {
-            Toast.makeText(requireContext(), "문제 선택 풀기 구현 예정", Toast.LENGTH_SHORT).show()
-            return
-        }
+            val context = requireContext()
+            val dialog = DialogQuizSelect(requireActivity())
 
-        // 과목 아이템 클릭하면 액티비티 레벨의 앱바의 크기를 저장하고 숨김
-        (activity as AppCompatActivity).let {
-            it.supportActionBar?.apply {
-                hide()
+            dialog.setNegative { dialog.dismiss() }
+            dialog.setPositive {
+                val selectedSubjects = homeViewModel.flexboxSelectedSubjects.value // [컴퓨터 개론, computer ... ]
+                if (selectedSubjects.isNullOrEmpty()) {
+                    Toast.makeText(requireContext(), "과목을 하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+                } else {
+                    // selectedSubjects <- [컴퓨터 개론, computer ... ]
+                    // 문제 푸는 화면으로 넘어가는 코드 작성
+                }
             }
+
+            val subjects = homeViewModel.quizSubjects.value
+            dialog.setOnShowListener {
+                val spinner = dialog.getSpinner()
+                if (subjects.isNullOrEmpty()) {
+                    Toast.makeText(context, "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    val subjectStringArray = temporalSubjects.map { it.title }.drop(1).toTypedArray()
+                    val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.tv_spinner_quiz_select, subjectStringArray)
+                    spinner.adapter = spinnerAdapter
+                } else {
+                    val subjectStringArray = subjects.map { it.subject }.drop(1).toTypedArray()
+                    val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.tv_spinner_quiz_select, subjectStringArray)
+                    spinner.adapter = spinnerAdapter
+                }
+            }
+
+            dialog.show()
+        } else {
+            (activity as AppCompatActivity).let {
+                it.supportActionBar?.apply {
+                    hide()
+                }
+            }
+            val action = HomeFragmentDirections.actionNavigationHomeToSubjectContentsFragment()
+            findNavController().navigate(action)
         }
-
-        val action = HomeFragmentDirections.actionNavigationHomeToSubjectContentsFragment()
-        findNavController().navigate(action)
     }
-}
 
+}
 
 interface OnSubjectItemClickListener {
     fun onSubjectItemClick(subject: QuizCategory)
 }
+
+
+
+
+
+
+
+
