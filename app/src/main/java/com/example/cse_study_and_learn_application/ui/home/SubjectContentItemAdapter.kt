@@ -2,6 +2,7 @@ package com.example.cse_study_and_learn_application.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -31,7 +32,6 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectContentViewHolder {
         val binding = ItemSubjectContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
         return SubjectContentViewHolder(binding, context)
     }
 
@@ -55,12 +55,12 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
     @SuppressLint("NotifyDataSetChanged")
     fun changeDetailSubjects(currentDetailSubjects: List<QuizContentCategory>) {
         contents = currentDetailSubjects
+        Log.d("test", "어댑터: $contents")
         notifyDataSetChanged()
     }
 }
 
-
-class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : ViewHolder(binding.root) {
+class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
     fun bind(content: QuizContentCategory, toggleCheckBox: Boolean) {
         binding.tvContentTitle.text = content.title
         if (toggleCheckBox) {

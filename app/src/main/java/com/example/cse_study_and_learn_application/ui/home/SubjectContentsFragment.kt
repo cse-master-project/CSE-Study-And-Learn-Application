@@ -61,6 +61,9 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             }
         }
 
+        adapter = SubjectContentItemAdapter(emptyList(), requireContext())
+        binding.rvContent.adapter = adapter
+        binding.rvContent.layoutManager = LinearLayoutManager(context)
 
 
         // 소분류 (전체, 기본, 사용자 문제) 선택
@@ -102,6 +105,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         val currentSubjectIndex = quizSubjects?.indexOfFirst { it.title == currentSubject.title }
 
         if (currentSubjectIndex != null) {
+
             val nextSubject = when (type) {
                 "NEXT" -> {
                     if (currentSubjectIndex == quizSubjects.size - 1) {
@@ -132,20 +136,13 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.tvTitle.text = currentSubject.title
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        adapter = if (detailSubjects.isEmpty()) {
+        if (detailSubjects.isEmpty()) {
             Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
-            SubjectContentItemAdapter(emptyList(), requireContext())
-        } else {
-            SubjectContentItemAdapter(detailSubjects.toList(), requireContext())
         }
 
-        if (binding.rvContent.adapter == null) {
-            binding.rvContent.adapter = adapter
-            binding.rvContent.layoutManager = LinearLayoutManager(context)
-        } else {
-            adapter.changeDetailSubjects(detailSubjects.toList())
-            adapter.notifyDataSetChanged()
-        }
+        adapter.changeDetailSubjects(detailSubjects.toList())
+        adapter.notifyDataSetChanged()
+
     }
 
     override fun onDestroy() {
