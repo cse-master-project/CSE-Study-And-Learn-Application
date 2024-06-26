@@ -10,7 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.commit
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentShortAnswerQuizBinding
-import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonContent
+import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.model.ShortAnswerQuizJsonContent
 import com.google.gson.Gson
 
 /**
@@ -38,9 +39,8 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
         quizType = arguments?.getInt("quizType")
         val hasImg = arguments?.getBoolean("hasImg")
         val jsonString = arguments?.getString("contents")
-        val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
+        val content = Gson().fromJson(jsonString, ShortAnswerQuizJsonContent::class.java)
         val quiz = content.quiz
-        val options = content.option
         answer = content.answer
         commentary = content.commentary
 
@@ -69,29 +69,30 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                     putInt("quizId", quizId!!)
                     putInt("quizType", quizType!!)
                 }
-//                Log.d("test","ua: ${userAnswer}, a: $answer, c: $commentary, qi: $quizId, qt: $quizType")
                 parentFragmentManager.commit {
-                    replace(R.id.fragmentContainerView, GradingFragment().apply {
+                    val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
+                    if (prevFragment != null) {
+                        remove(prevFragment)
+                    }
+                    add(R.id.fragmentContainerView, GradingFragment().apply {
                         arguments = bundle
                     })
-                    addToBackStack(null)
                 }
             } catch (e: Exception) {
-                Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
+                Log.e("ShortAnswerQuizFragment", "onAnswerSubmit", e)
             }
-
         }
     }
 
     companion object {
-        fun newInstance(contents: String, hasImg: Boolean, quizId: Int, quizType: Int): ShortAnswerQuizFragment {
+        fun newInstance(response: RandomQuiz): ShortAnswerQuizFragment {
             val args = Bundle()
 
             val fragment = ShortAnswerQuizFragment()
-            args.putInt("quizType", quizType)
-            args.putInt("quizId", quizId)
-            args.putString("contents", contents)
-            args.putBoolean("hasImg", hasImg)
+            args.putInt("quizType", response.quizType)
+            args.putInt("quizId", response.quizId)
+            args.putString("contents", response.jsonContent)
+            args.putBoolean("hasImg", response.hasImage)
             fragment.arguments = args
             return fragment
         }
