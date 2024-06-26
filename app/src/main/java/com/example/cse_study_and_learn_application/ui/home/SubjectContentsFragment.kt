@@ -251,6 +251,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             val i = Intent(requireContext(), QuizActivity::class.java)
             i.putExtra("subject", subject)
             i.putExtra("detailSubject", temporaryDetailSubject.joinToString(","))
+            Log.d("test", temporaryDetailSubject.toString())
 
             startActivity(i)
         } else {

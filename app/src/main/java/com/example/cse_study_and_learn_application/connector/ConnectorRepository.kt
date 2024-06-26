@@ -170,6 +170,7 @@ class ConnectorRepository {
             token = token,
             subject = subject,
             detailSubject = detailSubject)
+        Log.d("test", response.message())
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")
         } else {

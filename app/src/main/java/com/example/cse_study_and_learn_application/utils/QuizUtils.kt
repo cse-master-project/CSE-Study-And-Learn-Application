@@ -14,6 +14,7 @@ import com.google.gson.Gson
 
 object QuizUtils {
     suspend fun loadQuizData(token: String, subject: String, detailSubject: String): RandomQuiz? {
+        Log.d("test", "subject = ${subject}, details = $detailSubject")
         return try {
             ConnectorRepository().getRandomQuiz(
                 token = token,
