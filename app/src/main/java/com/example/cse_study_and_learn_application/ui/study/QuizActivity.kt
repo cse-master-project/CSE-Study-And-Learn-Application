@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.model.TrueFalseQuizJsonContent
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.QuizUtils
@@ -46,6 +47,10 @@ class QuizActivity() : AppCompatActivity() {
                     requestQuiz(subjects, detailSubject)
                 }
                 is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
+
+                is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
+
+                is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
             }
 
         }
@@ -77,10 +82,10 @@ class QuizActivity() : AppCompatActivity() {
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val fragment = when (getQuizTypeFromInt(response!!.quizType)) {
-            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response.jsonContent, response.hasImage, response!!.quizId, response!!.quizType)
-            QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response.jsonContent, response.hasImage, response!!.quizId, response!!.quizType)
-            QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response.jsonContent, response.hasImage, response!!.quizId)
-            QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response.jsonContent)
+            QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response)
+            QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response)
+            QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response)
+            QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response)
             QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response.jsonContent)
             else-> {
                 Log.e("QuizActivity", "showQuiz : Not Found fragment")

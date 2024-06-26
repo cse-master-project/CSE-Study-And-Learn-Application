@@ -11,6 +11,8 @@ import androidx.fragment.app.commit
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMultipleChoiceQuizBinding
 import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonContent
+import com.example.cse_study_and_learn_application.model.QuizResponse
+import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 
@@ -118,10 +120,13 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                 }
                 Log.d("test","ua: ${userAnswer}, a: $answer, as: $answerString, c: $commentary, qi: $quizId, qt: $quizType")
                 parentFragmentManager.commit {
-                    replace(R.id.fragmentContainerView, GradingFragment().apply {
+                    val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
+                    if (prevFragment != null) {
+                        remove(prevFragment)
+                    }
+                    add(R.id.fragmentContainerView, GradingFragment().apply {
                         arguments = bundle
                     })
-                    addToBackStack(null)
                 }
             } catch (e: Exception) {
                 Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
@@ -131,14 +136,14 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     companion object {
-        fun newInstance(contents: String, hasImg: Boolean, quizId: Int, quizType: Int): MultipleChoiceQuizFragment {
+        fun newInstance(response: RandomQuiz): MultipleChoiceQuizFragment {
             val args = Bundle()
 
             val fragment = MultipleChoiceQuizFragment()
-            args.putInt("quizType", quizType)
-            args.putInt("quizId", quizId)
-            args.putString("contents", contents)
-            args.putBoolean("hasImg", hasImg)
+            args.putInt("quizType", response.quizType)
+            args.putInt("quizId", response.quizId)
+            args.putString("contents", response.jsonContent)
+            args.putBoolean("hasImg", response.hasImage)
             fragment.arguments = args
             return fragment
         }
