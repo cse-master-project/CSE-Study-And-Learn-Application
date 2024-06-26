@@ -10,7 +10,6 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
@@ -63,6 +62,12 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
 
         adapter = SubjectContentItemAdapter(emptyList(), requireContext())
+        adapter.setToggleCheckBoxListener(object: SubjectContentItemAdapter.ToggleCheckBoxListener{
+            override fun clickToggle(title: String, selected: Boolean) {
+                homeViewModel.clickRecyclerItemCheck(title, selected)
+            }
+
+        })
         binding.rvContent.adapter = adapter
         binding.rvContent.layoutManager = LinearLayoutManager(context)
 
@@ -209,7 +214,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
             // 랜덤 선택 풀기
             R.id.cb_all_random -> {
-                adapter.toggleCheckBoxVisibility()
+                val result = adapter.toggleCheckBoxVisibility()
+                homeViewModel.setAllRandomCheck(result)
             }
 
             R.id.rb_all_sel-> {
@@ -230,11 +236,15 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
     }
 
+    /**
+     * 지금 이 코드에서 에러가 발생한다고 함
+     * detailSbuejct 의 내용들이 계속 바뀌는 문제
+     * 내 판단 지금 리사이클러뷰에 업데이트되는 뷰가 달라지면서 화면상에 안보이는 뷰가 선택이 안되는 상태
+     */
     private fun checkDetailQuizSend() {
         val subject = homeViewModel.subject.title
-        val detailsAdapter = binding.rvContent.adapter as SubjectContentItemAdapter
-        val detailSubject = detailsAdapter.getSelectedItems()
-        // Log.d("test", detailSubject.toString())
+        val detailSubject = homeViewModel.getSelectedDetailSubjects()
+        Log.d("test", "detailSubject: ${detailSubject.toString()}")
 
         if (detailSubject.isNotEmpty()) {
             val temporaryDetailSubject = arrayListOf<String>()

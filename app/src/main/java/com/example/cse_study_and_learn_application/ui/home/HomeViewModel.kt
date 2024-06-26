@@ -62,6 +62,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         MutableLiveData<MutableList<String>>(mutableListOf())
     }
 
+    var currentDetailSubjectsList = mutableListOf<QuizContentCategory>()
+
     fun setCategoryThumbnails(context: Context) {
         val subjectThumbnailMap = mutableMapOf<String, String>()
         val parser: XmlResourceParser = context.resources.getXml(R.xml.thumbnails)
@@ -135,11 +137,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val detailSubjects = _quizSubjects.value?.find { it.subjectId == _selectedSubject.id && it.subject == _selectedSubject.title }
         detailSubjects?.let {
             for (detailSubject in it.detailSubject) {
-                quizContentCategoryList.add(QuizContentCategory(detailSubject, false))
+                quizContentCategoryList.add(QuizContentCategory(detailSubject, true))
             }
         }
 
+        currentDetailSubjectsList = quizContentCategoryList
         return quizContentCategoryList
+    }
+
+    fun getSelectedDetailSubjects(): List<QuizContentCategory> {
+        return currentDetailSubjectsList.filter { it.selected }
     }
 
 
@@ -170,6 +177,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e("test", "getAllQuizzes error: $e")
             }
         }
+    }
+
+    fun clickRecyclerItemCheck(title: String, selected: Boolean) {
+        currentDetailSubjectsList.first { it.title == title}.selected = selected
+    }
+
+    fun setAllRandomCheck(result: Boolean) {
+        if (result) {
+            currentDetailSubjectsList.forEach { it.selected = true }
+        } else {
+            currentDetailSubjectsList.forEach { it.selected = false }
+        }
+
     }
 
 

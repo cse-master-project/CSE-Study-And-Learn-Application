@@ -28,7 +28,13 @@ import com.example.cse_study_and_learn_application.model.QuizContentCategory
  */
 class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>, private val context: Context) :
     RecyclerView.Adapter<SubjectContentViewHolder>() {
+    interface ToggleCheckBoxListener {
+        fun clickToggle(title: String, selected: Boolean)
+    }
+
     private var toggleCheckBox = true
+
+    private var toggleCheckBoxListener: ToggleCheckBoxListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectContentViewHolder {
         val binding = ItemSubjectContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -39,13 +45,14 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
 
     override fun onBindViewHolder(holder: SubjectContentViewHolder, position: Int) {
         val content = contents[position]
-        holder.bind(content, toggleCheckBox)
+        holder.bind(content, toggleCheckBox, toggleCheckBoxListener)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun toggleCheckBoxVisibility() {
+    fun toggleCheckBoxVisibility(): Boolean {
         toggleCheckBox = !toggleCheckBox
         notifyDataSetChanged()
+        return toggleCheckBox
     }
 
     fun getSelectedItems(): List<QuizContentCategory> {
@@ -58,10 +65,20 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
         Log.d("test", "어댑터: $contents")
         notifyDataSetChanged()
     }
+
+    fun setToggleCheckBoxListener(toggleCheckBoxListener: ToggleCheckBoxListener) {
+        this.toggleCheckBoxListener = toggleCheckBoxListener
+    }
 }
 
-class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(content: QuizContentCategory, toggleCheckBox: Boolean) {
+class SubjectContentViewHolder(
+    private val binding: ItemSubjectContentBinding,
+    private val context: Context
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(
+        content: QuizContentCategory,
+        toggleCheckBox: Boolean,
+        toggleCheckBoxListener: SubjectContentItemAdapter.ToggleCheckBoxListener?) {
         binding.tvContentTitle.text = content.title
         if (toggleCheckBox) {
             binding.cbQuizSel.isChecked = true
@@ -79,6 +96,7 @@ class SubjectContentViewHolder(private val binding: ItemSubjectContentBinding, p
 
         binding.cbQuizSel.setOnClickListener {
             content.selected = binding.cbQuizSel.isChecked
+            toggleCheckBoxListener?.clickToggle(content.title, content.selected)
         }
     }
 }
