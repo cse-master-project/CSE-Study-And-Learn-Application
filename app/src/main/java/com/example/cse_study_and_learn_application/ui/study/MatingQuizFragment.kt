@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMatingQuizBinding
 import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
+import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.google.gson.Gson
@@ -177,13 +178,13 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     }
 
     companion object {
-        fun newInstance(contents: String, hasImg: Boolean, quizId: Int): MatingQuizFragment {
+        fun newInstance(response: RandomQuiz): MatingQuizFragment {
             val args = Bundle()
 
             val fragment = MatingQuizFragment()
-            args.putInt("quizId", quizId)
-            args.putString("contents", contents)
-            args.putBoolean("hasImg", hasImg)
+            args.putInt("quizId", response.quizId)
+            args.putString("contents", response.jsonContent)
+            args.putBoolean("hasImg", response.hasImage)
             fragment.arguments = args
             return fragment
         }
