@@ -65,20 +65,26 @@ class GradingFragment : Fragment() {
     }
 
     private fun grading() {
-        if (userAnswer == answer) {
-            // 정답
-            binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
-        } else {
-            // 오답
-            binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
-        }
-
         when (getQuizTypeFromInt(quizType!!)) {
             QuizType.MULTIPLE_CHOICE_QUIZ -> {
+                if (userAnswer == answer) {
+                    // 정답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                } else {
+                    // 오답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                }
                 binding.btnAnswer.text = answer
                 binding.tvAnswer.text = answerString
             }
             QuizType.SHORT_ANSWER_QUIZ -> {
+                if (userAnswer == answer) {
+                    // 정답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                } else {
+                    // 오답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
             }
@@ -97,17 +103,24 @@ class GradingFragment : Fragment() {
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
-
+                if (userAnswer == answer) {
+                    // 정답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                } else {
+                    // 오답
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                }
+                binding.btnAnswer.text = "답"
+                binding.tvAnswer.text = answer
             }
             QuizType.FILL_BLANK_QUIZ -> {
 
             }
             else -> {
-                Log.d("test", quizType.toString())
+                Log.d("failure", "not found quiz type: ${quizType.toString()}")
             }
         }
         binding.tvCommentary.text = commentary
-
     }
 
 }
