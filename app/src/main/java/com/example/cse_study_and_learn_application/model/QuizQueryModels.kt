@@ -60,7 +60,7 @@ data class MatingQuizJsonContent(
 
 data class TrueFalseQuizJsonContent(
     val quiz: String,
-    val answer: Int,
+    val answer: String,
     val commentary: String
 )
 
