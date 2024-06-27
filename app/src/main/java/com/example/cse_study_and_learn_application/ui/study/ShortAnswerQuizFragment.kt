@@ -66,7 +66,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                         binding.ivQuizImage.visibility = View.VISIBLE
                         binding.ivQuizImage.setImageBitmap(image)
                     } catch (e: Exception) {
-                        Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+                        Log.e("ShortAnswerQuizFragment", "get Image Failure", e)
                     }
                 }
             }
