@@ -10,9 +10,9 @@ import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -155,14 +155,8 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getQuizImage(token: String, quizId: Int): Response<Unit> {
-        val response = RetrofitInstance.quizQueryApi.getQuizImage(token, quizId)
-        if (response.isSuccessful) {
-            return response
-        } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get quiz image: ${response.message()}\n$errorBody")
-        }
+    suspend fun getQuizImage(token: String, quizId: Int): ResponseBody {
+        return RetrofitInstance.quizQueryApi.getQuizImage(token, quizId)
     }
 
     suspend fun getRandomQuiz(token: String, subject: String, detailSubject: String): RandomQuiz {

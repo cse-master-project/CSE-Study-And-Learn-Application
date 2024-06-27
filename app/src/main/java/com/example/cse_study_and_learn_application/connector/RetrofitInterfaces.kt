@@ -14,6 +14,7 @@ import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -73,7 +74,7 @@ interface QuizQueryApi {
     suspend fun getQuizImage(
         @Header("Authorization") token: String,
         @Path("quizId") quizId: Int
-    ): Response<Unit>
+    ): ResponseBody
 
     @GET("/api/quiz/random")
     suspend fun getRandomQuiz(

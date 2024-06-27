@@ -1,6 +1,9 @@
 package com.example.cse_study_and_learn_application.ui.study
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,11 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
+import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentShortAnswerQuizBinding
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.ShortAnswerQuizJsonContent
+import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 /**
  * Short answer fragment
@@ -30,24 +37,35 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     private lateinit var commentary: String
     private var quizId: Int? = null
     private var quizType: Int? = null
+    private var image: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentShortAnswerQuizBinding.inflate(inflater)
-        quizId = arguments?.getInt("quizId")
-        quizType = arguments?.getInt("quizType")
-        val hasImg = arguments?.getBoolean("hasImg")
-        val jsonString = arguments?.getString("contents")
+        quizId = requireArguments().getInt("quizId")
+        quizType = requireArguments().getInt("quizType")
+        val hasImg = requireArguments().getBoolean("hasImg")
+        val jsonString = requireArguments().getString("contents")
         val content = Gson().fromJson(jsonString, ShortAnswerQuizJsonContent::class.java)
         val quiz = content.quiz
         answer = content.answer
         commentary = content.commentary
 
         // 이미지 유무 판별
-        if (hasImg!!) {
+        if (hasImg) {
             binding.ivQuizImage.visibility = View.VISIBLE
-            // binding.ivQuizImage.setImageResource()
+            lifecycleScope.launch {
+                try {
+                    val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
+                    val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                    image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                    binding.ivQuizImage.visibility = View.VISIBLE
+                    binding.ivQuizImage.setImageBitmap(image)
+                } catch (e: Exception) {
+                    Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+                }
+            }
         }
 
         binding.tvQuizText.text = quiz

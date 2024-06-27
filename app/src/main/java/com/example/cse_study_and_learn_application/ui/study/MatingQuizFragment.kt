@@ -48,7 +48,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     ): View {
         binding = FragmentMatingQuizBinding.inflate(inflater)
 
-        arguments?.let {
+        requireArguments().let {
             quizId = it.getInt("quizId")
             hasImg = it.getBoolean("hasImg")
             jsonString = it.getString("contents", "")
