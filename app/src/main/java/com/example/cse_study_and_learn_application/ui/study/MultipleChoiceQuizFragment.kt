@@ -44,70 +44,70 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizId: Int? = null
     private var quizType: Int? = null
     private var image: Bitmap? = null
-
+    private var options: List<String>? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
 
-        quizId = requireArguments().getInt("quizId")
-        quizType = requireArguments().getInt("quizType")
-        val hasImg = requireArguments().getBoolean("hasImg")
-        val jsonString = requireArguments().getString("contents")
-        val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
-        val quiz = content.quiz
-        val options = content.option
-        answer = content.answer
-        commentary = content.commentary
+        requireArguments().let {
+            quizId = it.getInt("quizId")
+            quizType = it.getInt("quizType")
+            val jsonString = it.getString("contents")
+            val content = Gson().fromJson(jsonString, MultipleChoiceQuizJsonContent::class.java)
+            val hasImg = requireArguments().getBoolean("hasImg")
+            val options = content.option
+            answer = content.answer
+            commentary = content.commentary
+            binding.tvQuizText.text = content.quiz
 
-        // 이미지 유무 판별
-        if (hasImg) {
-            binding.ivQuizImage.visibility = View.VISIBLE
-            lifecycleScope.launch {
-                try {
-                    val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
-                    val decoded = Base64.decode(response.string(), Base64.DEFAULT)
-                    image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-                    binding.ivQuizImage.visibility = View.VISIBLE
-                    binding.ivQuizImage.setImageBitmap(image)
-                } catch (e: Exception) {
-                    Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+            // 이미지 유무 판별
+            if (hasImg) {
+                binding.ivQuizImage.visibility = View.VISIBLE
+                lifecycleScope.launch {
+                    try {
+                        val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
+                        val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                        image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                        binding.ivQuizImage.visibility = View.VISIBLE
+                        binding.ivQuizImage.setImageBitmap(image)
+                    } catch (e: Exception) {
+                        Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+                    }
                 }
             }
-        }
 
-        binding.tvQuizText.text = quiz
+            binding.tvAnswer1.text = options[0]
+            binding.tvAnswer2.text = options[1]
+            binding.tvAnswer3.text = options[2]
+            binding.tvAnswer4.text = options[3]
 
-        binding.tvAnswer1.text = options[0]
-        binding.tvAnswer2.text = options[1]
-        binding.tvAnswer3.text = options[2]
-        binding.tvAnswer4.text = options[3]
+            cards.add(binding.cvAnswer1)
+            cards.add(binding.cvAnswer2)
+            cards.add(binding.cvAnswer3)
+            cards.add(binding.cvAnswer4)
 
-        cards.add(binding.cvAnswer1)
-        cards.add(binding.cvAnswer2)
-        cards.add(binding.cvAnswer3)
-        cards.add(binding.cvAnswer4)
-
-        cards[0].setOnClickListener {
-            onlyOneCardViewToggle(cards[0])
-            userAnswer = "1"
-            answerString = binding.tvAnswer1.text.toString()
-        }
-        cards[1].setOnClickListener {
-            onlyOneCardViewToggle(cards[1])
-            userAnswer = "2"
-            answerString = binding.tvAnswer2.text.toString()
-        }
-        cards[2].setOnClickListener {
-            onlyOneCardViewToggle(cards[2])
-            userAnswer = "3"
-            answerString = binding.tvAnswer3.text.toString()
-        }
-        cards[3].setOnClickListener {
-            onlyOneCardViewToggle(cards[3])
-            userAnswer = "4"
-            answerString = binding.tvAnswer4.text.toString()
+            cards[0].setOnClickListener {
+                onlyOneCardViewToggle(cards[0])
+                userAnswer = "1"
+                answerString = binding.tvAnswer1.text.toString()
+            }
+            cards[1].setOnClickListener {
+                onlyOneCardViewToggle(cards[1])
+                userAnswer = "2"
+                answerString = binding.tvAnswer2.text.toString()
+            }
+            cards[2].setOnClickListener {
+                onlyOneCardViewToggle(cards[2])
+                userAnswer = "3"
+                answerString = binding.tvAnswer3.text.toString()
+            }
+            cards[3].setOnClickListener {
+                onlyOneCardViewToggle(cards[3])
+                userAnswer = "4"
+                answerString = binding.tvAnswer4.text.toString()
+            }
         }
 
         return binding.root

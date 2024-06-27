@@ -49,40 +49,42 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
     ): View {
         binding = FragmentTrueFalseQuizBinding.inflate(inflater)
 
-        quizId = requireArguments().getInt("quizId")
-        quizType = requireArguments().getInt("quizType")
-        val hasImg = requireArguments().getBoolean("hasImg")
-        Log.d("test", "hasImg = $hasImg")
-        val jsonString = requireArguments().getString("contents")
-        val content = Gson().fromJson(jsonString, TrueFalseQuizJsonContent::class.java)
-        val quiz = content.quiz
-        answer = content.answer
-        commentary = content.commentary
+        requireArguments().let{
+            quizId = it.getInt("quizId")
+            quizType = it.getInt("quizType")
+            val hasImg = it.getBoolean("hasImg")
+            val jsonString = it.getString("contents")
 
-        if (hasImg) {
-            binding.ivQuizImage.visibility = View.VISIBLE
-            lifecycleScope.launch {
-                try {
-                    val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
-                    val decoded = Base64.decode(response.string(), Base64.DEFAULT)
-                    image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-                    binding.ivQuizImage.visibility = View.VISIBLE
-                    binding.ivQuizImage.setImageBitmap(image)
-                } catch (e: Exception) {
-                    Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+            val content = Gson().fromJson(jsonString, TrueFalseQuizJsonContent::class.java)
+            answer = content.answer
+            commentary = content.commentary
+
+            binding.tvQuizText.text = content.quiz
+
+            if (hasImg) {
+                binding.ivQuizImage.visibility = View.VISIBLE
+                lifecycleScope.launch {
+                    try {
+                        val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
+                        val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                        image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                        binding.ivQuizImage.visibility = View.VISIBLE
+                        binding.ivQuizImage.setImageBitmap(image)
+                    } catch (e: Exception) {
+                        Log.e("MultipleChoiceQuizFragment", "get Image Failure", e)
+                    }
                 }
+            }
+
+            binding.rbTrue.setOnClickListener {
+                userAnswer = "1"
+            }
+
+            binding.rbFalse.setOnClickListener {
+                userAnswer = "0"
             }
         }
 
-        binding.tvQuizText.text = quiz
-
-        binding.rbTrue.setOnClickListener {
-            userAnswer = "1"
-        }
-
-        binding.rbFalse.setOnClickListener {
-            userAnswer = "0"
-        }
 
         return binding.root
     }
