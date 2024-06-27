@@ -95,11 +95,11 @@ class GradingFragment : Fragment() {
                 if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
                     Log.d("test", "정답")
                     Log.d("test", commentary.toString())
-                    resultSubmit(quizId!!, true)
+                    // resultSubmit(quizId!!, true)
                 } else {
                     Log.d("test", "오답")
                     Log.d("test", commentary.toString())
-                    resultSubmit(quizId!!, false)
+                    // resultSubmit(quizId!!, false)
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
@@ -114,7 +114,25 @@ class GradingFragment : Fragment() {
                 binding.tvAnswer.text = answer
             }
             QuizType.FILL_BLANK_QUIZ -> {
+                var flag = true
+                for (i: Int in 0..answer.length) {
+                    if (answer[i] != userAnswer[i]) {
+                        flag = false
+                    }
+                }
 
+                if (flag) {
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                } else {
+                    binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                }
+                binding.btnAnswer.text = "답"
+
+                when (answer.length) {
+                    1 -> binding.tvAnswer.text = "1: ${answer[0]}"
+                    2 -> binding.tvAnswer.text = "1: ${answer[0]} 2: ${answer[1]}"
+                    3 -> binding.tvAnswer.text = "1: ${answer[0]} 2: ${answer[1]} 3: ${answer[2]}"
+                }
             }
             else -> {
                 Log.d("failure", "not found quiz type: ${quizType.toString()}")

@@ -51,6 +51,8 @@ class QuizActivity() : AppCompatActivity() {
                 is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
 
                 is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
+
+                is FillBlankQuizFragment -> currentFragment.onAnswerSubmit()
             }
 
         }
@@ -86,7 +88,7 @@ class QuizActivity() : AppCompatActivity() {
             QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response)
             QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response)
             QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response)
-            QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response.jsonContent)
+            QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response)
             else-> {
                 Log.e("QuizActivity", "showQuiz : Not Found fragment")
                 throw NullPointerException()
