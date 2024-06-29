@@ -115,7 +115,7 @@ class GradingFragment : Fragment() {
             }
             QuizType.FILL_BLANK_QUIZ -> {
                 var flag = true
-                for (i: Int in 0..answer.length) {
+                for (i: Int in answer.indices) {
                     if (answer[i] != userAnswer[i]) {
                         flag = false
                     }
