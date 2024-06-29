@@ -2,16 +2,22 @@ package com.example.cse_study_and_learn_application.ui.login
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
+import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
 import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
@@ -20,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 /**
@@ -42,7 +49,6 @@ class SignInActivity : AppCompatActivity() {
             val email = account.email
 
             AccountAssistant.setUserEmail(this, email!!)
-//            Log.d("test", "User Email: $email")
 
             val grantType = "authorization_code"
             val clientId = BuildConfig.server_client_id
@@ -54,27 +60,39 @@ class SignInActivity : AppCompatActivity() {
                     val connectorRepository = ConnectorRepository()
                     connectorRepository.getAccessToken(grantType, clientId, clientSecret, authCode) { accessToken, error ->
                         if (error != null) {
-                            Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", error)
+                            throw Exception("accessTokenResponse failure")
                         } else {
-//                            Log.d("test", "accessToken response: $accessToken")
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
-
-                            lifecycleScope.launch {
-                                try {
-                                    val registrationResponse = connectorRepository.getUserRegistration(accessToken, "테스트 121")
-                                    if (registrationResponse) {
-                                        Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                        moveMainActivity()
+                            val builder = MaterialAlertDialogBuilder(this@SignInActivity)
+                            val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
+                            val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
+                            val dialog = with (builder) {
+                                setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
+                                setView(dialogLayout)
+                                setPositiveButton("확인") { _, _ ->
+                                    lifecycleScope.launch {
+                                        val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
+                                        if (registrationResponse) {
+                                            Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                            moveMainActivity()
+                                        } else {
+                                            throw Exception("registrationResponse failure")
+                                        }
                                     }
-                                } catch (e: Exception) {
-                                    Log.e("test", "registrationResponse 호출 실패", e)
-                                    moveMainActivity()
                                 }
+                                setNegativeButton("취소", null)
+                                show()
                             }
+                            dialog.window?.let { window ->
+                                val params = window.attributes
+                                params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
+                                window.attributes = params
+                            }
+
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("accessTokenResponse", "accessTokenResponse 호출 실패", e)
+                    Log.e("SignInActivity", "호출 실패", e)
                 }
             }
         } catch (e: ApiException) {
@@ -103,12 +121,10 @@ class SignInActivity : AppCompatActivity() {
 //                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     moveMainActivity()
                 } catch (e: Exception) {
-                    Log.d("test", "로그인 실패 $e")
+                    Log.e("SignInActivity", "로그인 실패", e)
                 }
             }
-//            Log.d("token", "serverAccessToken auto login test: ${AccountAssistant.getServerAccessToken(this)}")
             Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
-
         }
     }
 
