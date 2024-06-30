@@ -43,6 +43,7 @@ class QuizActivity() : AppCompatActivity() {
         binding.ibBackPres.setOnClickListener {
             onBackPressed()
         }
+
         binding.ibGrading.setOnClickListener {
             when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                 is GradingFragment -> {

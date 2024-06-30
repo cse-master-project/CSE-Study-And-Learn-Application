@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import kotlinx.coroutines.launch
@@ -25,6 +27,8 @@ class GradingFragment : Fragment() {
 
     private lateinit var binding: FragmentGradingBinding
 
+
+    private val quizViewModel: QuizViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +54,36 @@ class GradingFragment : Fragment() {
                 quizId = quizId,
                 isCorrect = isCorrect
             )
+        }
+    }
+
+    private fun failUpdate() {
+        val nickname = AccountAssistant.nickname
+        quizViewModel.getStatsByNickname(nickname) {
+            it?.let {
+                Log.d("test", "변경전: $it")
+                quizViewModel.insertOrUpdate(nickname, it.correctAnswers, it.wrongAnswers + 1)
+                quizViewModel.getStatsByNickname(nickname) { qs ->
+                    qs?.let {
+                        Log.d("test", "변경후: $qs")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun successUpdate() {
+        val nickname = AccountAssistant.nickname
+        quizViewModel.getStatsByNickname(nickname) {
+            it?.let {
+                Log.d("test", "변경전: $it")
+                quizViewModel.insertOrUpdate(nickname, it.correctAnswers + 1, it.wrongAnswers)
+                quizViewModel.getStatsByNickname(nickname) { qs ->
+                    qs?.let {
+                        Log.d("test", "변경후: $qs")
+                    }
+                }
+            }
         }
     }
 
@@ -83,8 +117,10 @@ class GradingFragment : Fragment() {
 
                 if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
                     resultSubmit(quizId, true)
+                    successUpdate()
                 } else {
                     resultSubmit(quizId, false)
+                    failUpdate()
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
@@ -92,10 +128,12 @@ class GradingFragment : Fragment() {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
                     resultSubmit(quizId, true)
+                    successUpdate()
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
                     resultSubmit(quizId, false)
+                    failUpdate()
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
@@ -110,9 +148,11 @@ class GradingFragment : Fragment() {
 
                 if (flag) {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    successUpdate()
                     resultSubmit(quizId, true)
                 } else {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    failUpdate()
                     resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = "답"

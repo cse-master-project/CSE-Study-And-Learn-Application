@@ -11,16 +11,19 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
 import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
+import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -33,12 +36,16 @@ import kotlinx.coroutines.launch
  * Sign in activity
  *
  * @constructor 로그인을 담당하는 액티비티
+ *
+ * 변경점 2024-06-30
+ * - 이미 서버에 로그인 정보가 있는경우 닉네임을 받지 않고 바로 로그인되도록 변경
  */
 @Keep
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
-    private lateinit var settingViewModel: SettingViewModel
+
+    private val quizViewModel: QuizViewModel by viewModels()
 
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -55,6 +62,7 @@ class SignInActivity : AppCompatActivity() {
             val clientSecret = BuildConfig.server_client_secret
             val authCode = account.serverAuthCode
 
+            val connectorRepository = ConnectorRepository()
             lifecycleScope.launch {
                 try {
                     val connectorRepository = ConnectorRepository()
@@ -118,7 +126,7 @@ class SignInActivity : AppCompatActivity() {
 
         setContentView(_binding.root)
 
-        val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
+        val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)  // 구글 액세스 토큰
 
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
@@ -126,11 +134,28 @@ class SignInActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
+                    Log.i("Server Response", "Get User Login: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-//                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                    moveMainActivity()
+
+                    lifecycleScope.launch {
+                        try {
+                            val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
+                            // Log.d("test", "userInfo: $userInfo")
+                            AccountAssistant.nickname = userInfo.nickname
+                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { quizStats ->
+                                Log.d("test", "getOrInsertStats: $quizStats")
+                            }
+                            moveMainActivity()
+
+                        } catch (e: Exception) {
+                            Log.e("test", "getUserInfo: $e")
+                        }
+                    }
+
                 } catch (e: Exception) {
                     Log.e("SignInActivity", "로그인 실패", e)
+                    // 구글 액세스 토큰 기간이 지났으면 회원가입이 되어있더라도 로그인에 실패할 수 있음
+                    requestGoogleLogin()
                 }
             }
             Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
