@@ -33,6 +33,9 @@ import kotlinx.coroutines.launch
  * Sign in activity
  *
  * @constructor 로그인을 담당하는 액티비티
+ *
+ * 변경점 2024-06-30
+ * - 이미 서버에 로그인 정보가 있는경우 닉네임을 받지 않고 바로 로그인되도록 변경
  */
 @Keep
 class SignInActivity : AppCompatActivity() {
@@ -55,44 +58,54 @@ class SignInActivity : AppCompatActivity() {
             val clientSecret = BuildConfig.server_client_secret
             val authCode = account.serverAuthCode
 
+            val connectorRepository = ConnectorRepository()
             lifecycleScope.launch {
                 try {
-                    val connectorRepository = ConnectorRepository()
                     connectorRepository.getAccessToken(grantType, clientId, clientSecret, authCode) { accessToken, error ->
                         if (error != null) {
                             throw Exception("accessTokenResponse failure")
                         } else {
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
-                            val builder = MaterialAlertDialogBuilder(this@SignInActivity)
-                            val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
-                            val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
-                            val dialog = with (builder) {
-                                setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
-                                setView(dialogLayout)
-                                setPositiveButton("확인") { _, _ ->
-                                    lifecycleScope.launch {
-                                        val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
-                                        if (registrationResponse) {
-                                            Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                            moveMainActivity()
-                                        } else {
-                                            throw Exception("registrationResponse failure")
-                                        }
-                                    }
+                            lifecycleScope.launch {
+                                val serverAccessToken = connectorRepository.getUserLogin(accessToken)
+                                if (serverAccessToken.isNotBlank()) {
+                                    Toast.makeText(this@SignInActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
+                                    AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
+                                    moveMainActivity()
+                                } else {
+                                    throw Exception("registrationResponse failure")
                                 }
-                                setNegativeButton("취소", null)
-                                show()
                             }
-                            dialog.window?.let { window ->
-                                val params = window.attributes
-                                params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
-                                window.attributes = params
-                            }
-
                         }
                     }
                 } catch (e: Exception) {
                     Log.e("SignInActivity", "호출 실패", e)
+                    val builder = MaterialAlertDialogBuilder(this@SignInActivity)
+                    val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
+                    val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
+                    val dialog = with (builder) {
+                        setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
+                        setView(dialogLayout)
+                        setPositiveButton("확인") { _, _ ->
+                            lifecycleScope.launch {
+                                val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
+                                val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
+                                if (registrationResponse) {
+                                    Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                    moveMainActivity()
+                                } else {
+                                    throw Exception("registrationResponse failure")
+                                }
+                            }
+                        }
+                        setNegativeButton("취소", null)
+                        show()
+                    }
+                    dialog.window?.let { window ->
+                        val params = window.attributes
+                        params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
+                        window.attributes = params
+                    }
                 }
             }
         } catch (e: ApiException) {
@@ -108,7 +121,7 @@ class SignInActivity : AppCompatActivity() {
 
         setContentView(_binding.root)
 
-        val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
+        val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)  // 구글 액세스 토큰
 
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
@@ -122,6 +135,8 @@ class SignInActivity : AppCompatActivity() {
                     moveMainActivity()
                 } catch (e: Exception) {
                     Log.e("SignInActivity", "로그인 실패", e)
+                    // 구글 액세스 토큰 기간이 지났으면 회원가입이 되어있더라도 로그인에 실패할 수 있음
+                    requestGoogleLogin()
                 }
             }
             Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
