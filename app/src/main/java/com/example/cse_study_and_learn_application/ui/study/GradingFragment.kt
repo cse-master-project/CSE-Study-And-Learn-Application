@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import kotlinx.coroutines.launch
@@ -31,6 +33,8 @@ class GradingFragment : Fragment() {
     private lateinit var answer: String
     private lateinit var answerString: String
     private lateinit var commentary: String
+
+    private val quizViewModel: QuizViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,15 +68,48 @@ class GradingFragment : Fragment() {
         }
     }
 
+    private fun failUpdate() {
+        val nickname = AccountAssistant.nickname
+        quizViewModel.getStatsByNickname(nickname) {
+            it?.let {
+                Log.d("test", "변경전: $it")
+                quizViewModel.insertOrUpdate(nickname, it.correctAnswers, it.wrongAnswers + 1)
+                quizViewModel.getStatsByNickname(nickname) { qs ->
+                    qs?.let {
+                        Log.d("test", "변경후: $qs")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun successUpdate() {
+        val nickname = AccountAssistant.nickname
+        quizViewModel.getStatsByNickname(nickname) {
+            it?.let {
+                Log.d("test", "변경전: $it")
+                quizViewModel.insertOrUpdate(nickname, it.correctAnswers + 1, it.wrongAnswers)
+                quizViewModel.getStatsByNickname(nickname) { qs ->
+                    qs?.let {
+                        Log.d("test", "변경후: $qs")
+                    }
+                }
+            }
+        }
+    }
+
     private fun grading() {
         when (getQuizTypeFromInt(quizType!!)) {
             QuizType.MULTIPLE_CHOICE_QUIZ -> {
                 if (userAnswer == answer) {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    successUpdate()
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    failUpdate()
+
                 }
                 binding.btnAnswer.text = answer
                 binding.tvAnswer.text = answerString
@@ -81,9 +118,11 @@ class GradingFragment : Fragment() {
                 if (userAnswer == answer) {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    successUpdate()
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    failUpdate()
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
@@ -96,19 +135,23 @@ class GradingFragment : Fragment() {
                     Log.d("test", "정답")
                     Log.d("test", commentary.toString())
                     // resultSubmit(quizId!!, true)
+                    successUpdate()
                 } else {
                     Log.d("test", "오답")
                     Log.d("test", commentary.toString())
                     // resultSubmit(quizId!!, false)
+                    failUpdate()
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
                 if (userAnswer == answer) {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    successUpdate()
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    failUpdate()
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
@@ -123,8 +166,10 @@ class GradingFragment : Fragment() {
 
                 if (flag) {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    successUpdate()
                 } else {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    failUpdate()
                 }
                 binding.btnAnswer.text = "답"
 

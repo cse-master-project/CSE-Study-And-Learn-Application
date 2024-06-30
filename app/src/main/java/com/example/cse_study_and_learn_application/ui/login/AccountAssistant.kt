@@ -8,6 +8,7 @@ object AccountAssistant {
     private const val KEY_SERVER_ACCESS_TOKEN = "server_access_token"
     private const val KEY_ACCESS_TOKEN = "google_access_token"
     private const val KEY_USER_EMAIL = "user_email"
+    var nickname: String = ""
 
     fun setServerAccessToken(context: Context, token: String) {
         val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

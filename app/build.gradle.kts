@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
     id("kotlinx-serialization")
@@ -15,6 +16,7 @@ val properties: Properties = Properties().apply {
 android {
     namespace = "com.example.cse_study_and_learn_application"
     compileSdk = 34
+
 
     signingConfigs {
         create("release") {
@@ -111,4 +113,11 @@ dependencies {
     // flex box
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
+    // Room
+    val room_version = "2.5.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 }

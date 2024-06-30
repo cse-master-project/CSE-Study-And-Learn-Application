@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.MainViewModel
@@ -33,6 +33,10 @@ class StatisticsFragment : Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
     private lateinit var statisticsViewModel: StatisticsViewModel
+
+
+    private val quizViewModel: QuizViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,7 +57,7 @@ class StatisticsFragment : Fragment() {
             if (statistics != null) {
                 // UI 업데이트 등의 동작 수행
                 adapter.itemUpdate(statisticsViewModel.ratioList)
-                Log.d("test", "성공?")
+                // Log.d("test", "성공?")
 
             } else {
                 // 통계 데이터 가져오기 실패 처리
@@ -79,6 +83,16 @@ class StatisticsFragment : Fragment() {
         }
 
         statisticsViewModel.getUserQuizStatistics(requireContext()) // 서버로부터 유저의 과목별 정답률 불러옴
+
+        statisticsViewModel.getQuizCount(requireContext(), quizViewModel) { quizStats ->
+            quizStats.let {
+                binding.tvTotalSuccessQuizCount.text = it.correctAnswers.toString() + " 문제"
+                binding.tvTotalFailQuizCount.text = it.wrongAnswers.toString() + " 문제"
+                binding.tvTotalQuizCount.text = (it.correctAnswers + it.wrongAnswers).toString() + " 문제"
+            }
+        }  // 유저의 결과별 문제 수를 불러옴
+
+
     }
     override fun onDestroyView() {
         super.onDestroyView()

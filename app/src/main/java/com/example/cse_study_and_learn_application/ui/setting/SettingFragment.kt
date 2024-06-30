@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
+import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 /**
@@ -76,6 +77,7 @@ class SettingFragment : Fragment() {
 
         settingViewModel.userInfo.observe(viewLifecycleOwner) {
             binding.tvUserName.text = "${it.nickname} 님"
+            AccountAssistant.nickname = it.nickname
         }
 
         initClickListener(settingViewModel)

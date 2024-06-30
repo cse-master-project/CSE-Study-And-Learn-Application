@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
+import com.example.cse_study_and_learn_application.db.QuizStats
 import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
@@ -30,6 +31,7 @@ class StatisticsViewModel : ViewModel() {
 
     private var _ratioList = mutableListOf(CategorySuccessRatio("전체", 85),
         CategorySuccessRatio("알고리즘", 85) ,CategorySuccessRatio("자료구조", 85) ,CategorySuccessRatio("이산수학", 85) )
+
 
     val ratioList get() = _ratioList
     private val connectorRepository = ConnectorRepository()
@@ -60,4 +62,21 @@ class StatisticsViewModel : ViewModel() {
             }
         }
     }
+
+    fun getQuizCount(context: Context, quizViewModel: QuizViewModel, callback: (QuizStats) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val token = AccountAssistant.getServerAccessToken(context)
+                val userInfo = connectorRepository.getUserInfo(token)
+
+                quizViewModel.getStatsByNickname(userInfo.nickname) { quizStats ->
+                    callback(quizStats!!)
+                }
+
+            } catch (e: Exception) {
+                Log.e("test", "getUserInfo: $e")
+            }
+        }
+    }
+
 }

@@ -11,16 +11,19 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
 import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
+import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -41,7 +44,8 @@ import kotlinx.coroutines.launch
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var _binding: ActivitySignInBinding
-    private lateinit var settingViewModel: SettingViewModel
+
+    private val quizViewModel: QuizViewModel by viewModels()
 
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -65,13 +69,26 @@ class SignInActivity : AppCompatActivity() {
                         if (error != null) {
                             throw Exception("accessTokenResponse failure")
                         } else {
-                            AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
+                            AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!) // 구글 액세스 토큰 저장
                             lifecycleScope.launch {
-                                val serverAccessToken = connectorRepository.getUserLogin(accessToken)
-                                if (serverAccessToken.isNotBlank()) {
+                                val serverAccessToken = connectorRepository.getUserLogin(accessToken)   // 구글 액세스 토큰으로 서버 액세스 토큰 불러오기(로그인)
+                                if (serverAccessToken.isNotBlank()) {   // 로그인 성공하면
                                     Toast.makeText(this@SignInActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
-                                    AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-                                    moveMainActivity()
+                                    AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)   // 서버 액세스 토큰 저장
+                                    lifecycleScope.launch {
+                                        try {
+                                            val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
+                                            AccountAssistant.nickname = userInfo.nickname
+                                            // Log.d("test", "userInfo: $userInfo")
+                                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { quizStats ->
+                                                // Log.d("test", "getOrInsertStats: $quizStats")
+                                            }
+                                            moveMainActivity()
+
+                                        } catch (e: Exception) {
+                                            Log.e("test", "getUserInfo: $e")
+                                        }
+                                    }
                                 } else {
                                     throw Exception("registrationResponse failure")
                                 }
@@ -89,9 +106,12 @@ class SignInActivity : AppCompatActivity() {
                         setPositiveButton("확인") { _, _ ->
                             lifecycleScope.launch {
                                 val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)
-                                val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
+                                val nickname = editText.text.toString()
+                                val registrationResponse = connectorRepository.getUserRegistration(accessToken, nickname)
                                 if (registrationResponse) {
                                     Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                    AccountAssistant.nickname = nickname
+                                    quizViewModel.insertOrUpdate(nickname = nickname, correctAnswers = 0, wrongAnswers = 0)
                                     moveMainActivity()
                                 } else {
                                     throw Exception("registrationResponse failure")
@@ -131,8 +151,22 @@ class SignInActivity : AppCompatActivity() {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
                     Log.i("Server Response", "Get User Login: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-//                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                    moveMainActivity()
+
+                    lifecycleScope.launch {
+                        try {
+                            val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
+                            // Log.d("test", "userInfo: $userInfo")
+                            AccountAssistant.nickname = userInfo.nickname
+                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { quizStats ->
+                                Log.d("test", "getOrInsertStats: $quizStats")
+                            }
+                            moveMainActivity()
+
+                        } catch (e: Exception) {
+                            Log.e("test", "getUserInfo: $e")
+                        }
+                    }
+
                 } catch (e: Exception) {
                     Log.e("SignInActivity", "로그인 실패", e)
                     // 구글 액세스 토큰 기간이 지났으면 회원가입이 되어있더라도 로그인에 실패할 수 있음
