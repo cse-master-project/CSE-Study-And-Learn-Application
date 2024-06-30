@@ -47,7 +47,7 @@ class QuizActivity() : AppCompatActivity() {
         }
 
         binding.ibReport.setOnClickListener {
-            showReportDialog()
+            // showReportDialog()
         }
 
         binding.ibGrading.setOnClickListener {

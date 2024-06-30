@@ -40,7 +40,7 @@ class CategorySuccessRatioAdapter(private var contents: List<CategorySuccessRati
         RecyclerView.ViewHolder(binding.root) {
         fun bind(content: CategorySuccessRatio) {
             binding.tvCategoryTitle.text = content.title
-            binding.tvCategoryRatio.text = content.ratio.toString().plus("%")
+            binding.tvCategoryRatio.text = content.ratio.toString() + "%"
 
 //            binding.tvCategoryTitle.setTextColorAsLinearGradient(arrayOf(
 //                ContextCompat.getColor(context, R.color.light_blue_400),

@@ -70,6 +70,7 @@ class SignInActivity : AppCompatActivity() {
                         if (error != null) {
                             throw Exception("accessTokenResponse failure")
                         } else {
+                            Log.d("test", "accessToken: $accessToken")
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
                             lifecycleScope.launch {
                                 val isSignedUser = connectorRepository.isSignedUser(accessToken)
@@ -89,8 +90,13 @@ class SignInActivity : AppCompatActivity() {
                                                 val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
                                                 if (registrationResponse) {
                                                     Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                                    recreate()
-                                                    moveMainActivity()
+                                                    lifecycleScope.launch {
+                                                        val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
+                                                        AccountAssistant.nickname = userInfo.nickname
+                                                        quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) {}
+                                                        recreate()
+                                                        moveMainActivity()
+                                                    }
                                                 } else {
                                                     throw Exception("registrationResponse failure")
                                                 }
@@ -142,11 +148,8 @@ class SignInActivity : AppCompatActivity() {
                             val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
                             // Log.d("test", "userInfo: $userInfo")
                             AccountAssistant.nickname = userInfo.nickname
-                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { quizStats ->
-                                Log.d("test", "getOrInsertStats: $quizStats")
-                            }
+                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { }
                             moveMainActivity()
-
                         } catch (e: Exception) {
                             Log.e("test", "getUserInfo: $e")
                         }

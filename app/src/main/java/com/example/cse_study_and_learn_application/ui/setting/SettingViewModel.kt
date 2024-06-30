@@ -78,6 +78,7 @@ class SettingViewModel : ViewModel() {
             } catch (e: Exception) {
                 // 예외 처리
                 _deactivateResult.value = false
+                Log.d("test", "deactivate: $e")
             }
         }
     }

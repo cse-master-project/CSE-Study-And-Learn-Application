@@ -11,7 +11,7 @@ import com.example.cse_study_and_learn_application.db.QuizStats
 import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import com.example.cse_study_and_learn_application.utils.convertToIntOrZero
+import com.example.cse_study_and_learn_application.utils.convertToDoubleOrZero
 import kotlinx.coroutines.launch
 
 /**
@@ -29,8 +29,8 @@ class StatisticsViewModel : ViewModel() {
     }
     val text: LiveData<String> = _text
 
-    private var _ratioList = mutableListOf(CategorySuccessRatio("전체", 85),
-        CategorySuccessRatio("알고리즘", 85) ,CategorySuccessRatio("자료구조", 85) ,CategorySuccessRatio("이산수학", 85) )
+    private var _ratioList = mutableListOf(CategorySuccessRatio("전체", 85.0),
+        CategorySuccessRatio("알고리즘", 85.0) ,CategorySuccessRatio("자료구조", 85.0) ,CategorySuccessRatio("이산수학", 85.0) )
 
 
     val ratioList get() = _ratioList
@@ -49,9 +49,9 @@ class StatisticsViewModel : ViewModel() {
                 // 서버 연결 성공시 리스트에 각 과목별 정답률 저장
                 userQuizStatistics.value?.correctRateBySubject?.let {
                     _ratioList.clear()
-                    _ratioList.add(CategorySuccessRatio("전체", convertToIntOrZero(statistics.totalCorrectRate)))
+                    _ratioList.add(CategorySuccessRatio("전체", convertToDoubleOrZero(statistics.totalCorrectRate)))
                     for (ratio in it) {
-                        val ratioBySubject = CategorySuccessRatio(ratio.key, convertToIntOrZero(ratio.value))
+                        val ratioBySubject = CategorySuccessRatio(ratio.key, convertToDoubleOrZero(ratio.value))
                         _ratioList.add(ratioBySubject)
                     }
                 }

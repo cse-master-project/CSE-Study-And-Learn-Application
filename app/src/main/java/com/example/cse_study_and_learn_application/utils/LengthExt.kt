@@ -15,10 +15,10 @@ fun Context.displayWidth(): Int {
 }
 
 
-fun convertToIntOrZero(value: String): Int {
+fun convertToDoubleOrZero(value: String): Double {
     return if (value == "NaN") {
-        0
+        0.0
     } else {
-        value.toInt()
+        value.toDouble()
     }
 }

@@ -129,6 +129,7 @@ class SettingFragment : Fragment() {
                 //Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
                 settingViewModel.deactivate(requireContext())   // 회원탈퇴 메서드
                 dialogQuestMessage.dismiss()
+
             }
 
             dialogQuestMessage.setNegative {
