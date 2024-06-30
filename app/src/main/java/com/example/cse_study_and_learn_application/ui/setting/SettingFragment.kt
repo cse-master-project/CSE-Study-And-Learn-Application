@@ -70,7 +70,6 @@ class SettingFragment : Fragment() {
             } else {
                 // 회원탈퇴 실패 처리
                 Toast.makeText(requireContext(), "회원탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
-
             }
         })
 

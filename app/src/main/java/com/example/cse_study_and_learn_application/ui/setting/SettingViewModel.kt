@@ -69,8 +69,8 @@ class SettingViewModel : ViewModel() {
                 if (isSuccess) {
                     // 회원탈퇴 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    AccountAssistant.clearAllPreferences(context)
                     _deactivateResult.value = true
+                    AccountAssistant.clearAllPreferences(context)
                 } else {
                     // 회원탈퇴 실패 처리
                     _deactivateResult.value = false
