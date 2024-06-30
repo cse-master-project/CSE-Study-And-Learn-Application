@@ -14,6 +14,8 @@ import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
+import com.example.cse_study_and_learn_application.model.isSignedRequest
+import com.example.cse_study_and_learn_application.model.isSignedResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -137,6 +139,11 @@ interface UserAccountApi {
     suspend fun logoutUser(
         @Header("Authorization") token: String
     ): Response<Unit>
+
+    @POST("/api/user/auth/google/check")
+    suspend fun isSigned(
+        @Body request: isSignedRequest
+    ): Response<isSignedResponse>
 }
 
 @Keep

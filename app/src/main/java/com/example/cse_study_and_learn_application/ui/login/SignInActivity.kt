@@ -63,32 +63,42 @@ class SignInActivity : AppCompatActivity() {
                             throw Exception("accessTokenResponse failure")
                         } else {
                             AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
-                            val builder = MaterialAlertDialogBuilder(this@SignInActivity)
-                            val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
-                            val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
-                            val dialog = with (builder) {
-                                setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
-                                setView(dialogLayout)
-                                setPositiveButton("확인") { _, _ ->
-                                    lifecycleScope.launch {
-                                        val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
-                                        if (registrationResponse) {
-                                            Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                            moveMainActivity()
-                                        } else {
-                                            throw Exception("registrationResponse failure")
+                            lifecycleScope.launch {
+                                val isSignedUser = connectorRepository.isSignedUser(accessToken)
+                                if (isSignedUser) {
+                                    val serverAccessToken = connectorRepository.getUserLogin(accessToken)
+                                    AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
+                                    moveMainActivity()
+                                } else {
+                                    val builder = MaterialAlertDialogBuilder(this@SignInActivity)
+                                    val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
+                                    val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
+                                    val dialog = with (builder) {
+                                        setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
+                                        setView(dialogLayout)
+                                        setPositiveButton("확인") { _, _ ->
+                                            lifecycleScope.launch {
+                                                val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
+                                                if (registrationResponse) {
+                                                    Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                                    recreate()
+                                                    moveMainActivity()
+                                                } else {
+                                                    throw Exception("registrationResponse failure")
+                                                }
+                                            }
                                         }
+                                        setNegativeButton("취소", null)
+                                        show()
+                                    }
+                                    dialog.window?.let { window ->
+                                        val params = window.attributes
+                                        params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
+                                        window.attributes = params
                                     }
                                 }
-                                setNegativeButton("취소", null)
-                                show()
-                            }
-                            dialog.window?.let { window ->
-                                val params = window.attributes
-                                params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
-                                window.attributes = params
-                            }
 
+                            }
                         }
                     }
                 } catch (e: Exception) {
@@ -116,7 +126,6 @@ class SignInActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
-                    Log.i("Server Response", "Get User Login: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
 //                    Toast.makeText(this@SignInActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                     moveMainActivity()

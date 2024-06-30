@@ -49,9 +49,15 @@ data class NicknameRequest(
     val nickname: String
 )
 
-
-
 data class UserInfo(
     @SerializedName("nickname") val nickname: String,
     @SerializedName("createAt") val createAt: String
+)
+
+data class isSignedResponse(
+    @SerializedName("registered") val registered: Boolean
+)
+
+data class isSignedRequest(
+    @SerializedName("accessToken") val accessToken: String
 )

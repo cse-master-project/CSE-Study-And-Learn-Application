@@ -25,12 +25,6 @@ class GradingFragment : Fragment() {
 
     private lateinit var binding: FragmentGradingBinding
 
-    private var quizId: Int? = null
-    private var quizType: Int? = null
-    private lateinit var userAnswer: String
-    private lateinit var answer: String
-    private lateinit var answerString: String
-    private lateinit var commentary: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,18 +32,13 @@ class GradingFragment : Fragment() {
     ): View {
         binding = FragmentGradingBinding.inflate(inflater)
 
-        arguments?.let {
-            quizId = it.getInt("quizId")
-            quizType = it.getInt("quizType")
-            userAnswer = it.getString("userAnswer").toString()
-            answer = it.getString("answer").toString()
-            answerString = it.getString("answerString").toString()
-            commentary = it.getString("commentary").toString()
+        requireArguments().let {
+            val quizId = it.getInt("quizId")
+            val userAnswer = it.getString("userAnswer").toString()
+            val answer = it.getString("answer").toString()
+
+            grading(quizId, userAnswer, answer)
         }
-
-        grading()
-
-        //resultSubmit(quizId!!, userAnswer == answer)
 
         return binding.root
     }
@@ -64,51 +53,49 @@ class GradingFragment : Fragment() {
         }
     }
 
-    private fun grading() {
-        when (getQuizTypeFromInt(quizType!!)) {
+    private fun grading(quizId: Int, userAnswer: String, answer: String) {
+        when (getQuizTypeFromInt(requireArguments().getInt("quizType"))) {
             QuizType.MULTIPLE_CHOICE_QUIZ -> {
                 if (userAnswer == answer) {
-                    // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    resultSubmit(quizId, true)
                 } else {
-                    // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = answer
-                binding.tvAnswer.text = answerString
+                binding.tvAnswer.text = requireArguments().getString("answerString").toString()
             }
             QuizType.SHORT_ANSWER_QUIZ -> {
                 if (userAnswer == answer) {
-                    // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    resultSubmit(quizId, true)
                 } else {
-                    // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
             }
             QuizType.MATING_QUIZ -> {
-                val userAnswer = arguments?.getStringArrayList("userAnswer")
-                val answer = arguments?.getStringArrayList("answer")
+                val userAnswer = requireArguments().getStringArrayList("userAnswer")
+                val answer = requireArguments().getStringArrayList("answer")
 
                 if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
-                    Log.d("test", "정답")
-                    Log.d("test", commentary.toString())
-                    // resultSubmit(quizId!!, true)
+                    resultSubmit(quizId, true)
                 } else {
-                    Log.d("test", "오답")
-                    Log.d("test", commentary.toString())
-                    // resultSubmit(quizId!!, false)
+                    resultSubmit(quizId, false)
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
                 if (userAnswer == answer) {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    resultSubmit(quizId, true)
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
@@ -123,22 +110,26 @@ class GradingFragment : Fragment() {
 
                 if (flag) {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
+                    resultSubmit(quizId, true)
                 } else {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
+                    resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = "답"
 
-                when (answer.length) {
-                    1 -> binding.tvAnswer.text = "1: ${answer[0]}"
-                    2 -> binding.tvAnswer.text = "1: ${answer[0]} 2: ${answer[1]}"
-                    3 -> binding.tvAnswer.text = "1: ${answer[0]} 2: ${answer[1]} 3: ${answer[2]}"
+                var answers = ""
+
+                for(i: Int in answer.indices) {
+                    answers += " ${i}번 정답: ${answer[i]}"
                 }
+
+                binding.tvAnswer.text = answers
             }
             else -> {
-                Log.d("failure", "not found quiz type: ${quizType.toString()}")
+                Log.e("failure", "not found quiz type: ${requireArguments().getInt("quizType")}")
             }
         }
-        binding.tvCommentary.text = commentary
+        binding.tvCommentary.text = requireArguments().getString("commentary")
     }
 
 }

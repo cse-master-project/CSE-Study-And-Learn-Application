@@ -48,6 +48,7 @@ class SettingViewModel : ViewModel() {
                 val isSuccess = connectorRepository.logoutUser(token)
                 if (isSuccess) {
                     // 로그아웃 성공 처리
+                    AccountAssistant.clearAllPreferences(context)
                     _logoutResult.value = true
                 } else {
                     // 로그아웃 실패 처리
@@ -68,6 +69,7 @@ class SettingViewModel : ViewModel() {
                 if (isSuccess) {
                     // 회원탈퇴 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
+                    AccountAssistant.clearAllPreferences(context)
                     _deactivateResult.value = true
                 } else {
                     // 회원탈퇴 실패 처리
@@ -85,13 +87,7 @@ class SettingViewModel : ViewModel() {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
                 val isSuccess = connectorRepository.setUserNickname(token, nickname)
-                if (isSuccess) {
-                    // 회원정보 수정 성공 처리
-                    _updateUserInfoResult.value = true
-                } else {
-                    // 회원정보 수정 실패 처리
-                    _updateUserInfoResult.value = false
-                }
+                _updateUserInfoResult.value = isSuccess
             } catch (e: Exception) {
                 // 예외 처리
                 _updateUserInfoResult.value = false
@@ -108,6 +104,7 @@ class SettingViewModel : ViewModel() {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
                 val userInfo = connectorRepository.getUserInfo(token)
+                Log.d("test", userInfo.nickname)
                 _userInfo.value = userInfo
 
             } catch (e: Exception) {

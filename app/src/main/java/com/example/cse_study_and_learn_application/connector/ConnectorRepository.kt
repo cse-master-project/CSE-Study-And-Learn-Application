@@ -12,6 +12,7 @@ import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
+import com.example.cse_study_and_learn_application.model.isSignedRequest
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -212,6 +213,7 @@ class ConnectorRepository {
     suspend fun deactivateUser(token: String): Boolean {
         val response = RetrofitInstance.userAccountQueryApi.deactivateUser(token)
         if (response.isSuccessful) {
+            Log.d("test", "deactivateUser success")
             return true
         } else {
             val errorBody = response.errorBody()?.string()
@@ -257,6 +259,17 @@ class ConnectorRepository {
         } else {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to get quiz subjects: ${response.message()}\n$errorBody")
+        }
+    }
+
+    suspend fun isSignedUser(token: String): Boolean {
+        val request = isSignedRequest(token)
+        val response = RetrofitInstance.userAccountQueryApi.isSigned(request)
+        if (response.isSuccessful) {
+            return response.body()?.registered ?: false
+        } else {
+            val errorBody = response.errorBody()?.string()
+            throw Exception("Failed to is Signed user: ${response.message()}\n$errorBody")
         }
     }
 
