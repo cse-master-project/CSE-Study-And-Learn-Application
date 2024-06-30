@@ -30,6 +30,8 @@ class QuizActivity() : AppCompatActivity() {
     private lateinit var subjects: String
     private lateinit var detailSubject: String
 
+    private var quizResponse: RandomQuiz? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +44,10 @@ class QuizActivity() : AppCompatActivity() {
 
         binding.ibBackPres.setOnClickListener {
             onBackPressed()
+        }
+
+        binding.ibReport.setOnClickListener {
+            showReportDialog()
         }
 
         binding.ibGrading.setOnClickListener {
@@ -72,7 +78,7 @@ class QuizActivity() : AppCompatActivity() {
                 detailSubject
                 ) ?: throw NullPointerException()
 
-//            Log.d("response", response.toString())
+
                 Log.i("Server Response", "Get Random Quiz: $response")
                 showQuiz(response)
             } catch (e: Exception) {
