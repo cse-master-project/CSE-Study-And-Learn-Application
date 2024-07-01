@@ -1,6 +1,7 @@
 package com.example.cse_study_and_learn_application.ui.setting
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.login.SignInActivity
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 /**
@@ -58,6 +60,9 @@ class SettingFragment : Fragment() {
 
         settingViewModel.logoutResult.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {
+                val intent = Intent(requireContext(), SignInActivity::class.java)
+                startActivity(intent)
+
                 requireActivity().finish()
             } else {
                 Toast.makeText(requireContext(), "로그아웃에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -67,6 +72,9 @@ class SettingFragment : Fragment() {
         settingViewModel.deactivateResult.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {
                 // 회원탈퇴 성공 처리
+                val intent = Intent(requireContext(), SignInActivity::class.java)
+                startActivity(intent)
+
                 requireActivity().finish()
             } else {
                 // 회원탈퇴 실패 처리
