@@ -102,7 +102,7 @@ interface UserAccountApi {
     @POST("/api/user/auth/google/sign-up")
     suspend fun getRegisterUserAccount(
         @Body requestBody: UserRegistrationRequest
-    ): Response<Unit>
+    ): Response<ServerLoginResponse>
 
     @POST("/api/user/auth/google/login")
     suspend fun getUserLogin(

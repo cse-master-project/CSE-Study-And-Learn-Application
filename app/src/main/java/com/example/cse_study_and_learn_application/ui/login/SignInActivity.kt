@@ -87,18 +87,27 @@ class SignInActivity : AppCompatActivity() {
                                         setView(dialogLayout)
                                         setPositiveButton("확인") { _, _ ->
                                             lifecycleScope.launch {
-                                                val registrationResponse = connectorRepository.getUserRegistration(accessToken, editText.text.toString())
-                                                if (registrationResponse) {
+                                                try {
+                                                    val registrationResponse = connectorRepository.getUserRegistration(
+                                                            token = accessToken,
+                                                            nickname = editText.text.toString()
+                                                        )
+                                                    AccountAssistant.setServerAccessToken(this@SignInActivity, registrationResponse)
                                                     Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
                                                     lifecycleScope.launch {
-                                                        val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
+                                                        val userInfo = connectorRepository.getUserInfo(
+                                                            token = AccountAssistant.getServerAccessToken(this@SignInActivity)
+                                                            )   // 유저 정보 불러오기
                                                         AccountAssistant.nickname = userInfo.nickname
-                                                        quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) {}
-                                                        recreate()
+                                                        quizViewModel.getOrInsertStats(
+                                                            nickname = userInfo.nickname,
+                                                            correctAnswers = 0,
+                                                            wrongAnswers = 0
+                                                        ) {}
                                                         moveMainActivity()
                                                     }
-                                                } else {
-                                                    throw Exception("registrationResponse failure")
+                                                } catch (e: Exception) {
+                                                    Log.e("SignInActivity", "Sign in failure", e)
                                                 }
                                             }
                                         }

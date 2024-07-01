@@ -35,11 +35,17 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getUserRegistration(token: String, nickname: String): Boolean {
+    suspend fun getUserRegistration(token: String, nickname: String): String {
         val requestBody = UserRegistrationRequest(token, nickname)
         val response = RetrofitInstance.userAccountQueryApi.getRegisterUserAccount(requestBody)
         if (response.isSuccessful) {
-            return true
+            val serverResponse = response.body()
+            if (serverResponse != null) {
+                return serverResponse.accessToken
+            } else {
+                throw NullPointerException("getUserRegistration")
+            }
+
         } else {
             val errorBody = response.errorBody()?.string()
             throw Exception("Failed to register user: ${response.message()}\n$errorBody")
