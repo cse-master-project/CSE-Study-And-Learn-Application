@@ -133,12 +133,12 @@ class QuizActivity() : AppCompatActivity() {
                 .setView(dialogView)
                 .setPositiveButton("신고") { dialog, which ->
                     lifecycleScope.launch {
-                        /*val report = ConnectorRepository().reportQuiz(
+                        val report = ConnectorRepository().reportQuiz(
                             token = AccountAssistant.getServerAccessToken(applicationContext),
                             quizId = response.quizId,
                             content = dropdownText.text.toString()
-                            )*/
-                        if (true) {
+                        )
+                        if (report) {
                             Toast.makeText(applicationContext, "문제를 신고했습니다.", Toast.LENGTH_SHORT).show()
                         }
                     }
