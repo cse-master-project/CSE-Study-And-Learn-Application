@@ -2,6 +2,7 @@ package com.example.cse_study_and_learn_application.connector
 
 import androidx.annotation.Keep
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
+import com.example.cse_study_and_learn_application.model.DefaultQuiz
 import com.example.cse_study_and_learn_application.model.NicknameRequest
 import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
@@ -82,7 +83,10 @@ interface QuizQueryApi {
     suspend fun getRandomQuiz(
         @Header("Authorization") token: String,
         @Query("subject") subject: String,
-        @Query("detailSubject") detailSubject: String
+        @Query("detailSubject") detailSubject: String,
+        @Query("hasUserQuiz") hasUserQuiz: Boolean,
+        @Query("hasDefaultQuiz") hasDefaultQuiz: Boolean,
+        @Query("hasSolvedQuiz") hasSolvedQuiz: Boolean
     ): Response<RandomQuiz>
 
     @POST("/api/quiz/report")

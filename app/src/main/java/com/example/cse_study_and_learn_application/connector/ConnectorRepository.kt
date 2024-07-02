@@ -166,11 +166,15 @@ class ConnectorRepository {
         return RetrofitInstance.quizQueryApi.getQuizImage(token, quizId)
     }
 
-    suspend fun getRandomQuiz(token: String, subject: String, detailSubject: String): RandomQuiz {
+    suspend fun getRandomQuiz(token: String, subject: String, detailSubject: String, hasUserQuiz: Boolean = false, hasDefaultQuiz: Boolean = true, hasSolvedQuiz: Boolean = false): RandomQuiz {
         val response = RetrofitInstance.quizQueryApi.getRandomQuiz(
             token = token,
             subject = subject,
-            detailSubject = detailSubject)
+            detailSubject = detailSubject,
+            hasUserQuiz = hasUserQuiz,
+            hasDefaultQuiz = hasDefaultQuiz,
+            hasSolvedQuiz = hasSolvedQuiz
+        )
         Log.d("test", response.message())
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Empty response body")

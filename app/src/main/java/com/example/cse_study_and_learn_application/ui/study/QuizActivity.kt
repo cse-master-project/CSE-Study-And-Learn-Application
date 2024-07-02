@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
@@ -13,15 +12,13 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
 import com.example.cse_study_and_learn_application.model.RandomQuiz
-import com.example.cse_study_and_learn_application.model.TrueFalseQuizJsonContent
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.utils.QuizType
-import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
-import javax.security.auth.Subject
+import kotlin.properties.Delegates
 
 /**
  * Quiz activity
@@ -35,6 +32,9 @@ class QuizActivity() : AppCompatActivity() {
 
     private lateinit var subjects: String
     private lateinit var detailSubject: String
+    private var hasUserQuiz by Delegates.notNull<Boolean>()
+    private var hasDefaultQuiz by Delegates.notNull<Boolean>()
+    private var hasSolvedQuiz by Delegates.notNull<Boolean>()
 
     private var quizResponse: RandomQuiz? = null
 
@@ -44,45 +44,61 @@ class QuizActivity() : AppCompatActivity() {
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        subjects = intent.getStringExtra("subject").toString()
-        detailSubject = intent.getStringExtra("detailSubject").toString()
-        Log.d("detailSubject", detailSubject)
+        intent.let {
+            subjects = it.getStringExtra("subject").toString()
+            detailSubject = it.getStringExtra("detailSubject").toString()
+            hasUserQuiz = it.getBooleanExtra("hasUserQuiz", false)
+            hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
+            hasSolvedQuiz = it.getBooleanExtra("hasSolvedQuiz", false)
 
-        binding.ibBackPres.setOnClickListener {
-            onBackPressed()
-        }
+            Log.d("detailSubject", detailSubject)
 
-        binding.ibReport.setOnClickListener {
-            showReportDialog(quizResponse)
-        }
-
-        binding.ibGrading.setOnClickListener {
-            when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
-                is GradingFragment -> {
-                    requestQuiz(subjects, detailSubject)
-                }
-                is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
-
-                is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
-
-                is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
-
-                is FillBlankQuizFragment -> currentFragment.onAnswerSubmit()
+            binding.ibBackPres.setOnClickListener {
+                onBackPressed()
             }
 
-        }
-        requestQuiz(subjects, detailSubject)
+            binding.ibReport.setOnClickListener {
+                showReportDialog(quizResponse)
+            }
 
+            binding.ibGrading.setOnClickListener {
+                when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
+                    is GradingFragment -> {
+                        requestQuiz(subjects, detailSubject)
+                    }
+                    is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
+
+                    is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
+
+                    is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
+
+                    is FillBlankQuizFragment -> currentFragment.onAnswerSubmit()
+                }
+
+            }
+            requestQuiz(subjects, detailSubject)
+        }
     }
 
     private fun requestQuiz(subjects: String, detailSubject: String){
         lifecycleScope.launch {
             try {
-                val response = QuizUtils.loadQuizData(
-                AccountAssistant.getServerAccessToken(applicationContext),
-                subjects,
-                detailSubject
-                ) ?: throw NullPointerException()
+                Log.d("test",
+                    "token = ${AccountAssistant.getServerAccessToken(applicationContext)}\n" +
+                        "subject = ${subjects}\n" +
+                        "detailSubject = ${detailSubject}\n " +
+                        "hasUserQuiz = ${hasUserQuiz}\n " +
+                        "hasDefaultQuiz = ${hasDefaultQuiz}\n " +
+                        "hasSolvedQuiz = ${hasSolvedQuiz}\n "
+                )
+                val response = ConnectorRepository().getRandomQuiz(
+                    token = AccountAssistant.getServerAccessToken(applicationContext),
+                    subject = subjects,
+                    detailSubject = detailSubject,
+                    hasUserQuiz = hasUserQuiz,
+                    hasDefaultQuiz = hasDefaultQuiz,
+                    hasSolvedQuiz = hasSolvedQuiz
+                )
                 Log.i("Server Response", "Get Random Quiz: $response")
                 quizResponse = response
                 showQuiz(response)
@@ -147,7 +163,5 @@ class QuizActivity() : AppCompatActivity() {
                 .setNegativeButton("취소", null)
                 .show()
         }
-
-
     }
 }

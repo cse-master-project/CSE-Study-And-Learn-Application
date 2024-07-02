@@ -17,6 +17,7 @@ import com.example.cse_study_and_learn_application.databinding.FragmentSubjectCo
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
 import com.example.cse_study_and_learn_application.utils.Subcategory
+import kotlin.properties.Delegates
 
 
 /**
@@ -39,6 +40,10 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
     private lateinit var adapter: SubjectContentItemAdapter
     private var quizSettingDialogFlag = false
 
+    private var hasUserQuiz: Boolean = true
+    private var hasDefaultQuiz: Boolean = true
+    private var hasSolvedQuiz: Boolean = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -52,6 +57,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.rbAllSel.setOnClickListener(this)
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
+        binding.cbAlready.setOnClickListener(this)
 
         activity?.apply {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
@@ -218,20 +224,29 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 homeViewModel.setAllRandomCheck(result)
             }
 
+            R.id.cb_already -> {
+                hasSolvedQuiz = binding.cbAlready.isChecked
+            }
+
             R.id.rb_all_sel-> {
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
                 Log.d("test", "rb_all_sel click")
-
+                hasUserQuiz = true
+                hasDefaultQuiz = true
             }
 
             R.id.rb_custom_sel -> {
                 Log.d("test", "rb_custom_sel click")
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.USER)
+                hasUserQuiz = true
+                hasDefaultQuiz = false
             }
 
             R.id.rb_default_sel -> {
                 Log.d("test", "rb_default_sel click")
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.DEFAULT)
+                hasUserQuiz = false
+                hasDefaultQuiz = true
             }
         }
     }
@@ -258,6 +273,9 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             val i = Intent(requireContext(), QuizActivity::class.java)
             i.putExtra("subject", subject)
             i.putExtra("detailSubject", temporaryDetailSubject.joinToString(","))
+            i.putExtra("hasUserQuiz", hasUserQuiz)
+            i.putExtra("hasDefaultQuiz", hasDefaultQuiz)
+            i.putExtra("hasSolvedQuiz", hasSolvedQuiz)
             Log.d("test", temporaryDetailSubject.toString())
 
             startActivity(i)

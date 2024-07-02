@@ -14,7 +14,6 @@ import com.example.cse_study_and_learn_application.databinding.FragmentMatingQui
 import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.utils.QuizType
-import com.example.cse_study_and_learn_application.utils.QuizUtils
 import com.google.gson.Gson
 
 /**
