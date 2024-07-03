@@ -1,17 +1,13 @@
 package com.example.cse_study_and_learn_application.ui.home
 
-import android.content.Context
+import android.content.Intent
 import android.content.res.XmlResourceParser
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ListPopupWindow
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -24,11 +20,11 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.ui.other.DialogQuizSelect
-import com.example.cse_study_and_learn_application.utils.displayHeight
+import com.example.cse_study_and_learn_application.ui.study.QuizActivity
+import com.example.cse_study_and_learn_application.utils.Lg
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
-import java.lang.reflect.Field
 
 
 /**
@@ -180,6 +176,16 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 } else {
                     // selectedSubjects <- [컴퓨터 개론, computer ... ]
                     // 문제 푸는 화면으로 넘어가는 코드 작성
+                    val i = Intent(requireContext(), QuizActivity::class.java)
+                    i.putExtra("isRandom", true)
+                    i.putStringArrayListExtra("subjectList", ArrayList(selectedSubjects))
+                    i.putExtra("hasUserQuiz", dialog.swUserQuiz.isChecked)
+                    i.putExtra("hasDefaultQuiz", dialog.swDefaultQuiz.isChecked)
+                    i.putExtra("hasSolvedQuiz", dialog.swSolvedQuiz.isChecked)
+                    // Lg.d("test",HomeFragment::class.java.name, dialog.swDefaultQuiz.isChecked.toString())
+                    // Lg.d("test", HomeFragment::class.java.name, "subjects: ${ArrayList(selectedSubjects)}")
+
+                    startActivity(i)
                 }
             }
 
@@ -192,7 +198,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                     val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.tv_spinner_quiz_select, subjectStringArray)
                     spinner.adapter = spinnerAdapter
                 } else {
-                    val subjectStringArray = subjects.map { it.subject }.drop(1).toTypedArray()
+                    val subjectStringArray = subjects.map { it.subject }.toTypedArray()
                     val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.tv_spinner_quiz_select, subjectStringArray)
                     spinner.adapter = spinnerAdapter
                 }

@@ -11,6 +11,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
 import com.example.cse_study_and_learn_application.R
@@ -25,6 +26,9 @@ class DialogQuizSelect(private val context: Context) : Dialog(context) {
     private lateinit var spinner: Spinner
     private lateinit var flexboxLayout: FlexboxLayout
     private lateinit var homeViewModel: HomeViewModel
+    lateinit var swDefaultQuiz: SwitchCompat
+    lateinit var swUserQuiz: SwitchCompat
+    lateinit var swSolvedQuiz: SwitchCompat
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +45,9 @@ class DialogQuizSelect(private val context: Context) : Dialog(context) {
         val add = dialogView.findViewById<TextView>(R.id.tv_add)
         val cardView = dialogView.findViewById<CardView>(R.id.cv_root)
         spinner = dialogView.findViewById(R.id.spinner_quiz)
+        swDefaultQuiz = dialogView.findViewById(R.id.sw_default_quiz)
+        swUserQuiz = dialogView.findViewById(R.id.sw_user_quiz)
+        swSolvedQuiz = dialogView.findViewById(R.id.sw_solved_quiz)
         flexboxLayout = dialogView.findViewById(R.id.flexbox_selected_quiz)
 
         val cardMarginInPixels = (cardMarginInDp * context.resources.displayMetrics.density).toInt()

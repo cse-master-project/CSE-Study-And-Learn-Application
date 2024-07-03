@@ -99,6 +99,15 @@ interface QuizQueryApi {
     suspend fun getQuizSubjects(
         @Header("Authorization") token: String
     ): Response<List<QuizSubject>>
+
+    @GET("api/quiz/random/only-subject")
+    suspend fun getRandomQuiz(
+        @Header("Authorization") token: String,
+        @Query("subject") subjects: List<String>,
+        @Query("hasUserQuiz") hasUserQuiz: Boolean,
+        @Query("hasDefaultQuiz") hasDefaultQuiz: Boolean,
+        @Query("hasSolvedQuiz") hasSolvedQuiz: Boolean
+    ): Response<RandomQuiz>
 }
 
 

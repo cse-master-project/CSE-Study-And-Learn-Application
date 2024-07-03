@@ -251,15 +251,10 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
     }
 
-    /**
-     * 지금 이 코드에서 에러가 발생한다고 함
-     * detailSbuejct 의 내용들이 계속 바뀌는 문제
-     * 내 판단 지금 리사이클러뷰에 업데이트되는 뷰가 달라지면서 화면상에 안보이는 뷰가 선택이 안되는 상태
-     */
     private fun checkDetailQuizSend() {
         val subject = homeViewModel.subject.title
         val detailSubject = homeViewModel.getSelectedDetailSubjects()
-        Log.d("test", "detailSubject: ${detailSubject.toString()}")
+        // Log.d("test", "detailSubject: ${detailSubject.toString()}")
 
         if (detailSubject.isNotEmpty()) {
             val temporaryDetailSubject = arrayListOf<String>()
@@ -268,15 +263,16 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 temporaryDetailSubject.add(it.title)
             }
 
-            Log.d("detail", temporaryDetailSubject.toString())
+            // Log.d("detail", temporaryDetailSubject.toString())
 
             val i = Intent(requireContext(), QuizActivity::class.java)
+            i.putExtra("isRandom", false)
             i.putExtra("subject", subject)
             i.putExtra("detailSubject", temporaryDetailSubject.joinToString(","))
             i.putExtra("hasUserQuiz", hasUserQuiz)
             i.putExtra("hasDefaultQuiz", hasDefaultQuiz)
             i.putExtra("hasSolvedQuiz", hasSolvedQuiz)
-            Log.d("test", temporaryDetailSubject.toString())
+            // Log.d("test", "subject: $subject")
 
             startActivity(i)
         } else {

@@ -8,11 +8,13 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -30,12 +32,13 @@ import kotlin.properties.Delegates
 class QuizActivity() : AppCompatActivity() {
     private lateinit var binding: ActivityQuizBinding
 
-    private lateinit var subjects: String
-    private lateinit var detailSubject: String
+    private var subjects: String? = null
+    private var subjectList: ArrayList<String>? = null
+    private var detailSubject: String? = null
     private var hasUserQuiz by Delegates.notNull<Boolean>()
     private var hasDefaultQuiz by Delegates.notNull<Boolean>()
     private var hasSolvedQuiz by Delegates.notNull<Boolean>()
-
+    private var isRandom = false
     private var quizResponse: RandomQuiz? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +48,19 @@ class QuizActivity() : AppCompatActivity() {
         setContentView(binding.root)
 
         intent.let {
-            subjects = it.getStringExtra("subject").toString()
-            detailSubject = it.getStringExtra("detailSubject").toString()
-            hasUserQuiz = it.getBooleanExtra("hasUserQuiz", false)
-            hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
-            hasSolvedQuiz = it.getBooleanExtra("hasSolvedQuiz", false)
+            isRandom = it.getBooleanExtra("isRandom", false)
+            if (isRandom) {
+                subjectList = it.getStringArrayListExtra("subjectList")
 
-            Log.d("detailSubject", detailSubject)
+            } else {
+                subjects = it.getStringExtra("subject").toString()
+                detailSubject = it.getStringExtra("detailSubject").toString()
+            }
+            hasUserQuiz = it.getBooleanExtra("hasUserQuiz", true)
+            hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
+            hasSolvedQuiz = it.getBooleanExtra("hasSolvedQuiz", true)
+
+            // Log.d("detailSubject", detailSubject)
 
             binding.ibBackPres.setOnClickListener {
                 onBackPressed()
@@ -64,7 +73,8 @@ class QuizActivity() : AppCompatActivity() {
             binding.ibGrading.setOnClickListener {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                     is GradingFragment -> {
-                        requestQuiz(subjects, detailSubject)
+                        getQuiz()
+
                     }
                     is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
 
@@ -76,7 +86,39 @@ class QuizActivity() : AppCompatActivity() {
                 }
 
             }
-            requestQuiz(subjects, detailSubject)
+            getQuiz()
+        }
+    }
+
+    private fun getQuiz() {
+        // Lg.d("test", this@QuizActivity.toString(), "subjectList = $subjectList")
+        // Lg.d("test", this@QuizActivity.toString(), "hasUserQuiz = $hasUserQuiz")
+        // Lg.d("test", this@QuizActivity.toString(), "hasDefaultQuiz = $hasDefaultQuiz")
+        // Lg.d("test", this@QuizActivity.toString(), "hasSolvedQuiz = $hasSolvedQuiz")
+
+        if (isRandom) {
+            requestRandomQuiz(subjectList!!)
+        } else {
+            requestQuiz(subjects!!, detailSubject!!)
+        }
+    }
+
+    private fun requestRandomQuiz(
+        subjects: ArrayList<String>,
+    ) {
+        lifecycleScope.launch {
+            try {
+                val token = AccountAssistant.getServerAccessToken(this@QuizActivity)
+                val response = ConnectorRepository().getRandomQuiz(token, subjects, hasDefaultQuiz, hasUserQuiz, hasSolvedQuiz)
+                quizResponse = response
+                showQuiz(response)
+            } catch (e: Exception) {
+                // Handle the error
+                e.printStackTrace()
+                Lg.e("test", QuizActivity::class.java.name, e.toString())
+                Toast.makeText(this@QuizActivity, "더 이상 풀 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
     }
 

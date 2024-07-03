@@ -184,6 +184,32 @@ class ConnectorRepository {
         }
     }
 
+    suspend fun getRandomQuiz(
+        token: String,
+        subject: List<String>,
+        hasUserQuiz: Boolean = false,
+        hasDefaultQuiz: Boolean = true,
+        hasSolvedQuiz: Boolean = false
+    ): RandomQuiz {
+        val response = RetrofitInstance.quizQueryApi.getRandomQuiz(
+            token = token,
+            subjects = subject,
+            hasUserQuiz = hasUserQuiz,
+            hasDefaultQuiz = hasDefaultQuiz,
+            hasSolvedQuiz = hasSolvedQuiz
+        )
+        Log.d("API Response", response.message())
+        if (response.isSuccessful) {
+            return response.body() ?: throw Exception("Empty response body")
+        } else {
+            val errorBody = response.errorBody()?.string()
+            throw Exception("Failed to get random quiz: ${response.message()}\n$errorBody")
+        }
+    }
+
+
+
+
     suspend fun setUserNickname(token: String, nickname: String): Boolean {
         val nicknameRequest = NicknameRequest(nickname)
         val response = RetrofitInstance.userAccountQueryApi.setUserNickname(token, nicknameRequest)

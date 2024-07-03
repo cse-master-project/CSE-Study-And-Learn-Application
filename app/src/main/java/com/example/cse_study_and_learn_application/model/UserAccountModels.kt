@@ -39,11 +39,18 @@ data class TokenResponse(
 )
 
 data class UserQuizStatistics(
+    @SerializedName("totalSolved")
+    val totalSolved: Int,
+    @SerializedName("totalCorrect")
+    val totalCorrect: Int,
+    @SerializedName("totalIncorrect")
+    val totalIncorrect: Int,
     @SerializedName("totalCorrectRate")
     val totalCorrectRate: String,
     @SerializedName("correctRateBySubject")
     val correctRateBySubject: Map<String, String>
 )
+
 
 data class NicknameRequest(
     val nickname: String

@@ -172,6 +172,7 @@ data class QuizResponse(
     val empty: Boolean
 )
 
+
 data class RandomQuiz(
     @SerializedName("quizId")
     val quizId: Int,

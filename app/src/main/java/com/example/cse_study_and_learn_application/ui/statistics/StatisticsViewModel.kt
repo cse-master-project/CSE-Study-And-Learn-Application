@@ -32,6 +32,9 @@ class StatisticsViewModel : ViewModel() {
     private var _ratioList = mutableListOf(CategorySuccessRatio("전체", 85.0),
         CategorySuccessRatio("알고리즘", 85.0) ,CategorySuccessRatio("자료구조", 85.0) ,CategorySuccessRatio("이산수학", 85.0) )
 
+    private var totalSolved = MutableLiveData(0)
+    private var totalCorrect = MutableLiveData(0)
+    private var totalIncorrect = MutableLiveData(0)
 
     val ratioList get() = _ratioList
     private val connectorRepository = ConnectorRepository()
@@ -55,6 +58,8 @@ class StatisticsViewModel : ViewModel() {
                         _ratioList.add(ratioBySubject)
                     }
                 }
+
+
 
             } catch (e: Exception) {
                 // 예외 처리

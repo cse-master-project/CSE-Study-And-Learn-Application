@@ -57,38 +57,6 @@ class GradingFragment : Fragment() {
         }
     }
 
-    private fun failUpdate() {
-        Log.d("test", "문제 틀렸음")
-        val nickname = AccountAssistant.nickname
-        quizViewModel.getStatsByNickname(nickname) {
-            it?.let {
-                Log.d("test", "변경전: $it")
-                quizViewModel.insertOrUpdate(nickname, it.correctAnswers, it.wrongAnswers + 1)
-                quizViewModel.getStatsByNickname(nickname) { qs ->
-                    qs?.let {
-                        Log.d("test", "변경후: $qs")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun successUpdate() {
-        Log.d("test", "문제 맞췄음")
-        
-        val nickname = AccountAssistant.nickname
-        quizViewModel.getStatsByNickname(nickname) {
-            it?.let {
-                Log.d("test", "변경전: $it")
-                quizViewModel.insertOrUpdate(nickname, it.correctAnswers + 1, it.wrongAnswers)
-                quizViewModel.getStatsByNickname(nickname) { qs ->
-                    qs?.let {
-                        Log.d("test", "변경후: $qs")
-                    }
-                }
-            }
-        }
-    }
 
     private fun grading(quizId: Int, userAnswer: String, answer: String) {
         when (getQuizTypeFromInt(requireArguments().getInt("quizType"))) {
@@ -120,10 +88,8 @@ class GradingFragment : Fragment() {
 
                 if (userAnswer != null && answer != null && userAnswer.toSet() == answer.toSet()) {
                     resultSubmit(quizId, true)
-                    successUpdate()
                 } else {
                     resultSubmit(quizId, false)
-                    failUpdate()
                 }
             }
             QuizType.TRUE_FALSE_QUIZ -> {
@@ -131,12 +97,10 @@ class GradingFragment : Fragment() {
                     // 정답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
                     resultSubmit(quizId, true)
-                    successUpdate()
                 } else {
                     // 오답
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
                     resultSubmit(quizId, false)
-                    failUpdate()
                 }
                 binding.btnAnswer.text = "답"
                 binding.tvAnswer.text = answer
@@ -151,11 +115,9 @@ class GradingFragment : Fragment() {
 
                 if (flag) {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_hei)
-                    successUpdate()
                     resultSubmit(quizId, true)
                 } else {
                     binding.ivGnuChar.setImageResource(R.drawable.gnu_no)
-                    failUpdate()
                     resultSubmit(quizId, false)
                 }
                 binding.btnAnswer.text = "답"

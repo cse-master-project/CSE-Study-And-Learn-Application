@@ -58,6 +58,9 @@ class StatisticsFragment : Fragment() {
                 // UI 업데이트 등의 동작 수행
                 adapter.itemUpdate(statisticsViewModel.ratioList)
                 // Log.d("test", "성공?")
+                binding.tvTotalSuccessQuizCount.text = statistics.totalCorrect.toString() + " 문제"
+                binding.tvTotalFailQuizCount.text = statistics.totalIncorrect.toString() + " 문제"
+                binding.tvTotalQuizCount.text = statistics.totalSolved.toString() + " 문제"
 
             } else {
                 // 통계 데이터 가져오기 실패 처리
@@ -84,13 +87,6 @@ class StatisticsFragment : Fragment() {
 
         statisticsViewModel.getUserQuizStatistics(requireContext()) // 서버로부터 유저의 과목별 정답률 불러옴
 
-        statisticsViewModel.getQuizCount(requireContext(), quizViewModel) { quizStats ->
-            quizStats.let {
-                binding.tvTotalSuccessQuizCount.text = it.correctAnswers.toString() + " 문제"
-                binding.tvTotalFailQuizCount.text = it.wrongAnswers.toString() + " 문제"
-                binding.tvTotalQuizCount.text = (it.correctAnswers + it.wrongAnswers).toString() + " 문제"
-            }
-        }  // 유저의 결과별 문제 수를 불러옴
 
 
     }

@@ -24,6 +24,7 @@ import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
 import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
 import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
+import com.example.cse_study_and_learn_application.utils.Lg
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -94,18 +95,7 @@ class SignInActivity : AppCompatActivity() {
                                                         )
                                                     AccountAssistant.setServerAccessToken(this@SignInActivity, registrationResponse)
                                                     Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                                    lifecycleScope.launch {
-                                                        val userInfo = connectorRepository.getUserInfo(
-                                                            token = AccountAssistant.getServerAccessToken(this@SignInActivity)
-                                                            )   // 유저 정보 불러오기
-                                                        AccountAssistant.nickname = userInfo.nickname
-                                                        quizViewModel.getOrInsertStats(
-                                                            nickname = userInfo.nickname,
-                                                            correctAnswers = 0,
-                                                            wrongAnswers = 0
-                                                        ) {}
-                                                        moveMainActivity()
-                                                    }
+                                                    moveMainActivity()
                                                 } catch (e: Exception) {
                                                     Log.e("SignInActivity", "Sign in failure", e)
                                                 }
@@ -142,6 +132,7 @@ class SignInActivity : AppCompatActivity() {
         setContentView(_binding.root)
 
         val accessToken = AccountAssistant.getAccessToken(this@SignInActivity)  // 구글 액세스 토큰
+        Lg.i("test", SignInActivity::class.java.name, "accessToken: $accessToken")
 
         if (accessToken.isNotBlank()) {
             val connectorRepository = ConnectorRepository()
@@ -151,18 +142,8 @@ class SignInActivity : AppCompatActivity() {
                     val serverAccessToken = connectorRepository.getUserLogin(accessToken)
                     Log.i("Server Response", "Get User Login: $serverAccessToken")
                     AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-
-                    lifecycleScope.launch {
-                        try {
-                            val userInfo = connectorRepository.getUserInfo(AccountAssistant.getServerAccessToken(this@SignInActivity))   // 유저 정보 불러오기
-                            // Log.d("test", "userInfo: $userInfo")
-                            AccountAssistant.nickname = userInfo.nickname
-                            quizViewModel.getOrInsertStats(userInfo.nickname, 0, 0) { }
-                            moveMainActivity()
-                        } catch (e: Exception) {
-                            Log.e("test", "getUserInfo: $e")
-                        }
-                    }
+                    Lg.i("test", SignInActivity::class.java.name, "serverAccessToken: $serverAccessToken")
+                    moveMainActivity()
 
                 } catch (e: Exception) {
                     Log.e("SignInActivity", "로그인 실패", e)
