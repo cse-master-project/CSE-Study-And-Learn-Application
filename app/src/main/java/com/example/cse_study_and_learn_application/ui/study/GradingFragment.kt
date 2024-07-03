@@ -58,6 +58,7 @@ class GradingFragment : Fragment() {
     }
 
     private fun failUpdate() {
+        Log.d("test", "문제 틀렸음")
         val nickname = AccountAssistant.nickname
         quizViewModel.getStatsByNickname(nickname) {
             it?.let {
@@ -73,6 +74,8 @@ class GradingFragment : Fragment() {
     }
 
     private fun successUpdate() {
+        Log.d("test", "문제 맞췄음")
+        
         val nickname = AccountAssistant.nickname
         quizViewModel.getStatsByNickname(nickname) {
             it?.let {

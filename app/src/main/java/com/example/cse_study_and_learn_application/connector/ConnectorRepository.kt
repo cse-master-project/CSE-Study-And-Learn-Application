@@ -57,7 +57,7 @@ class ConnectorRepository {
         if (response.isSuccessful) {
             val serverLoginResponse = response.body()
             if (serverLoginResponse != null) {
-                Log.d("test", "user login 성공!")
+                // Log.d("test", "user login 성공!")
                 return serverLoginResponse.accessToken
             } else {
                 throw Exception("Empty response body")

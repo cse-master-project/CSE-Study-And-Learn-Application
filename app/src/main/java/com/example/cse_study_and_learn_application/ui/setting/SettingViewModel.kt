@@ -105,7 +105,7 @@ class SettingViewModel : ViewModel() {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
                 val userInfo = connectorRepository.getUserInfo(token)
-                Log.d("test", userInfo.nickname)
+                // Log.d("test", userInfo.nickname)
                 _userInfo.value = userInfo
 
             } catch (e: Exception) {
