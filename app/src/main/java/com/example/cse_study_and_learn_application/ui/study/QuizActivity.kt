@@ -80,6 +80,8 @@ class QuizActivity() : AppCompatActivity() {
 
                     is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
 
+                    is MatingQuizFragment -> currentFragment.onAnswerSubmit()
+
                     is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
 
                     is FillBlankQuizFragment -> currentFragment.onAnswerSubmit()
