@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.study.ShortAnswerQuizFragment">
-
-
+    tools:context=".ui.study.ShortAnswerQuizFragment"
+    android:focusableInTouchMode="true">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -64,6 +63,9 @@
             android:id="@+id/et_answer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:hint="정답..." />
     </com.google.android.material.textfield.TextInputLayout>
 

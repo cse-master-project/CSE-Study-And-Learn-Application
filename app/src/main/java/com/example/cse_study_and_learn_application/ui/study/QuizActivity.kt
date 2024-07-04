@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.R
@@ -18,6 +20,7 @@ import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -51,16 +54,15 @@ class QuizActivity() : AppCompatActivity() {
             isRandom = it.getBooleanExtra("isRandom", false)
             if (isRandom) {
                 subjectList = it.getStringArrayListExtra("subjectList")
-
+                binding.tvTitle.text = "많은(?) 과목"
             } else {
                 subjects = it.getStringExtra("subject").toString()
                 detailSubject = it.getStringExtra("detailSubject").toString()
+                binding.tvTitle.text = subjects
             }
             hasUserQuiz = it.getBooleanExtra("hasUserQuiz", true)
             hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
             hasSolvedQuiz = it.getBooleanExtra("hasSolvedQuiz", true)
-
-            // Log.d("detailSubject", detailSubject)
 
             binding.ibBackPres.setOnClickListener {
                 onBackPressed()
@@ -74,16 +76,11 @@ class QuizActivity() : AppCompatActivity() {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                     is GradingFragment -> {
                         getQuiz()
-
                     }
                     is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
-
                     is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
-
                     is MatingQuizFragment -> currentFragment.onAnswerSubmit()
-
                     is TrueFalseQuizFragment -> currentFragment.onAnswerSubmit()
-
                     is FillBlankQuizFragment -> currentFragment.onAnswerSubmit()
                 }
 
@@ -93,11 +90,6 @@ class QuizActivity() : AppCompatActivity() {
     }
 
     private fun getQuiz() {
-        // Lg.d("test", this@QuizActivity.toString(), "subjectList = $subjectList")
-        // Lg.d("test", this@QuizActivity.toString(), "hasUserQuiz = $hasUserQuiz")
-        // Lg.d("test", this@QuizActivity.toString(), "hasDefaultQuiz = $hasDefaultQuiz")
-        // Lg.d("test", this@QuizActivity.toString(), "hasSolvedQuiz = $hasSolvedQuiz")
-
         if (isRandom) {
             requestRandomQuiz(subjectList!!)
         } else {
@@ -179,6 +171,8 @@ class QuizActivity() : AppCompatActivity() {
             val dialogView = layoutInflater.inflate(R.layout.dialog_quiz_report, null)
             val dropdown = dialogView.findViewById<TextInputLayout>(R.id.dropdown_menu)
             val dropdownText = dropdown.editText as AutoCompleteTextView
+            val otherReasonLayout = dialogView.findViewById<TextInputLayout>(R.id.ll_other_reason)
+            val otherReasonEditText = dialogView.findViewById<TextInputEditText>(R.id.et_other_reason)
 
             // 드롭다운 메뉴에 표시할 항목들
             val items = listOf("문제에 오타가 있습니다.", "정답이 올바르지 않습니다.", "그림이 올바르지 않습니다.", "해설이 올바르지 않습니다.", "기타")
@@ -187,25 +181,62 @@ class QuizActivity() : AppCompatActivity() {
             val adapter = ArrayAdapter(this, R.layout.item_report_list, items)
             dropdownText.setAdapter(adapter)
 
-            // 다이얼로그 생성
-            MaterialAlertDialogBuilder(this)
-                .setTitle(Html.fromHtml("<b>문제 신고<b>", Html.FROM_HTML_MODE_LEGACY) )
-                .setView(dialogView)
-                .setPositiveButton("신고") { dialog, which ->
-                    lifecycleScope.launch {
-                        val report = ConnectorRepository().reportQuiz(
-                            token = AccountAssistant.getServerAccessToken(applicationContext),
-                            quizId = response.quizId,
-                            content = dropdownText.text.toString()
-                        )
-                        if (report) {
-                            Toast.makeText(applicationContext, "문제를 신고했습니다.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
+            dropdownText.setOnItemClickListener { _, _, position, _ ->
+                if (items[position] == "기타") {
+                    otherReasonLayout.visibility = View.VISIBLE
+                } else {
+                    otherReasonLayout.visibility = View.GONE
                 }
+            }
+
+            val reportDialog = MaterialAlertDialogBuilder(this)
+                .setTitle(Html.fromHtml("<b>문제 신고</b>", Html.FROM_HTML_MODE_LEGACY))
+                .setView(dialogView)
+                .setPositiveButton("신고", null)
                 .setNegativeButton("취소", null)
-                .show()
+                .create()
+
+            reportDialog.setOnShowListener { dialog ->
+                val positiveButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+                positiveButton.setOnClickListener {
+                    val selectedReason = dropdownText.text.toString()
+                    if (selectedReason != "") {
+                        val reportContent = if (selectedReason == "기타") {
+                            val otherReason = otherReasonEditText.text.toString()
+                            if (otherReason.isBlank()) {
+                                showAlert("기타 사유를 입력해주세요.")
+                                return@setOnClickListener
+                            }
+                            "기타: $otherReason"
+                        } else {
+                            selectedReason
+                        }
+
+                        lifecycleScope.launch {
+                            val report = ConnectorRepository().reportQuiz(
+                                token = AccountAssistant.getServerAccessToken(applicationContext),
+                                quizId = response.quizId,
+                                content = reportContent
+                            )
+                            if (report) {
+                                Toast.makeText(applicationContext, "문제를 신고했습니다.", Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                            }
+                        }
+                    } else {
+                        showAlert("신고 사유를 선택해주세요.")
+                    }
+                }
+            }
+            reportDialog.show()
         }
+    }
+
+    private fun showAlert(message: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("알림")
+            .setMessage(message)
+            .setPositiveButton("확인", null)
+            .show()
     }
 }
