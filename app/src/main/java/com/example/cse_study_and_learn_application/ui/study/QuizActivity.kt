@@ -1,5 +1,10 @@
 package com.example.cse_study_and_learn_application.ui.study
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.opengl.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
@@ -7,7 +12,9 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -19,6 +26,7 @@ import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
+import com.example.cse_study_and_learn_application.utils.showAlert
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -64,8 +72,34 @@ class QuizActivity() : AppCompatActivity() {
             hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
             hasSolvedQuiz = it.getBooleanExtra("hasSolvedQuiz", true)
 
+            binding.ibBackPres.scaleX = 1.2f
+            binding.ibBackPres.scaleY = 1.2f
+
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showAlert(
+                        this@QuizActivity,
+                        "알림",
+                        "정말로 그만 푸시겠습니까?",
+                        positiveButtonText = "확인",
+                        onPositiveClick = {
+                            finish()
+                        },
+                        negativeButtonText = "취소"
+                    )
+                }
+            })
+
             binding.ibBackPres.setOnClickListener {
-                onBackPressed()
+                showAlert(
+                    this,
+                    "알림",
+                    "정말로 그만 푸시겠습니까?",
+                    onPositiveClick = {
+                        finish()
+                    },
+                    negativeButtonText = "취소"
+                )
             }
 
             binding.ibReport.setOnClickListener {
@@ -204,7 +238,7 @@ class QuizActivity() : AppCompatActivity() {
                         val reportContent = if (selectedReason == "기타") {
                             val otherReason = otherReasonEditText.text.toString()
                             if (otherReason.isBlank()) {
-                                showAlert("기타 사유를 입력해주세요.")
+                                showAlert(this, "알림", "기타 사유를 입력해주세요.")
                                 return@setOnClickListener
                             }
                             "기타: $otherReason"
@@ -224,7 +258,7 @@ class QuizActivity() : AppCompatActivity() {
                             }
                         }
                     } else {
-                        showAlert("신고 사유를 선택해주세요.")
+                        showAlert(this,"알림", "신고 사유를 선택해주세요.")
                     }
                 }
             }
@@ -232,11 +266,5 @@ class QuizActivity() : AppCompatActivity() {
         }
     }
 
-    private fun showAlert(message: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("알림")
-            .setMessage(message)
-            .setPositiveButton("확인", null)
-            .show()
-    }
 }
+
