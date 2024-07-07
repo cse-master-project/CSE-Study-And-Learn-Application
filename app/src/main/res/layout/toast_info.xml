@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/custom_toast.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/outer_layout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inner_layout"
+        android:elevation="10dp"
+        android:layout_marginVertical="20dp"
+        android:layout_marginEnd="15dp"
+        android:paddingVertical="20dp"
+        android:layout_marginStart="-6dp"
+        android:background="@drawable/bg_rounded_toast_yellow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/view_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civ_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_question_mark_24"
+            app:civ_border_overlay="false"
+            app:civ_border_width="5dp"
+            app:civ_circle_background_color="#F7BF4F"
+            app:civ_border_color="#F7BF4F" />
+
+
+        <TextView
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/civ_icon"
+            android:layout_marginStart="25dp"
+            android:id="@+id/tv_toast_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="INFO"
+            android:textColor="#E5A503"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif"
+            android:drawablePadding="4dp"/>
+
+        <TextView
+            app:layout_constraintTop_toBottomOf="@id/tv_toast_title"
+            app:layout_constraintStart_toStartOf="@id/tv_toast_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"
+            android:id="@+id/tv_toast_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="정보!"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_marginStart="15dp"
+        android:translationZ="10dp"
+        android:elevation="1dp"
+        android:id="@+id/view_bar"
+        app:layout_constraintTop_toTopOf="@id/inner_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/inner_layout"
+        android:layout_width="10dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_rounded_bar_yellow" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

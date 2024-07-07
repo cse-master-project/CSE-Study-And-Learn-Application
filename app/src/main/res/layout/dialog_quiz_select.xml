@@ -91,6 +91,26 @@
             android:spinnerMode="dropdown"
             style="@style/CustomSpinnerStyle" />
 
+        <ImageView
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_arrow"
+            app:layout_constraintTop_toTopOf="@id/spinner_quiz"
+            app:layout_constraintBottom_toBottomOf="@id/spinner_quiz"
+            app:layout_constraintEnd_toStartOf="@id/view_spinner" />
+
+
+        <View
+            android:layout_marginEnd="5dp"
+            android:id="@+id/view_spinner"
+            app:layout_constraintTop_toTopOf="@id/spinner_quiz"
+            app:layout_constraintBottom_toBottomOf="@id/spinner_quiz"
+            app:layout_constraintEnd_toStartOf="@id/tv_add"
+            android:background="@color/light_blue_300"
+            android:layout_width="2dp"
+            android:layout_height="0dp" />
+
         <TextView
             android:padding="10dp"
             android:layout_marginEnd="10dp"

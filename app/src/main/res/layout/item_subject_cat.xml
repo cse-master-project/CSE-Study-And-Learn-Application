@@ -39,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="아이콘 자료구조"
+            android:maxLines="1"
             style="@style/SubjectTitleStyle"/>
 
         <TextView
@@ -53,4 +54,3 @@
 
 
 </com.google.android.material.card.MaterialCardView>
-

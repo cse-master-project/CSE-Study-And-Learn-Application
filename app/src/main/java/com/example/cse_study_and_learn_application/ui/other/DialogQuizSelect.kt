@@ -66,7 +66,9 @@ class DialogQuizSelect(private val context: Context) : Dialog(context) {
         add.setOnClickListener {
             val selectedSubject = spinner.selectedItem.toString()
             if (homeViewModel.flexboxSelectedSubjects.value?.contains(selectedSubject) == true) {
-                Toast.makeText(context, "이미 추가된 항목입니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "이미 추가된 항목입니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(context, DesignToast.LayoutDesign.INFO, "이미 추가된 항목입니다.").show()
+
             } else {
                 addSubjectToFlexbox(selectedSubject)
             }

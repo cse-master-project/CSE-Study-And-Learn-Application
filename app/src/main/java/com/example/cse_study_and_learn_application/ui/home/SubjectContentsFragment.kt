@@ -9,15 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSubjectContentsBinding
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
 import com.example.cse_study_and_learn_application.utils.Subcategory
-import kotlin.properties.Delegates
 
 
 /**
@@ -58,6 +57,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         binding.rbCustomSel.setOnClickListener(this)
         binding.rbDefaultSel.setOnClickListener(this)
         binding.cbAlready.setOnClickListener(this)
+        binding.llSettingOuter.setOnClickListener(this)
+        binding.tvAllSelect.setOnClickListener(this)
 
         activity?.apply {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
@@ -93,6 +94,14 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         initToolbarListener()
 
         initSubjectContents()   // 이 메서드에서 퀴즈 중분류 구성하기
+
+        homeViewModel.isAllSelected.observe(viewLifecycleOwner) { isAllSelected ->
+            if (isAllSelected) {
+                binding.tvAllSelect.text = "전체 선택 해제"
+            } else {
+                binding.tvAllSelect.text = "전체 선택"
+            }
+        }
 
         return binding.root
     }
@@ -149,7 +158,10 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
         val detailSubjects = homeViewModel.getCurrentDetailSubjects()
         if (detailSubjects.isEmpty()) {
-            Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "조건에 일치하는 문제가 없습니다.").show()
+            requireActivity().onBackPressed()
         }
 
         adapter.changeDetailSubjects(detailSubjects.toList())
@@ -189,15 +201,16 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     }
 
                     dialogQuestMessage.setPositive {
-                        Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
+                        // Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
                         dialogQuestMessage.dismiss()
                         checkDetailQuizSend()
                     }
 
                     dialogQuestMessage.setNegative {
-                        Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
-                        quizSettingDialogFlag = true
+                        // Toast.makeText(context, "아니요 클릭", Toast.LENGTH_SHORT).show()
+                        quizSettingDialogFlag = false
                         binding.llDialogSetting.visibility = View.VISIBLE   // 퀴즈 설정 다이얼로그 표시
+                        binding.llSettingOuter.visibility = View.VISIBLE
                         dialogQuestMessage.dismiss()
                     }
 
@@ -208,20 +221,48 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
             }
 
+            R.id.tv_all_select -> {
+                if (adapter.toggleCheckBox) {
+                    DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "먼저 랜덤 풀기 설정을 해제해야합니다.").show()
+                    return
+                }
+
+                if (binding.tvAllSelect.text == "전체 선택") {
+                    homeViewModel.setChangeCheckSetting(true)
+                    adapter.setChangeCheck(true)
+                } else {
+                    homeViewModel.setChangeCheckSetting(false)
+                    adapter.setChangeCheck(false)
+                }
+            }
+
+            R.id.ll_setting_outer -> {
+                quizSettingDialogFlag = !quizSettingDialogFlag
+                if (quizSettingDialogFlag) {
+                    binding.llDialogSetting.visibility = View.VISIBLE
+                    binding.llSettingOuter.visibility = View.VISIBLE
+                } else {
+                    binding.llDialogSetting.visibility = View.INVISIBLE
+                    binding.llSettingOuter.visibility = View.GONE
+                }
+            }
+
             // 퀴즈 관련해서 설정할 수 있는 다이얼로그 버튼
             R.id.cdv_extend_quiz_setting -> {
                 quizSettingDialogFlag = !quizSettingDialogFlag
                 if (quizSettingDialogFlag) {
                     binding.llDialogSetting.visibility = View.VISIBLE
+                    binding.llSettingOuter.visibility = View.VISIBLE
                 } else {
                     binding.llDialogSetting.visibility = View.INVISIBLE
+                    binding.llSettingOuter.visibility = View.GONE
                 }
             }
 
             // 랜덤 선택 풀기
             R.id.cb_all_random -> {
                 val result = adapter.toggleCheckBoxVisibility()
-                homeViewModel.setAllRandomCheck(result)
+                if (result) homeViewModel.setChangeCheckSetting(true)
             }
 
             R.id.cb_already -> {
@@ -276,7 +317,9 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
             startActivity(i)
         } else {
-            Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(requireContext(), "하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "하나 이상 선택하세요.").show()
+
         }
 
     }

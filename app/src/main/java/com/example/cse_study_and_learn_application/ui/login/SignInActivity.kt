@@ -22,6 +22,7 @@ import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivitySignInBinding
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.setting.SettingViewModel
 import com.example.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.example.cse_study_and_learn_application.utils.Lg
@@ -94,7 +95,8 @@ class SignInActivity : AppCompatActivity() {
                                                             nickname = editText.text.toString()
                                                         )
                                                     AccountAssistant.setServerAccessToken(this@SignInActivity, registrationResponse)
-                                                    Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                                    //Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                                    DesignToast.makeText(this@SignInActivity, DesignToast.LayoutDesign.SUCCESS, "회원가입을 성공하였습니다.").show()
                                                     moveMainActivity()
                                                 } catch (e: Exception) {
                                                     Log.e("SignInActivity", "Sign in failure", e)

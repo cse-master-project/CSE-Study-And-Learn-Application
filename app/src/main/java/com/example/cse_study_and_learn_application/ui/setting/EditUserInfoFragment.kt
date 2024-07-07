@@ -14,6 +14,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentEditUserInfoBinding
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 // TODO: Rename parameter arguments, choose names that match
@@ -73,14 +74,6 @@ class EditUserInfoFragment : Fragment() {
 
         binding.tvEmail.text = AccountAssistant.getUserEmail(requireContext())
 
-        settingViewModel.updateUserInfoResult.observe(viewLifecycleOwner, Observer { isSuccess ->
-            if (isSuccess) {
-                // 회원정보 수정 성공 처리
-                settingViewModel.closeEditFragment()
-                requireActivity().onBackPressed()
-            }
-        })
-
         // 회원 정보 수정 하는 버튼
         initClickListener()
 
@@ -103,8 +96,26 @@ class EditUserInfoFragment : Fragment() {
             )
 
             dialogQuestMessage.setPositive {
-                settingViewModel.updateUserInfo(requireContext(), binding.etNickname.text.toString())
-                dialogQuestMessage.dismiss()
+                val newNickname = binding.etNickname.text.toString()
+                if (newNickname.isEmpty()) {
+                    DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "닉네임을 입력해 주세요.").show()
+                    dialogQuestMessage.dismiss()
+                } else if (AccountAssistant.nickname == newNickname) {
+                    DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "새로운 닉네임을 입력해 주세요.").show()
+                    dialogQuestMessage.dismiss()
+                } else {
+                    val result = settingViewModel.updateUserInfo(requireContext(), binding.etNickname.text.toString())
+                    dialogQuestMessage.dismiss()
+
+                    if (result) {
+                        // 회원정보 수정 성공 처리
+                        DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.SUCCESS, "닉네임을 변경하였습니다.").show()
+                        settingViewModel.closeEditFragment()
+                        requireActivity().onBackPressed()
+                    } else {
+                        DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "이미 사용 중인 닉네임입니다.").show()
+                    }
+                }
             }
 
             dialogQuestMessage.setNegative {

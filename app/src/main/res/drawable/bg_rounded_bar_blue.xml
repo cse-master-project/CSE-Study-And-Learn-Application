@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/bg_rounded_bar.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/light_blue_300"/> <!-- 바 색상 -->
+    <corners android:radius="16dp"/> <!-- 둥근 테두리 반경 -->
+</shape>

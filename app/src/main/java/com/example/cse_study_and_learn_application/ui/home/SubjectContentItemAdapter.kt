@@ -32,7 +32,8 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
         fun clickToggle(title: String, selected: Boolean)
     }
 
-    private var toggleCheckBox = true
+    var toggleCheckBox = false
+    private var checkAll = true
 
     private var toggleCheckBoxListener: ToggleCheckBoxListener? = null
 
@@ -45,12 +46,15 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
 
     override fun onBindViewHolder(holder: SubjectContentViewHolder, position: Int) {
         val content = contents[position]
-        holder.bind(content, toggleCheckBox, toggleCheckBoxListener)
+        holder.bind(content, toggleCheckBox, toggleCheckBoxListener, position, checkAll)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun toggleCheckBoxVisibility(): Boolean {
         toggleCheckBox = !toggleCheckBox
+        if (toggleCheckBox) {
+            checkAll = toggleCheckBox
+        }
         notifyDataSetChanged()
         return toggleCheckBox
     }
@@ -69,6 +73,13 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
     fun setToggleCheckBoxListener(toggleCheckBoxListener: ToggleCheckBoxListener) {
         this.toggleCheckBoxListener = toggleCheckBoxListener
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setChangeCheck(flag: Boolean) {
+        checkAll = flag
+        notifyDataSetChanged()
+    }
+
 }
 
 class SubjectContentViewHolder(
@@ -78,8 +89,12 @@ class SubjectContentViewHolder(
     fun bind(
         content: QuizContentCategory,
         toggleCheckBox: Boolean,
-        toggleCheckBoxListener: SubjectContentItemAdapter.ToggleCheckBoxListener?) {
+        toggleCheckBoxListener: SubjectContentItemAdapter.ToggleCheckBoxListener?,
+        position: Int,
+        checkAll: Boolean) {
         binding.tvContentTitle.text = content.title
+        binding.tvCount.text = String.format("No. %d", position)
+
         if (toggleCheckBox) {
             binding.cbQuizSel.isChecked = true
             binding.cbQuizSel.isEnabled = false
@@ -87,9 +102,9 @@ class SubjectContentViewHolder(
             binding.cbQuizSel.buttonTintList =
                 ContextCompat.getColorStateList(context, R.color.light_gray_c5)
         } else {
-            binding.cbQuizSel.isChecked = false
+            binding.cbQuizSel.isChecked = checkAll
             binding.cbQuizSel.isEnabled = true
-            content.selected = false
+            content.selected = checkAll
             binding.cbQuizSel.buttonTintList =
                 ContextCompat.getColorStateList(context, R.color.light_blue_300)
         }

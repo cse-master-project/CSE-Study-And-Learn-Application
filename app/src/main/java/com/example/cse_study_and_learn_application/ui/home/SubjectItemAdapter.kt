@@ -50,7 +50,7 @@ class SubjectItemAdapter(private var questionRelateModels: MutableList<QuizCateg
             val assetManager = holder.itemView.context.assets
             val inputStream = assetManager.open(subject.bg)
             val bitmap = BitmapFactory.decodeStream(inputStream)
-            val inputStream2 = assetManager.open("images/bg/semi_white2.png")
+            val inputStream2 = assetManager.open("images/bg/semi_white3.png")
             val bitmap2 = BitmapFactory.decodeStream(inputStream2)
 
             holder.setImage(bitmap, bitmap2)
@@ -81,11 +81,20 @@ class SubjectViewHolder(private val binding: ItemSubjectCatBinding) : RecyclerVi
         binding.tvSubjectTitle.text = subject.title
         binding.tvQuestionCnt.text = subject.cnt
         binding.tvIcon.text = subject.icon
+
+        // 텍스트 크기 조정 로직
+        binding.tvSubjectTitle.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            val textView = binding.tvSubjectTitle
+            if (textView.lineCount > 1) {
+                textView.textSize = 16f // 원하는 크기로 줄이기
+            } else {
+                textView.textSize = 19f // 기본 크기
+            }
+        }
     }
 
     fun setImage(bitmap: Bitmap, bitmap2: Bitmap) {
         Glide.with(binding.root.context).load(bitmap).into(binding.ivSubjectBg)
         Glide.with(binding.root.context).load(bitmap2).into(binding.ivBlur)
-        // binding.ivSubjectBg.setImageBitmap(bitmap)
     }
 }
