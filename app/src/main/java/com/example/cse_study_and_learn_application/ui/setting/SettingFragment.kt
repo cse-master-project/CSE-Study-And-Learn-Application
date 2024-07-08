@@ -22,6 +22,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentSettingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.login.SignInActivity
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
 /**
@@ -60,25 +61,30 @@ class SettingFragment : Fragment() {
 
         settingViewModel.logoutResult.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.SUCCESS, "로그아웃 되었습니다.").show()
                 val intent = Intent(requireContext(), SignInActivity::class.java)
                 startActivity(intent)
-
                 requireActivity().finish()
+
+
             } else {
-                Toast.makeText(requireContext(), "로그아웃에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "로그아웃에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "로그아웃이 실패하였습니다.").show()
             }
         })
 
         settingViewModel.deactivateResult.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {
                 // 회원탈퇴 성공 처리
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.SUCCESS, "회원탈퇴 되었습니다.").show()
                 val intent = Intent(requireContext(), SignInActivity::class.java)
                 startActivity(intent)
-
                 requireActivity().finish()
+
             } else {
                 // 회원탈퇴 실패 처리
-                Toast.makeText(requireContext(), "회원탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "회원탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "회원탈퇴를 실패하였습니다.").show()
             }
         })
 

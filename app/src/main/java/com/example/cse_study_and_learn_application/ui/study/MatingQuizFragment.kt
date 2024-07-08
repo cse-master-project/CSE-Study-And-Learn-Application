@@ -13,6 +13,7 @@ import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentMatingQuizBinding
 import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.google.gson.Gson
 
@@ -194,7 +195,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         Log.d("test", answerList.toString())
 
         if(answerList.isEmpty()) {
-            Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해 주세요.").show()
         } else {
             try {
                 val bundle = Bundle().apply {

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 
 /**
  * Statistics fragment
@@ -65,7 +66,9 @@ class StatisticsFragment : Fragment() {
             } else {
                 // 통계 데이터 가져오기 실패 처리
                 // 오류 메시지 표시 등의 동작 수행
-                Toast.makeText(requireContext(), "정답률을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(requireContext(), "정답률을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "통계 정보를 불러오지 못하였습니다.").show()
             }
         }
 

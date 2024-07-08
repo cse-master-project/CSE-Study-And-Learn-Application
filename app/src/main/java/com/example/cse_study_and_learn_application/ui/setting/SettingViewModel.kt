@@ -35,7 +35,7 @@ class SettingViewModel : ViewModel() {
     private val _deactivateResult = MutableLiveData<Boolean>()
     val deactivateResult: LiveData<Boolean> = _deactivateResult
 
-    private val _updateUserInfoResult = MutableLiveData<Boolean>()
+    private val _updateUserInfoResult = MutableLiveData(false)
     val updateUserInfoResult: LiveData<Boolean> = _updateUserInfoResult
 
     private var _userInfo = MutableLiveData<UserInfo>()
@@ -83,17 +83,18 @@ class SettingViewModel : ViewModel() {
         }
     }
 
-    fun updateUserInfo(context: Context, nickname: String) {
+    fun updateUserInfo(context: Context, nickname: String): Boolean {
         viewModelScope.launch {
             try {
                 val token = AccountAssistant.getServerAccessToken(context)
                 val isSuccess = connectorRepository.setUserNickname(token, nickname)
                 _updateUserInfoResult.value = isSuccess
             } catch (e: Exception) {
-                // 예외 처리
                 _updateUserInfoResult.value = false
+                e.printStackTrace()
             }
         }
+        return _updateUserInfoResult.value!!
     }
 
     fun closeEditFragment() {

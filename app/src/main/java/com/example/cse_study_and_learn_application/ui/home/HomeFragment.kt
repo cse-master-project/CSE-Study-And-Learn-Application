@@ -19,6 +19,7 @@ import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentHomeBinding
 import com.example.cse_study_and_learn_application.model.QuizCategory
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuizSelect
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
 import com.example.cse_study_and_learn_application.utils.Lg
@@ -76,7 +77,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             } else {
                 // 카테고리 정보 가져오기 실패 처리
                 // 오류 메시지 표시 등의 동작 수행
-                Toast.makeText(requireContext(), "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "과목을 불러오는데 실패하였습니다.").show()
+                //Toast.makeText(requireContext(), "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -172,7 +174,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             dialog.setPositive {
                 val selectedSubjects = homeViewModel.flexboxSelectedSubjects.value // [컴퓨터 개론, computer ... ]
                 if (selectedSubjects.isNullOrEmpty()) {
-                    Toast.makeText(requireContext(), "과목을 하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(requireContext(), "과목을 하나 이상 선택하세요.", Toast.LENGTH_SHORT).show()
+                    DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "과목을 하나 이상 선택하세요.").show()
                 } else {
                     // selectedSubjects <- [컴퓨터 개론, computer ... ]
                     // 문제 푸는 화면으로 넘어가는 코드 작성
@@ -186,6 +189,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                     // Lg.d("test", HomeFragment::class.java.name, "subjects: ${ArrayList(selectedSubjects)}")
 
                     startActivity(i)
+                    dialog.dismiss()
                 }
             }
 
@@ -193,7 +197,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             dialog.setOnShowListener {
                 val spinner = dialog.getSpinner()
                 if (subjects.isNullOrEmpty()) {
-                    Toast.makeText(context, "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "과목을 불러오는데 실패하였습니다.").show()
+                    //Toast.makeText(context, "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
                     val subjectStringArray = temporalSubjects.map { it.title }.drop(1).toTypedArray()
                     val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.tv_spinner_quiz_select, subjectStringArray)
                     spinner.adapter = spinnerAdapter

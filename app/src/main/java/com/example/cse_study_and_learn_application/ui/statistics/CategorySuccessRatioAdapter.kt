@@ -20,7 +20,8 @@ import com.example.cse_study_and_learn_application.model.CategorySuccessRatio
 class CategorySuccessRatioAdapter(private var contents: List<CategorySuccessRatio>, private val context: Context):
     RecyclerView.Adapter<CategorySuccessRatioAdapter.RatioViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatioViewHolder {
-        val binding = ItemEachCategoryRatioBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemEachCategoryRatioBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RatioViewHolder(binding, context)
     }
 
@@ -36,11 +37,20 @@ class CategorySuccessRatioAdapter(private var contents: List<CategorySuccessRati
         notifyDataSetChanged()
     }
 
-    class RatioViewHolder(private val binding: ItemEachCategoryRatioBinding, private val context: Context) :
+    class RatioViewHolder(
+        private val binding: ItemEachCategoryRatioBinding,
+        private val context: Context
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(content: CategorySuccessRatio) {
             binding.tvCategoryTitle.text = content.title
-            binding.tvCategoryRatio.text = String.format("%.2f%%", content.ratio)
+            val ratio = content.ratio
+            val formattedRatio = when {
+                ratio == 0.0 -> "0%"
+                ratio % 1 == 0.0 -> String.format("%.0f%%", ratio)
+                else -> String.format("%.1f%%", ratio)
+            }
+            binding.tvCategoryRatio.text = formattedRatio
 
 //            binding.tvCategoryTitle.setTextColorAsLinearGradient(arrayOf(
 //                ContextCompat.getColor(context, R.color.light_blue_400),

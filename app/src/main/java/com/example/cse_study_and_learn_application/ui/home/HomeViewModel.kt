@@ -47,7 +47,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _quizSubjectCategories = MutableLiveData<MutableList<QuizCategory>>()
     val quizSubjectCategories: LiveData<MutableList<QuizCategory>> = _quizSubjectCategories     // 내부적으로 사용하는 클래스
 
-    private var subjectThumbnailMap = mutableMapOf<String, String>()
+    private var subjectThumbnailMap = LinkedHashMap<String, String>()
 //
 //    private val _quizResponseLiveData = MutableLiveData<QuizResponse>()
 //    val quizLiveData: LiveData<QuizResponse> = _quizResponseLiveData
@@ -55,17 +55,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _quizList = MutableLiveData<List<Quiz>>()
     val quizList: LiveData<List<Quiz>> = _quizList
 
-    private val _detailSubjects = MutableLiveData<MutableMap<String, MutableSet<QuizContentCategory>>>()
-    val detailSubjects: LiveData<MutableMap<String, MutableSet<QuizContentCategory>>> = _detailSubjects
+    private val _detailSubjects = MutableLiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>>()
+    val detailSubjects: LiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>> = _detailSubjects
+
 
     val flexboxSelectedSubjects: MutableLiveData<MutableList<String>> by lazy {
         MutableLiveData<MutableList<String>>(mutableListOf())
     }
 
-    var currentDetailSubjectsList = mutableListOf<QuizContentCategory>()
+    var currentDetailSubjectsList = MutableLiveData(mutableListOf<QuizContentCategory>())
 
+    private val _isAllSelected = MutableLiveData<Boolean>()
+    val isAllSelected: LiveData<Boolean> = _isAllSelected
     fun setCategoryThumbnails(context: Context) {
-        val subjectThumbnailMap = mutableMapOf<String, String>()
+        val subjectThumbnailMap = LinkedHashMap<String, String>()
         val parser: XmlResourceParser = context.resources.getXml(R.xml.thumbnails)
         try {
             var eventType = parser.eventType
@@ -89,6 +92,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     fun setInitSubjectCategories(contents: MutableList<QuizCategory>) {
         _quizSubjectCategories.value = contents
     }
@@ -109,7 +113,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val id = subject.subjectId
                     val title = subject.subject
                     val bg = if (subjectThumbnailMap[title].isNullOrBlank()) "오류" else subjectThumbnailMap[title]
-                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString() + " 목록", if (id % 2 == 0) "⭐" else "💡")
+                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString() + " 챕터", if (id % 2 == 0) "⭐" else "💡")
                     newCategories.add(sub)  // 카테고리 추가
                 }
                 _quizSubjectCategories.value = newCategories
@@ -141,12 +145,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        currentDetailSubjectsList = quizContentCategoryList
+        currentDetailSubjectsList.value = quizContentCategoryList
+        checkAllSelected()
         return quizContentCategoryList
     }
 
     fun getSelectedDetailSubjects(): List<QuizContentCategory> {
-        return currentDetailSubjectsList.filter { it.selected }
+        return currentDetailSubjectsList.value!!.filter { it.selected }
     }
 
 
@@ -164,10 +169,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 _quizList.value = quizResponse.content
-                val detailSubject = mutableMapOf<String, MutableSet<QuizContentCategory>>()
+                val detailSubject = LinkedHashMap<String, MutableList<QuizContentCategory>>()
                 for (quiz in _quizList.value!!) {
-                    detailSubject.getOrPut(quiz.subject) { mutableSetOf() }.add(
-                    QuizContentCategory(quiz.detailSubject, true))
+                    detailSubject.getOrPut(quiz.subject) { mutableListOf() }.add(
+                        QuizContentCategory(quiz.detailSubject, true)
+                    )
                 }
 
                 _detailSubjects.value = detailSubject
@@ -179,20 +185,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     fun clickRecyclerItemCheck(title: String, selected: Boolean) {
-        currentDetailSubjectsList.first { it.title == title}.selected = selected
+        currentDetailSubjectsList.value!!.first { it.title == title }.selected = selected
+        checkAllSelected()
     }
 
-    fun setAllRandomCheck(result: Boolean) {
+    fun setChangeCheckSetting(result: Boolean) {
         if (result) {
-            currentDetailSubjectsList.forEach { it.selected = true }
+            currentDetailSubjectsList.value!!.forEach { it.selected = true }
         } else {
-            currentDetailSubjectsList.forEach { it.selected = false }
+            currentDetailSubjectsList.value!!.forEach { it.selected = false }
         }
-
+        checkAllSelected()
     }
 
-
+    private fun checkAllSelected() {
+        _isAllSelected.value = currentDetailSubjectsList.value?.all { it.selected }
+    }
 
 
 }
