@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.cse_study_and_learn_application.databinding.ItemSubjectCatBinding
@@ -21,12 +23,17 @@ import java.io.IOException
  * @since 2024-03-09
  *
  */
-class SubjectItemAdapter(private var questionRelateModels: MutableList<QuizCategory>, private val listener: OnSubjectItemClickListener) : RecyclerView.Adapter<SubjectViewHolder>() {
+class SubjectItemAdapter(
+    private var questionRelateModels: MutableList<QuizCategory>,
+    private val listener: OnSubjectItemClickListener
+) : RecyclerView.Adapter<SubjectViewHolder>(), Filterable {
+
+    private var filteredQuestionRelateModels: MutableList<QuizCategory> = questionRelateModels
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectViewHolder {
         val binding = ItemSubjectCatBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        // 화면 너비의 절반과 화면 높이의 0.35배로 뷰의 크기를 조정
+        // 화면 너비의 절반과 화면 높이의 0.30배로 뷰의 크기를 조정
         val displayMetrics = parent.context.resources.displayMetrics
         val width = ViewGroup.LayoutParams.MATCH_PARENT
         val height = (displayMetrics.heightPixels * 0.30).toInt()
@@ -40,7 +47,7 @@ class SubjectItemAdapter(private var questionRelateModels: MutableList<QuizCateg
     }
 
     override fun onBindViewHolder(holder: SubjectViewHolder, position: Int) {
-        val subject = questionRelateModels[position]
+        val subject = filteredQuestionRelateModels[position]
 
         // 과목 타이틀, 문제 수 설정
         holder.bind(subject)
@@ -65,16 +72,38 @@ class SubjectItemAdapter(private var questionRelateModels: MutableList<QuizCateg
         }
     }
 
-    override fun getItemCount(): Int = questionRelateModels.size
+    override fun getItemCount(): Int = filteredQuestionRelateModels.size
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateItem(contents: MutableList<QuizCategory>) {
         questionRelateModels = contents
+        filteredQuestionRelateModels = contents
         notifyDataSetChanged()
     }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charString = constraint?.toString() ?: ""
+                filteredQuestionRelateModels = if (charString.isEmpty()) {
+                    questionRelateModels
+                } else {
+                    questionRelateModels.filter {
+                        it.title.contains(charString, ignoreCase = true)
+                    }.toMutableList()
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredQuestionRelateModels
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredQuestionRelateModels = results?.values as MutableList<QuizCategory>
+                notifyDataSetChanged()
+            }
+        }
+    }
 }
-
-
 
 class SubjectViewHolder(private val binding: ItemSubjectCatBinding) : RecyclerView.ViewHolder(binding.root) {
     fun bind(subject: QuizCategory) {

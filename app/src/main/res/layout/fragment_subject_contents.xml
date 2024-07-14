@@ -181,7 +181,7 @@
                     android:paddingStart="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="기본 문제" />
+                    android:text="기본 제공 문제" />
 
                 <RadioButton
                     android:id="@+id/rb_custom_sel"
@@ -189,7 +189,7 @@
                     android:paddingStart="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="사용자 문제" />
+                    android:text="창작 문제" />
             </RadioGroup>
 
             <View

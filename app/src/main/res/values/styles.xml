@@ -59,10 +59,35 @@
         <item name="android:layout_marginEnd">8dp</item>
     </style>
 
+    <style name="StatisticsAbstStyle2">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+    </style>
+
     <!-- Spinner -->
     <style name="CustomSpinnerStyle" parent="Widget.AppCompat.Spinner">
         <item name="android:background">@drawable/bg_spinner_rounded_light_blue_300</item>
         <item name="android:drawableRight">@drawable/spinner_arrow</item>
     </style>
+
+    <style name="ToolbarTitleBold" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">21sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="CustomSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search_gray</item>
+        <item name="closeIcon">@drawable/ic_close_gray</item>
+        <item name="submitBackground">@drawable/bg_spinner_rounded_light_blue_300</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColorHint">@color/light_blue_300</item>
+    </style>
+
+
 
 </resources>

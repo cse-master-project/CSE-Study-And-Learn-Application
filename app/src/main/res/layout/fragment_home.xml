@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/nestedScrollView"
     tools:context=".ui.home.HomeFragment" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,19 +71,47 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            app:layout_constraintTop_toBottomOf="@id/cl_info_view"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:id="@+id/rv_subjects"
-            tools:listitem="@layout/item_subject_cat"
+        <TextView
+            android:id="@+id/search_view_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="클릭하여 과목을 검색해보세요."
+            android:textColor="@color/gray_600"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@id/search_view"
+            app:layout_constraintBottom_toBottomOf="@id/search_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.appcompat.widget.SearchView
+            android:paddingHorizontal="5dp"
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="과목을 입력해주세요."
+            app:layout_constraintTop_toBottomOf="@id/cl_info_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/CustomSearchView"/>
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_subjects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:clipToPadding="false"
             android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:paddingBottom="10dp"
-            android:paddingEnd="5dp"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_view"
+            app:layout_constraintVertical_bias="0.0"
+            tools:layout_editor_absoluteX="0dp"
+            tools:listitem="@layout/item_subject_cat" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

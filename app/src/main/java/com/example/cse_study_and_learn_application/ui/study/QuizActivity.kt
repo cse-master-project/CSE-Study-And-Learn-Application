@@ -23,6 +23,7 @@ import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
@@ -144,7 +145,8 @@ class QuizActivity() : AppCompatActivity() {
                 // Handle the error
                 e.printStackTrace()
                 Lg.e("test", QuizActivity::class.java.name, e.toString())
-                Toast.makeText(this@QuizActivity, "더 이상 풀 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@QuizActivity, "더 이상 풀 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(this@QuizActivity, DesignToast.LayoutDesign.INFO, "더 이상 풀 문제가 없습니다.").show()
                 finish()
             }
         }
@@ -174,7 +176,8 @@ class QuizActivity() : AppCompatActivity() {
                 showQuiz(response)
             } catch (e: Exception) {
                 Log.e("Server Response", "failed Load Quiz Data", e)
-                Toast.makeText(this@QuizActivity, "더 이상 풀 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@QuizActivity, "더 이상 풀 문제가 없습니다.", Toast.LENGTH_SHORT).show()
+                DesignToast.makeText(this@QuizActivity, DesignToast.LayoutDesign.INFO, "더 이상 풀 문제가 없습니다.").show()
                 finish()
             }
         }
@@ -253,7 +256,8 @@ class QuizActivity() : AppCompatActivity() {
                                 content = reportContent
                             )
                             if (report) {
-                                Toast.makeText(applicationContext, "문제를 신고했습니다.", Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(applicationContext, "문제를 신고했습니다.", Toast.LENGTH_SHORT).show()
+                                DesignToast.makeText(this@QuizActivity, DesignToast.LayoutDesign.INFO, "문제를 신고 했습니다.").show()
                                 dialog.dismiss()
                             }
                         }

@@ -2,12 +2,10 @@ package com.example.cse_study_and_learn_application.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ItemSubjectContentBinding
 import com.example.cse_study_and_learn_application.model.QuizContentCategory
@@ -32,10 +30,15 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
         fun clickToggle(title: String, selected: Boolean)
     }
 
+    interface ItemClickListener {
+        fun click(title: String, selected: Boolean)
+    }
+
     var toggleCheckBox = false
     private var checkAll = true
 
     private var toggleCheckBoxListener: ToggleCheckBoxListener? = null
+    private var itemClickListener: ItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectContentViewHolder {
         val binding = ItemSubjectContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -46,7 +49,7 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
 
     override fun onBindViewHolder(holder: SubjectContentViewHolder, position: Int) {
         val content = contents[position]
-        holder.bind(content, toggleCheckBox, toggleCheckBoxListener, position, checkAll)
+        holder.bind(content, toggleCheckBox, toggleCheckBoxListener, position, checkAll, itemClickListener)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -80,6 +83,10 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
         notifyDataSetChanged()
     }
 
+    fun setItemClickListener(listener: ItemClickListener) {
+        this.itemClickListener = listener
+    }
+
 }
 
 class SubjectContentViewHolder(
@@ -91,7 +98,9 @@ class SubjectContentViewHolder(
         toggleCheckBox: Boolean,
         toggleCheckBoxListener: SubjectContentItemAdapter.ToggleCheckBoxListener?,
         position: Int,
-        checkAll: Boolean) {
+        checkAll: Boolean,
+        itemClickListener: SubjectContentItemAdapter.ItemClickListener?
+    ) {
         binding.tvContentTitle.text = content.title
         binding.tvCount.text = String.format("No. %d", position)
 
@@ -112,6 +121,12 @@ class SubjectContentViewHolder(
         binding.cbQuizSel.setOnClickListener {
             content.selected = binding.cbQuizSel.isChecked
             toggleCheckBoxListener?.clickToggle(content.title, content.selected)
+        }
+
+        binding.clRoot.setOnClickListener {
+            content.selected = !binding.cbQuizSel.isChecked
+            binding.cbQuizSel.isChecked = content.selected
+            itemClickListener?.click(content.title, content.selected)
         }
     }
 }

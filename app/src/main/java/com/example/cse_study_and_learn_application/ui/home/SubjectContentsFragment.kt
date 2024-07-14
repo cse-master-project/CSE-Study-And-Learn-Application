@@ -73,8 +73,14 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             override fun clickToggle(title: String, selected: Boolean) {
                 homeViewModel.clickRecyclerItemCheck(title, selected)
             }
-
         })
+
+        adapter.setItemClickListener(object: SubjectContentItemAdapter.ItemClickListener {
+            override fun click(title: String, selected: Boolean) {
+                homeViewModel.clickRecyclerItemCheck(title, selected)
+            }
+        })
+
         binding.rvContent.adapter = adapter
         binding.rvContent.layoutManager = LinearLayoutManager(context)
 

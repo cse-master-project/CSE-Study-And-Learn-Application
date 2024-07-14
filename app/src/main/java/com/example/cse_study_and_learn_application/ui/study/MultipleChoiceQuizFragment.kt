@@ -19,6 +19,7 @@ import com.example.cse_study_and_learn_application.model.MultipleChoiceQuizJsonC
 import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -126,7 +127,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     // 앱바의 채점 버튼 클릭
     override fun onAnswerSubmit() {
         if(userAnswer == null) {
-            Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해주세요.").show()
         } else {
             try {
                 val bundle = Bundle().apply {

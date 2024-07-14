@@ -25,6 +25,7 @@ import com.example.cse_study_and_learn_application.databinding.FragmentShortAnsw
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.ShortAnswerQuizJsonContent
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
@@ -107,7 +108,8 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     override fun onAnswerSubmit() {
         userAnswer = binding.etAnswer.text.toString()
         if(userAnswer == "") {
-            Toast.makeText(context, "답을 입력 해주세요.", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(context, "답을 입력 해주세요.", Toast.LENGTH_SHORT).show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 입력해주세요.").show()
         } else {
             try {
                 val bundle = Bundle().apply {
