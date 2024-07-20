@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.model.UserInfo
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
 import kotlinx.coroutines.launch
 
 /**
@@ -49,6 +50,7 @@ class SettingViewModel : ViewModel() {
                 if (isSuccess) {
                     // 로그아웃 성공 처리
                     AccountAssistant.clearAllPreferences(context)
+                    HighlightHelper.clearHelpShown(context) // 도움말 초기화
                     _logoutResult.value = true
                 } else {
                     // 로그아웃 실패 처리
@@ -69,8 +71,9 @@ class SettingViewModel : ViewModel() {
                 if (isSuccess) {
                     // 회원탈퇴 성공 처리
                     // 로컬에 저장된 사용자 정보 및 토큰 삭제
-                    _deactivateResult.value = true
                     AccountAssistant.clearAllPreferences(context)
+                    HighlightHelper.clearHelpShown(context) // 도움말 초기화
+                    _deactivateResult.value = true
                 } else {
                     // 회원탈퇴 실패 처리
                     _deactivateResult.value = false
@@ -82,6 +85,7 @@ class SettingViewModel : ViewModel() {
             }
         }
     }
+
 
     fun updateUserInfo(context: Context, nickname: String): Boolean {
         viewModelScope.launch {

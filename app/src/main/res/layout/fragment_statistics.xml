@@ -20,72 +20,101 @@
             app:layout_constraintBottom_toTopOf="@id/tv_each_title"
             android:layout_marginHorizontal="10dp">
 
-            <TextView
-                android:id="@+id/tv_title_all_cnt"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_all_cnt"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="전체 시도한 문제 수"
-                android:textColor="@color/white"
-                style="@style/StatisticsAbstStyle" />
-
-            <TextView
-                android:textColor="@color/white"
-                android:id="@+id/tv_total_quiz_count"
-                app:layout_constraintTop_toTopOf="parent"
-                android:gravity="end"
                 app:layout_constraintEnd_toEndOf="@id/view_base"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text=""
-                style="@style/StatisticsAbstStyle2" />
+                android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/tv_title_success_all_cnt"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tv_total_quiz_count"
+                <TextView
+                    android:id="@+id/tv_title_all_cnt"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체 시도한 문제 수"
+                    android:textColor="@color/white"
+                    style="@style/StatisticsAbstStyle" />
+
+                <TextView
+                    android:textColor="@color/white"
+                    android:id="@+id/tv_total_quiz_count"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    style="@style/StatisticsAbstStyle2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="전체 맞춘 문제 수"
-                style="@style/StatisticsAbstStyle" />
-
-            <TextView
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tv_total_quiz_count"
-                android:id="@+id/tv_total_success_quiz_count"
+                app:layout_constraintTop_toBottomOf="@id/cl_all_cnt"
                 app:layout_constraintEnd_toEndOf="@id/view_base"
-
+                android:id="@+id/cl_success_all_cnt"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text=""
-                style="@style/StatisticsAbstStyle2" />
+                android:layout_height="wrap_content" >
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:id="@+id/tv_title_success_all_cnt"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체 맞춘 문제 수"
+                    style="@style/StatisticsAbstStyle" />
 
-            <TextView
-                android:id="@+id/tv_title_failure_all_cnt"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tv_total_success_quiz_count"
+                <TextView
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/tv_total_success_quiz_count"
+                    app:layout_constraintEnd_toEndOf="parent"
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text=""
+                    style="@style/StatisticsAbstStyle2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_failure_all_cnt"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="전체 틀린 문제 수"
-                style="@style/StatisticsAbstStyle" />
-
-            <TextView
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tv_total_success_quiz_count"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/tv_total_fail_quiz_count"
+                app:layout_constraintTop_toBottomOf="@id/cl_success_all_cnt"
                 app:layout_constraintEnd_toEndOf="@id/view_base"
-                android:layout_width="wrap_content"
-                android:gravity="end"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
 
-                android:layout_height="wrap_content"
-                android:text=""
-                style="@style/StatisticsAbstStyle2" />
+                <TextView
+                    android:id="@+id/tv_title_failure_all_cnt"
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전체 틀린 문제 수"
+                    style="@style/StatisticsAbstStyle" />
+
+                <TextView
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:id="@+id/tv_total_fail_quiz_count"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:gravity="end"
+
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    style="@style/StatisticsAbstStyle2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pieChart"

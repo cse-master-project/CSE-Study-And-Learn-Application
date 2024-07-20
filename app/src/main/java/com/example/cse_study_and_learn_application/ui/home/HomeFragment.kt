@@ -30,7 +30,11 @@ import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuizSelect
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
+import com.example.cse_study_and_learn_application.utils.HighlightItem
+import com.example.cse_study_and_learn_application.utils.HighlightPosition
 import com.example.cse_study_and_learn_application.utils.Lg
+import com.example.cse_study_and_learn_application.utils.dpToPx
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -57,6 +61,9 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     private lateinit var adapter: SubjectItemAdapter
     private lateinit var searchViewAdapter: ArrayAdapter<String>
     private lateinit var temporalSubjects: MutableList<QuizCategory>
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -89,6 +96,40 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "과목을 불러오는데 실패하였습니다.").show()
                 //Toast.makeText(requireContext(), "과목을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val highlightHelper = HighlightHelper(
+            requireContext(),
+            this,
+            listOf(
+                HighlightItem(
+                    R.id.search_view,
+                    "여기서 찾고자 하는 과목을 검색할 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM
+                ),
+                HighlightItem(
+                    R.id.rv_subjects,
+                    "여기를 클릭해서 원하는 과목을 랜덤으로 선택해서 문제를 풀 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 0,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.rv_subjects,
+                    "여기를 클릭해서 원하는 과목을 하나를 지정해서 문제를 풀 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 1,
+                    scaleFactor = 1.1f
+                ),
+            ),
+            debugMode = false,
+            heightThreshold = requireContext().dpToPx(28),
+            bubblePadding = requireContext().dpToPx(10),
+            screenName = HomeFragment::class.java.name
+        )
+
+        binding.root.post {
+            highlightHelper.showHighlights()
         }
 
         return binding.root

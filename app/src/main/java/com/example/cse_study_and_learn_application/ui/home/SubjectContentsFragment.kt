@@ -1,7 +1,9 @@
 package com.example.cse_study_and_learn_application.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,7 +18,12 @@ import com.example.cse_study_and_learn_application.databinding.FragmentSubjectCo
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
+import com.example.cse_study_and_learn_application.utils.HighlightItem
+import com.example.cse_study_and_learn_application.utils.HighlightPosition
+import com.example.cse_study_and_learn_application.utils.HighlightView
 import com.example.cse_study_and_learn_application.utils.Subcategory
+import com.example.cse_study_and_learn_application.utils.dpToPx
 
 
 /**
@@ -42,6 +49,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
     private var hasUserQuiz: Boolean = true
     private var hasDefaultQuiz: Boolean = true
     private var hasSolvedQuiz: Boolean = true
+
+    private lateinit var highlightHelper: HighlightHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -101,6 +110,24 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
         initSubjectContents()   // 이 메서드에서 퀴즈 중분류 구성하기
 
+        highlightHelper = HighlightHelper(
+            requireContext(),
+            this,
+            listOf(
+                HighlightItem(R.id.cdv_extend_quiz_setting, "기본 제공 문제, 창작 문제 등 퀴즈 설정을 여기서 할 수 있습니다.", showPosition = HighlightPosition.UI_BOTTOM),
+                HighlightItem(R.id.rv_content, "여기를 클릭해서 풀고자 하는 챕터를 고를 수 있습니다.",  showPosition = HighlightPosition.UI_BOTTOM  , position = 1, scaleFactor = 1.1f),
+                HighlightItem(R.id.fab_question_exe, "문제 풀기를 시작하려면 여기를 클릭하세요.", showPosition = HighlightPosition.UI_TOP),
+            ),
+            debugMode = false,
+            heightThreshold = requireContext().dpToPx(28),
+            bubblePadding = requireContext().dpToPx(10),
+            screenName = SubjectContentsFragment::class.java.name
+        )
+
+        binding.root.post {
+            highlightHelper.showHighlights()
+        }
+
         homeViewModel.isAllSelected.observe(viewLifecycleOwner) { isAllSelected ->
             if (isAllSelected) {
                 binding.tvAllSelect.text = "전체 선택 해제"
@@ -111,6 +138,10 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
         return binding.root
     }
+
+
+
+
 
     private fun initToolbarListener() {
         binding.ibBackPres.setOnClickListener {

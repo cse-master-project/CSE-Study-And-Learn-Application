@@ -16,7 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.MainViewModel
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.FragmentStatisticsBinding
+import com.example.cse_study_and_learn_application.ui.home.HomeFragment
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
+import com.example.cse_study_and_learn_application.utils.HighlightItem
+import com.example.cse_study_and_learn_application.utils.HighlightPosition
+import com.example.cse_study_and_learn_application.utils.dpToPx
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.PieData
@@ -86,6 +91,58 @@ class StatisticsFragment : Fragment() {
             }
         }
 
+        val highlightHelper = HighlightHelper(
+            requireContext(),
+            this,
+            listOf(
+                HighlightItem(
+                    R.id.cl_all_cnt,
+                    "여기서 전체 시도한 문제 수를 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.cl_success_all_cnt,
+                    "여기를 성공한 문제 수를 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.cl_failure_all_cnt,
+                    "여기서 틀린 문제 수를 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.pieChart,
+                    "여기서 시도한 문제 수의 정답/오답 비율을 볼 수 있습니다. 푸른색이 정답률, 붉은색이 오답률입니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1f
+
+                ),
+                HighlightItem(
+                    R.id.rv_category_ratios,
+                    "여기서 전체 정답 비율을 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 0
+                ),
+                HighlightItem(
+                    R.id.rv_category_ratios,
+                    "여기 밑으로 다른 과목의 정답률을 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 1
+                ),
+            ),
+            debugMode = false,
+            heightThreshold = requireContext().dpToPx(26),
+            bubblePadding = requireContext().dpToPx(10),
+            screenName = StatisticsFragment::class.java.name
+        )
+
+        binding.root.post {
+            highlightHelper.showHighlights()
+        }
+
         return root
     }
 
@@ -132,8 +189,8 @@ class StatisticsFragment : Fragment() {
         )
 
         val colors = listOf(
-            ContextCompat.getColor(requireContext(), R.color.light_blue_800),
-            ContextCompat.getColor(requireContext(), R.color.light_blue_500)
+            Color.parseColor("#E74C3C"),
+            ContextCompat.getColor(requireContext(), R.color.light_blue_700)
         )
 
         val dataSet = PieDataSet(entries, "Category Results").apply {
