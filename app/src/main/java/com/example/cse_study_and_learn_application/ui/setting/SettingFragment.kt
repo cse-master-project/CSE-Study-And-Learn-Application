@@ -24,6 +24,11 @@ import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.login.SignInActivity
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuestMessage
+import com.example.cse_study_and_learn_application.ui.statistics.StatisticsFragment
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
+import com.example.cse_study_and_learn_application.utils.HighlightItem
+import com.example.cse_study_and_learn_application.utils.HighlightPosition
+import com.example.cse_study_and_learn_application.utils.dpToPx
 
 /**
  * Setting fragment
@@ -95,6 +100,33 @@ class SettingFragment : Fragment() {
 
         initClickListener(settingViewModel)
 
+
+        val highlightHelper = HighlightHelper(
+            requireContext(),
+            this,
+            listOf(
+                HighlightItem(
+                    R.id.lin_user_info,
+                    "여기서 사용자의 닉네임을 볼 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.lin_edit_user,
+                    "여기서 사용자 정보를 수정할 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    scaleFactor = 1.1f
+                )
+            ),
+            debugMode = false,
+            heightThreshold = requireContext().dpToPx(26),
+            bubblePadding = requireContext().dpToPx(10),
+            screenName = SettingFragment::class.java.name
+        )
+
+        binding.root.post {
+            highlightHelper.showHighlights()
+        }
 
         return root
     }

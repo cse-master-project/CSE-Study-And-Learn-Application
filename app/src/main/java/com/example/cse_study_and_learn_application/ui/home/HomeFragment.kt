@@ -3,13 +3,21 @@ package com.example.cse_study_and_learn_application.ui.home
 import android.content.Intent
 import android.content.res.XmlResourceParser
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -22,7 +30,11 @@ import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.ui.other.DialogQuizSelect
 import com.example.cse_study_and_learn_application.ui.study.QuizActivity
+import com.example.cse_study_and_learn_application.utils.HighlightHelper
+import com.example.cse_study_and_learn_application.utils.HighlightItem
+import com.example.cse_study_and_learn_application.utils.HighlightPosition
 import com.example.cse_study_and_learn_application.utils.Lg
+import com.example.cse_study_and_learn_application.utils.dpToPx
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -47,8 +59,11 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     private lateinit var mainViewModel: MainViewModel
 
     private lateinit var adapter: SubjectItemAdapter
-
+    private lateinit var searchViewAdapter: ArrayAdapter<String>
     private lateinit var temporalSubjects: MutableList<QuizCategory>
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +75,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupRecyclerView()
+        setupSearchView()
 
         val gifPath = "file:///android_asset/images/gnu/gnu_hi.gif"
         Glide.with(requireActivity())
@@ -82,8 +98,146 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             }
         }
 
+        val highlightHelper = HighlightHelper(
+            requireContext(),
+            this,
+            listOf(
+                HighlightItem(
+                    R.id.search_view,
+                    "여기서 찾고자 하는 과목을 검색할 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM
+                ),
+                HighlightItem(
+                    R.id.rv_subjects,
+                    "여기를 클릭해서 원하는 과목을 랜덤으로 선택해서 문제를 풀 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 0,
+                    scaleFactor = 1.1f
+                ),
+                HighlightItem(
+                    R.id.rv_subjects,
+                    "여기를 클릭해서 원하는 과목을 하나를 지정해서 문제를 풀 수 있습니다.",
+                    showPosition = HighlightPosition.UI_BOTTOM,
+                    position = 1,
+                    scaleFactor = 1.1f
+                ),
+            ),
+            debugMode = false,
+            heightThreshold = requireContext().dpToPx(28),
+            bubblePadding = requireContext().dpToPx(10),
+            screenName = HomeFragment::class.java.name
+        )
+
+        binding.root.post {
+            highlightHelper.showHighlights()
+        }
+
         return binding.root
     }
+
+    private fun setupSearchView() {
+        val searchView = binding.searchView
+
+        // SearchView 텍스트 색상 및 힌트 색상 설정
+        val searchEditText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        searchEditText.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+        searchEditText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.light_blue_300))
+
+        // 초기 상태에서 힌트 텍스트 설정
+        binding.searchViewHint.visibility = View.VISIBLE
+
+        // 돋보기 아이콘 클릭 시 포커스 설정
+        searchView.setOnSearchClickListener {
+            binding.searchViewHint.visibility = View.INVISIBLE
+            searchView.onActionViewExpanded()  // SearchView를 확장 상태로 설정
+            searchEditText.requestFocus()  // EditText에 포커스를 설정
+        }
+
+        // 포커스를 잃었을 때 초기 상태로 돌아가도록 설정
+        searchView.setOnCloseListener {
+            binding.searchViewHint.visibility = View.VISIBLE
+            false
+        }
+
+        val subjects = temporalSubjects.map { it.title }
+        searchViewAdapter = ArrayAdapter(requireContext(), R.layout.item_search, R.id.tv_suggestion, subjects)
+
+        val searchListView = ListView(requireContext()).apply {
+            adapter = searchViewAdapter
+            divider = null // 구분선 제거
+        }
+
+        val popupWindow = PopupWindow(searchListView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+            setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_dropdown))
+            isOutsideTouchable = true
+            isFocusable = false // 팝업이 포커스를 가지지 않도록 설정
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { searchAndScrollToItem(it) }
+                popupWindow.dismiss()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    popupWindow.dismiss()
+                } else {
+                    searchViewAdapter.filter.filter(newText)
+                    if (!popupWindow.isShowing) {
+                        popupWindow.showAsDropDown(searchView)
+                    }
+                }
+                return true
+            }
+        })
+
+        searchListView.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            searchView.setQuery(selectedItem, false)
+            searchAndScrollToItem(selectedItem)
+            popupWindow.dismiss()
+        }
+
+        // X 버튼 클릭 시 검색 취소 기능 추가
+        val closeButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        closeButton.setOnClickListener {
+            searchView.setQuery("", false)
+            searchView.clearFocus()
+            binding.searchViewHint.visibility = View.VISIBLE
+            // SearchView 초기 상태로 되돌리기
+            searchView.onActionViewCollapsed()
+        }
+
+        // TextView 클릭 리스너 추가
+        binding.searchViewHint.setOnClickListener {
+            binding.searchViewHint.visibility = View.INVISIBLE
+            searchView.onActionViewExpanded()  // SearchView를 확장 상태로 설정
+            searchEditText.requestFocus()  // EditText에 포커스를 설정
+        }
+    }
+    private fun searchAndScrollToItem(query: String) {
+        val position = homeViewModel.quizSubjectCategories.value?.indexOfFirst {
+            it.title.contains(query, ignoreCase = true)
+        } ?: -1
+
+        if (position != -1) {
+            binding.rvSubjects.post {
+                val viewHolder = binding.rvSubjects.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.let {
+                    val y = it.top
+                    binding.nestedScrollView.smoothScrollTo(0, y)
+                }
+            }
+        } else {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "해당 과목을 찾을 수 없습니다.").show()
+        }
+    }
+
+
+
+
 
     override fun onResume() {
         super.onResume()

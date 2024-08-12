@@ -196,7 +196,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
         if(answerList.isEmpty()) {
             // Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해 주세요.").show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해 주세요.").show()
         } else {
             try {
                 val bundle = Bundle().apply {
