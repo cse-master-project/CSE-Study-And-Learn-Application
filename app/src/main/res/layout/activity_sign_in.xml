@@ -23,9 +23,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@drawable/gnu_sinna"
-        android:background="@drawable/bg_rounded"
-        android:backgroundTint="#d2f3f8"
+        android:src="@drawable/ic_app_logo_1"
         />
 
     <androidx.cardview.widget.CardView
@@ -92,8 +90,7 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/gnu_hi"
-            android:background="#d2f3f8"/>
+            android:src="@drawable/gnu_hi"/>
 
     </androidx.cardview.widget.CardView>
 
