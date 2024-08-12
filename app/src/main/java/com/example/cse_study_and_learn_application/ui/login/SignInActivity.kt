@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -29,6 +31,7 @@ import com.example.cse_study_and_learn_application.utils.Lg
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -129,6 +132,8 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivitySignInBinding.inflate(layoutInflater)
 
+        setGoogleButtonText(_binding.btnSignIn,"Google 계정으로 로그인")
+
         addListener()
 
         setContentView(_binding.root)
@@ -182,5 +187,20 @@ class SignInActivity : AppCompatActivity() {
     private fun moveMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun setGoogleButtonText(loginButton: SignInButton, buttonText: String){
+        var i = 0
+        while (i < loginButton.childCount){
+            var v = loginButton.getChildAt(i)
+            if (v is TextView) {
+                var tv = v
+                tv.setText(buttonText)
+                tv.setGravity(Gravity.CENTER)
+                return
+            }
+            i++
+
+        }
     }
 }
