@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.Glide
 import com.example.cse_study_and_learn_application.BuildConfig
 import com.example.cse_study_and_learn_application.MainActivity
 import com.example.cse_study_and_learn_application.R
@@ -160,6 +161,12 @@ class SignInActivity : AppCompatActivity() {
             }
             Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
         }
+
+        val gifPath = "file:///android_asset/images/gnu/gnu_hi.gif"
+        Glide.with(this)
+            .asGif()
+            .load(gifPath)
+            .into(_binding.ivGnuChar)
     }
 
     private fun addListener() {
@@ -195,8 +202,8 @@ class SignInActivity : AppCompatActivity() {
             var v = loginButton.getChildAt(i)
             if (v is TextView) {
                 var tv = v
-                tv.setText(buttonText)
-                tv.setGravity(Gravity.CENTER)
+                tv.text = buttonText
+                tv.gravity = Gravity.CENTER
                 return
             }
             i++
