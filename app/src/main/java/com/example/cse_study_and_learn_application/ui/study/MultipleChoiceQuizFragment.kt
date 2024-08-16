@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.children
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
@@ -89,25 +91,13 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             cards.add(binding.cvAnswer3)
             cards.add(binding.cvAnswer4)
 
-            cards[0].setOnClickListener {
-                onlyOneCardViewToggle(cards[0])
-                userAnswer = "1"
-                answerString = binding.tvAnswer1.text.toString()
-            }
-            cards[1].setOnClickListener {
-                onlyOneCardViewToggle(cards[1])
-                userAnswer = "2"
-                answerString = binding.tvAnswer2.text.toString()
-            }
-            cards[2].setOnClickListener {
-                onlyOneCardViewToggle(cards[2])
-                userAnswer = "3"
-                answerString = binding.tvAnswer3.text.toString()
-            }
-            cards[3].setOnClickListener {
-                onlyOneCardViewToggle(cards[3])
-                userAnswer = "4"
-                answerString = binding.tvAnswer4.text.toString()
+            cards.forEachIndexed { index, card ->
+                card.setOnClickListener {
+                    updateCardSelection(card, cards)
+                    userAnswer = (index + 1).toString()
+                    val textView = cards[index].findViewById<TextView>(getTextViewId(index))
+                    answerString = textView.text.toString()
+                }
             }
         }
 
@@ -115,13 +105,21 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     // 카드뷰 한 개만 선택
-    private fun onlyOneCardViewToggle(cardView:MaterialCardView) {
-        for(i in cards) {
-            if (i.isChecked) {
-                i.toggle()
-            }
+    private fun updateCardSelection(selectedCard:MaterialCardView, cards: List<MaterialCardView>) {
+        cards.forEach { card ->
+            card.isChecked = card == selectedCard
         }
-        cardView.toggle()
+    }
+
+    // 인덱스를 넣으면 카드뷰 내의 텍스트 뷰 ID 반환
+    private fun getTextViewId(index: Int): Int {
+        return when (index) {
+            0 -> R.id.tv_answer_1
+            1 -> R.id.tv_answer_2
+            2 -> R.id.tv_answer_3
+            3 -> R.id.tv_answer_4
+            else -> throw IllegalArgumentException("Invalid index")
+        }
     }
 
     // 앱바의 채점 버튼 클릭

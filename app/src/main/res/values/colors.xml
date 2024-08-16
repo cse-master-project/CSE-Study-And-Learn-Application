@@ -34,4 +34,6 @@
     <color name="gray_800">#424242</color>
     <color name="gray_900">#212121</color>
 
+    <color name="selected_card_color">#4FC3F7</color>
+    <color name="default_card_color">#B3E5FC</color>
 </resources>
