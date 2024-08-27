@@ -150,7 +150,6 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             } catch (e: Exception) {
                 Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
             }
-
         }
     }
 

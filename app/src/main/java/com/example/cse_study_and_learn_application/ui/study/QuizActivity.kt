@@ -107,7 +107,7 @@ class QuizActivity() : AppCompatActivity() {
                 showReportDialog(quizResponse)
             }
 
-            binding.ibGrading.setOnClickListener {
+            binding.btnGrading.setOnClickListener {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                     is GradingFragment -> {
                         getQuiz()
