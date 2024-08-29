@@ -29,6 +29,7 @@ import com.google.gson.Gson
 class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     private lateinit var binding: FragmentMatingQuizBinding
+    private var loadNextQuiz: (() -> Unit)? = null
 
     private var quizId = -1
     private var hasImg = false
@@ -41,6 +42,9 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     // 선이 이어진 상태 저장
     private val connectedPairs: MutableSet<Pair<Int, Int>> = mutableSetOf()
+
+    private var isAnswerSubmitted = false
+    private var bottomSheet: BottomSheetGradingFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,6 +100,30 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             binding.rightRecyclerView.layoutManager = LinearLayoutManager(context)
             binding.rightRecyclerView.adapter = rightAdapter
         }
+
+        val leftAdapter = MatingRecyclerViewAdapter(content.leftOption, true, object: MatingRecyclerViewAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int, option: String?) {
+                if (!isAnswerSubmitted) {
+                    leftSelectedPosition = position
+                    checkAndDrawLine()
+                }
+            }
+        })
+
+        val rightAdapter = MatingRecyclerViewAdapter(content.rightOption, false, object: MatingRecyclerViewAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int, option: String?) {
+                if (!isAnswerSubmitted) {
+                    rightSelectedPosition = position
+                    checkAndDrawLine()
+                }
+            }
+        })
+
+        binding.leftRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.leftRecyclerView.adapter = leftAdapter
+
+        binding.rightRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.rightRecyclerView.adapter = rightAdapter
 
         return binding.root
     }
@@ -177,6 +205,39 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         }
     }
 
+    override fun onAnswerSubmit() {
+        val answerList = connectedPairs.map { pair -> "${pair.first}t${pair.second}" }
+        Log.d("test", answerList.toString())
+
+        if(answerList.isEmpty()) {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해 주세요.").show()
+        } else {
+            try {
+                if (!isAnswerSubmitted) {
+                    isAnswerSubmitted = true
+                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                        quizId = quizId,
+                        userAnswer = answerList.joinToString(","),
+                        answer = content.answer.joinToString(","),
+                        answerString = "", // 선잇기 문제의 경우 answerString은 빈 문자열로 설정
+                        commentary = content.commentary,
+                        quizType = QuizType.MATING_QUIZ.ordinal
+                    )
+                    bottomSheet?.setOnNextQuizListener {
+                        loadNextQuiz?.invoke()
+                    }
+                }
+                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
+            } catch (e: Exception) {
+                Log.e("MatingQuizFragment", "onAnswerSubmit", e)
+            }
+        }
+    }
+
+    fun setLoadNextQuizListener(listener: () -> Unit) {
+        loadNextQuiz = listener
+    }
+
     companion object {
         fun newInstance(response: RandomQuiz): MatingQuizFragment {
             val args = Bundle()
@@ -187,35 +248,6 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             args.putBoolean("hasImg", response.hasImage)
             fragment.arguments = args
             return fragment
-        }
-    }
-
-    override fun onAnswerSubmit() {
-        val answerList = connectedPairs.map { pair -> "${pair.first}t${pair.second}" }
-        Log.d("test", answerList.toString())
-
-        if(answerList.isEmpty()) {
-            // Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해 주세요.").show()
-        } else {
-            try {
-                val bundle = Bundle().apply {
-                    putStringArrayList("userAnswer", ArrayList(answerList))
-                    putStringArrayList("answer", ArrayList(content.answer))
-                    putString("commentary", content.commentary)
-                    putInt("quizId", quizId)
-                    putInt("quizType", QuizType.MATING_QUIZ.ordinal)
-                }
-                parentFragmentManager.commit {
-                    replace(R.id.fragmentContainerView, GradingFragment().apply {
-                        arguments = bundle
-                    })
-                    addToBackStack(null)
-                }
-            } catch (e: Exception) {
-                Log.e("MatingQuizFragment", "onAnswerSubmit", e)
-            }
-
         }
     }
 }

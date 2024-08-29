@@ -124,6 +124,7 @@ class QuizActivity() : AppCompatActivity() {
         }
     }
 
+
     private fun getQuiz() {
         if (isRandom) {
             requestRandomQuiz(subjectList!!)
@@ -183,19 +184,31 @@ class QuizActivity() : AppCompatActivity() {
         }
     }
 
-    private fun showQuiz(response: RandomQuiz?) {
+    private fun loadNextQuiz() {
+        getQuiz()
+    }
 
+    private fun showQuiz(response: RandomQuiz?) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val fragment = when (getQuizTypeFromInt(response!!.quizType)) {
             QuizType.MULTIPLE_CHOICE_QUIZ -> MultipleChoiceQuizFragment.newInstance(response)
-            QuizType.SHORT_ANSWER_QUIZ-> ShortAnswerQuizFragment.newInstance(response)
-            QuizType.MATING_QUIZ-> MatingQuizFragment.newInstance(response)
-            QuizType.TRUE_FALSE_QUIZ-> TrueFalseQuizFragment.newInstance(response)
-            QuizType.FILL_BLANK_QUIZ-> FillBlankQuizFragment.newInstance(response)
-            else-> {
+            QuizType.SHORT_ANSWER_QUIZ -> ShortAnswerQuizFragment.newInstance(response)
+            QuizType.MATING_QUIZ -> MatingQuizFragment.newInstance(response)
+            QuizType.TRUE_FALSE_QUIZ -> TrueFalseQuizFragment.newInstance(response)
+            QuizType.FILL_BLANK_QUIZ -> FillBlankQuizFragment.newInstance(response)
+            else -> {
                 Log.e("QuizActivity", "showQuiz : Not Found fragment")
                 throw NullPointerException()
             }
+        }
+
+        // Fragment에 loadNextQuiz 메서드 설정
+        when (fragment) {
+            is MultipleChoiceQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
+            is ShortAnswerQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
+            is MatingQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
+            is TrueFalseQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
+            is FillBlankQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
         }
 
         fragmentTransaction.replace(R.id.fragmentContainerView, fragment)

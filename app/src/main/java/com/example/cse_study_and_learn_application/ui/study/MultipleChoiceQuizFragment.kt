@@ -48,6 +48,16 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizType: Int? = null
     private var image: Bitmap? = null
     private var options: List<String>? = null
+
+    private var isAnswerSubmitted = false
+    private var bottomSheet: BottomSheetGradingFragment? = null
+
+    private var loadNextQuiz: (() -> Unit)? = null
+
+    fun setLoadNextQuizListener(listener: () -> Unit) {
+        loadNextQuiz = listener
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -93,10 +103,12 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
 
             cards.forEachIndexed { index, card ->
                 card.setOnClickListener {
-                    updateCardSelection(card, cards)
-                    userAnswer = (index + 1).toString()
-                    val textView = cards[index].findViewById<TextView>(getTextViewId(index))
-                    answerString = textView.text.toString()
+                    if (!isAnswerSubmitted) {
+                        updateCardSelection(card, cards)
+                        userAnswer = (index + 1).toString()
+                        val textView = cards[index].findViewById<TextView>(getTextViewId(index))
+                        answerString = textView.text.toString()
+                    }
                 }
             }
         }
@@ -122,31 +134,29 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         }
     }
 
+
+
     // 앱바의 채점 버튼 클릭
     override fun onAnswerSubmit() {
-        if(userAnswer == null) {
-            //Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+        if (userAnswer == null) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해주세요.").show()
         } else {
             try {
-                val bundle = Bundle().apply {
-                    putString("userAnswer", userAnswer)
-                    putString("answer", answer)
-                    putString("answerString", answerString)
-                    putString("commentary", commentary)
-                    putInt("quizId", quizId!!)
-                    putInt("quizType", quizType!!)
-                }
-                Log.d("test","ua: ${userAnswer}, a: $answer, as: $answerString, c: $commentary, qi: $quizId, qt: $quizType")
-                parentFragmentManager.commit {
-                    val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
-                    if (prevFragment != null) {
-                        remove(prevFragment)
+                if (!isAnswerSubmitted) {
+                    isAnswerSubmitted = true
+                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                        quizId = quizId!!,
+                        userAnswer = userAnswer!!,
+                        answer = answer,
+                        answerString = answerString,
+                        commentary = commentary,
+                        quizType = quizType!!
+                    )
+                    bottomSheet?.setOnNextQuizListener {
+                        loadNextQuiz?.invoke()
                     }
-                    add(R.id.fragmentContainerView, GradingFragment().apply {
-                        arguments = bundle
-                    })
                 }
+                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
             }
@@ -155,14 +165,13 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
 
     companion object {
         fun newInstance(response: RandomQuiz): MultipleChoiceQuizFragment {
-            val args = Bundle()
-
             val fragment = MultipleChoiceQuizFragment()
-            args.putInt("quizType", response.quizType)
-            args.putInt("quizId", response.quizId)
-            args.putString("contents", response.jsonContent)
-            args.putBoolean("hasImg", response.hasImage)
-            fragment.arguments = args
+            fragment.arguments = Bundle().apply {
+                putInt("quizType", response.quizType)
+                putInt("quizId", response.quizId)
+                putString("contents", response.jsonContent)
+                putBoolean("hasImg", response.hasImage)
+            }
             return fragment
         }
     }

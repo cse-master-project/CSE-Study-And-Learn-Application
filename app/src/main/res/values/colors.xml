@@ -36,4 +36,9 @@
 
     <color name="selected_card_color">#4FC3F7</color>
     <color name="default_card_color">#B3E5FC</color>
+
+    <color name="correct">#00ff00</color>
+    <color name="incorrect">#ff0000</color>
+
+    <color name="transparent">#00000000</color>
 </resources>

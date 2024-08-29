@@ -24,6 +24,7 @@ import com.example.cse_study_and_learn_application.databinding.FragmentFillBlank
 import com.example.cse_study_and_learn_application.model.FillBlankQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
+import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,8 @@ import kotlinx.coroutines.launch
  */
 class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
-    lateinit var binding: FragmentFillBlankQuizBinding
+    private lateinit var binding: FragmentFillBlankQuizBinding
+    private var loadNextQuiz: (() -> Unit)? = null
 
     private var userAnswer: ArrayList<String> = arrayListOf("", "", "")
     private lateinit var answer: List<String>
@@ -46,19 +48,23 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizType: Int? = null
     private var image: Bitmap? = null
 
+    private var isAnswerSubmitted = false
+    private var bottomSheet: BottomSheetGradingFragment? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI(view)
-        val editTexts: MutableList<EditText> = mutableListOf()
-        editTexts.add(view.findViewById<EditText>(R.id.et_answer_1))
-        editTexts.add(view.findViewById<EditText>(R.id.et_answer_2))
-        editTexts.add(view.findViewById<EditText>(R.id.et_answer_3))
+        val editTexts: MutableList<EditText> = mutableListOf(
+            binding.etAnswer1,
+            binding.etAnswer2,
+            binding.etAnswer3
+        )
 
         for (et in editTexts) {
             et.setOnTouchListenerForKeyboard()
-            et.setOnEditorActionListener { _, i, e ->
-                if (i == EditorInfo.IME_ACTION_DONE ||
-                    (e != null && e.keyCode == KeyEvent.KEYCODE_ENTER && e.action == KeyEvent.ACTION_DOWN)
+            et.setOnEditorActionListener { _, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
                 ) {
                     onAnswerSubmit()
                     true
@@ -82,75 +88,102 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             val jsonString = it.getString("contents")
             val content = Gson().fromJson(jsonString, FillBlankQuizJsonContent::class.java)
             answer = content.answer
-            commentary= content.commentary
-
+            commentary = content.commentary
 
             binding.tvQuizText.text = content.quiz
 
             if (hasImg) {
                 binding.ivQuizImage.visibility = View.VISIBLE
-                lifecycleScope.launch {
-                    try {
-                        val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
-                        val decoded = Base64.decode(response.string(), Base64.DEFAULT)
-                        image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-                        binding.ivQuizImage.visibility = View.VISIBLE
-                        binding.ivQuizImage.setImageBitmap(image)
-                    } catch (e: Exception) {
-                        Log.e("FillBlankQuizFragment", "get Image Failure", e)
-                    }
-                }
+                loadImage()
             }
-
-            when (answer.count()) {
-                2 -> binding.etAnswer1.visibility = View.VISIBLE
-                3 -> {
-                    binding.etAnswer2.visibility = View.VISIBLE
-                    binding.etAnswer3.visibility = View.VISIBLE
-                }
-            }
-
+            setupAnswerFields()
         }
 
         return binding.root
     }
 
+    private fun setupAnswerFields() {
+        val editTexts = listOf(binding.etAnswer1, binding.etAnswer2, binding.etAnswer3)
+
+        editTexts.forEachIndexed { index, editText ->
+            if (index < answer.size) {
+                editText.visibility = View.VISIBLE
+                editText.setOnTouchListenerForKeyboard()
+                editText.setOnEditorActionListener { _, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+                    ) {
+                        onAnswerSubmit()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            } else {
+                editText.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun loadImage() {
+        lifecycleScope.launch {
+            try {
+                val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
+                val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                binding.ivQuizImage.setImageBitmap(image)
+            } catch (e: Exception) {
+                Log.e("FillBlankQuizFragment", "get Image Failure", e)
+            }
+        }
+    }
+
     override fun onAnswerSubmit() {
-        when (answer.count()) {
-            1 -> {
-                userAnswer[0] = (binding.etAnswer1.text.toString())
-            }
-            2 -> {
-                userAnswer[0] = binding.etAnswer1.text.toString()
-                userAnswer[1] = binding.etAnswer2.text.toString()
-            }
-            3 -> {
-                userAnswer[0] = binding.etAnswer1.text.toString()
-                userAnswer[1] = binding.etAnswer2.text.toString()
-                userAnswer[2] = binding.etAnswer3.text.toString()
+        if (!isAnswerSubmitted) {
+            userAnswer.clear()
+            for (i in 0 until answer.size) {
+                when (i) {
+                    0 -> userAnswer.add(binding.etAnswer1.text.toString())
+                    1 -> userAnswer.add(binding.etAnswer2.text.toString())
+                    2 -> userAnswer.add(binding.etAnswer3.text.toString())
+                }
             }
         }
 
-        try {
-            val bundle = Bundle().apply {
-                putStringArrayList("userAnswer", userAnswer)
-                putStringArrayList("answer", ArrayList(answer))
-                putString("commentary", commentary)
-                putInt("quizId", quizId!!)
-                putInt("quizType", quizType!!)
-            }
-            parentFragmentManager.commit {
-                val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
-                if (prevFragment != null) {
-                    remove(prevFragment)
+        if (userAnswer.any { it.isBlank() }) {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "모든 빈칸을 채워주세요.").show()
+        } else {
+            try {
+                if (!isAnswerSubmitted) {
+                    isAnswerSubmitted = true
+                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                        quizId = quizId!!,
+                        userAnswer = userAnswer.joinToString(","),
+                        answer = answer.joinToString(","),
+                        answerString = answer.mapIndexed { index, s -> "${index + 1}번 답: $s" }.joinToString("\n"),
+                        commentary = commentary,
+                        quizType = quizType!!
+                    )
+                    bottomSheet?.setOnNextQuizListener {
+                        loadNextQuiz?.invoke()
+                    }
+                    disableEditTexts()
                 }
-                add(R.id.fragmentContainerView, GradingFragment().apply {
-                    arguments = bundle
-                })
+                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
+            } catch (e: Exception) {
+                Log.e("FillBlankQuizFragment", "onAnswerSubmit", e)
             }
-        } catch (e: Exception) {
-            Log.e("FillBlankQuizFragment", "onAnswerSubmit", e)
         }
+    }
+
+    fun setLoadNextQuizListener(listener: () -> Unit) {
+        loadNextQuiz = listener
+    }
+
+    private fun disableEditTexts() {
+        binding.etAnswer1.isEnabled = false
+        binding.etAnswer2.isEnabled = false
+        binding.etAnswer3.isEnabled = false
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -206,6 +239,4 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             return fragment
         }
     }
-
-
 }

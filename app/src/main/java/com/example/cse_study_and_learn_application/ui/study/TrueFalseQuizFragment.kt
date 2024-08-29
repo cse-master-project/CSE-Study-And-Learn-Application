@@ -36,7 +36,9 @@ import kotlin.properties.Delegates
  */
 class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
 
-    lateinit var binding: FragmentTrueFalseQuizBinding
+    private lateinit var binding: FragmentTrueFalseQuizBinding
+    private var loadNextQuiz: (() -> Unit)? = null
+
     private var userAnswer: String? = null
     private lateinit var answer: String
     private lateinit var commentary: String
@@ -44,13 +46,16 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizType: Int? = null
     private var image: Bitmap? = null
 
+    private var isAnswerSubmitted = false
+    private var bottomSheet: BottomSheetGradingFragment? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTrueFalseQuizBinding.inflate(inflater)
 
-        requireArguments().let{
+        requireArguments().let {
             quizId = it.getInt("quizId")
             quizType = it.getInt("quizType")
             val hasImg = it.getBoolean("hasImg")
@@ -64,60 +69,79 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
 
             if (hasImg) {
                 binding.ivQuizImage.visibility = View.VISIBLE
-                lifecycleScope.launch {
-                    try {
-                        val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
-                        val decoded = Base64.decode(response.string(), Base64.DEFAULT)
-                        image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-                        binding.ivQuizImage.visibility = View.VISIBLE
-                        binding.ivQuizImage.setImageBitmap(image)
-                    } catch (e: Exception) {
-                        Log.e("TrueFalseQuizFragment", "get Image Failure", e)
-                    }
-                }
+                loadImage()
             }
 
             binding.rbTrue.setOnClickListener {
-                userAnswer = "1"
+                if (!isAnswerSubmitted) {
+                    userAnswer = "1"
+                    updateRadioButtons()
+                }
             }
 
             binding.rbFalse.setOnClickListener {
-                userAnswer = "0"
+                if (!isAnswerSubmitted) {
+                    userAnswer = "0"
+                    updateRadioButtons()
+                }
             }
         }
-
 
         return binding.root
     }
 
+    private fun updateRadioButtons() {
+        binding.rbTrue.isChecked = userAnswer == "1"
+        binding.rbFalse.isChecked = userAnswer == "0"
+    }
+
+    private fun loadImage() {
+        lifecycleScope.launch {
+            try {
+                val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId!!)
+                val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                binding.ivQuizImage.setImageBitmap(image)
+            } catch (e: Exception) {
+                Log.e("TrueFalseQuizFragment", "get Image Failure", e)
+            }
+        }
+    }
+
     override fun onAnswerSubmit() {
-        if(userAnswer == null) {
-            // Toast.makeText(context, "답을 선택 해주세요.", Toast.LENGTH_SHORT).show()
+        if (userAnswer == null) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해주세요.").show()
         } else {
             try {
-                val bundle = Bundle().apply {
-                    putString("userAnswer", userAnswer!!)
-                    putString("answer", answer)
-                    putString("commentary", commentary)
-                    putInt("quizId", quizId!!)
-                    putInt("quizType", quizType!!)
-                }
-                Log.d("test","ua: ${userAnswer}, a: $answer, c: $commentary, qi: $quizId, qt: $quizType")
-                parentFragmentManager.commit {
-                    val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
-                    if (prevFragment != null) {
-                        remove(prevFragment)
+                if (!isAnswerSubmitted) {
+                    isAnswerSubmitted = true
+                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                        quizId = quizId!!,
+                        userAnswer = userAnswer!!,
+                        answer = answer,
+                        answerString = if (answer == "1") "참" else "거짓",
+                        commentary = commentary,
+                        quizType = quizType!!
+                    )
+                    bottomSheet?.setOnNextQuizListener {
+                        loadNextQuiz?.invoke()
                     }
-                    add(R.id.fragmentContainerView, GradingFragment().apply {
-                        arguments = bundle
-                    })
+                    disableRadioButtons()
                 }
+                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("TrueFalseQuizFragment", "onAnswerSubmit", e)
             }
-
         }
+    }
+
+    fun setLoadNextQuizListener(listener: () -> Unit) {
+        loadNextQuiz = listener
+    }
+
+    private fun disableRadioButtons() {
+        binding.rbTrue.isEnabled = false
+        binding.rbFalse.isEnabled = false
     }
 
     companion object {
@@ -133,6 +157,4 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
             return fragment
         }
     }
-
-
 }

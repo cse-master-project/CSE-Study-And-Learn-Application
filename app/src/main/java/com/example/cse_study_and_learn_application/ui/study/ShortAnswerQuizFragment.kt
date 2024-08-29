@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.KeyEvent
@@ -39,6 +41,7 @@ import kotlinx.coroutines.launch
 class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private lateinit var binding: FragmentShortAnswerQuizBinding
+    private var loadNextQuiz: (() -> Unit)? = null
 
     private var userAnswer: String? = null
     private lateinit var answer: String
@@ -46,6 +49,9 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizId: Int? = null
     private var quizType: Int? = null
     private var image: Bitmap? = null
+
+    private var isAnswerSubmitted = false
+    private var bottomSheet: BottomSheetGradingFragment? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,6 +74,10 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentShortAnswerQuizBinding.inflate(inflater)
+
+        /**
+         * 아직 답 여러개 일 때 칸 수 늘리는거 안 만들어짐
+         */
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -95,11 +105,25 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                     }
                 }
             }
-
             binding.tvQuizText.text = quiz
         }
 
+        binding.etAnswer.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (!isAnswerSubmitted) {
+                    userAnswer = s.toString()
+                } else {
+                    // 이미 답변을 제출했다면 입력을 무시
+                    binding.etAnswer.removeTextChangedListener(this)
+                    binding.etAnswer.setText(userAnswer)
+                    binding.etAnswer.setSelection(userAnswer?.length ?: 0)
+                    binding.etAnswer.addTextChangedListener(this)
+                }
+            }
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         return binding.root
     }
@@ -107,31 +131,33 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     // 앱바의 채점 버튼 클릭
     override fun onAnswerSubmit() {
         userAnswer = binding.etAnswer.text.toString()
-        if(userAnswer == "") {
-            // Toast.makeText(context, "답을 입력 해주세요.", Toast.LENGTH_SHORT).show()
+        if (userAnswer.isNullOrEmpty()) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 입력해주세요.").show()
         } else {
             try {
-                val bundle = Bundle().apply {
-                    putString("userAnswer", userAnswer)
-                    putString("answer", answer)
-                    putString("commentary", commentary)
-                    putInt("quizId", quizId!!)
-                    putInt("quizType", quizType!!)
-                }
-                parentFragmentManager.commit {
-                    val prevFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
-                    if (prevFragment != null) {
-                        remove(prevFragment)
+                if (!isAnswerSubmitted) {
+                    isAnswerSubmitted = true
+                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                        quizId = quizId!!,
+                        userAnswer = userAnswer!!,
+                        answer = answer,
+                        answerString = answer, // 단답형의 경우 answerString은 answer와 동일
+                        commentary = commentary,
+                        quizType = quizType!!
+                    )
+                    bottomSheet?.setOnNextQuizListener {
+                        loadNextQuiz?.invoke()
                     }
-                    add(R.id.fragmentContainerView, GradingFragment().apply {
-                        arguments = bundle
-                    })
                 }
+                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("ShortAnswerQuizFragment", "onAnswerSubmit", e)
             }
         }
+    }
+
+    fun setLoadNextQuizListener(listener: () -> Unit) {
+        loadNextQuiz = listener
     }
 
     @SuppressLint("ClickableViewAccessibility")
