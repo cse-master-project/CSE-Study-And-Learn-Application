@@ -172,6 +172,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                         quizSubjects[currentSubjectIndex + 1]
                     }
                 }
+
                 "PREV" -> {
                     if (currentSubjectIndex == 0) {
                         quizSubjects[quizSubjects.size - 1]
@@ -179,6 +180,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                         quizSubjects[currentSubjectIndex - 1]
                     }
                 }
+
                 else -> {
                     currentSubject
                 }
@@ -188,6 +190,28 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         }
     }
 
+    /**
+     * Init subject contents
+     *ASD;FKLJLKNVXCZ
+     *
+     * L;SDAKJFL;K
+     * VXCZLVLKANDLPVK
+     *
+     *
+     *
+     * FDALKGA;LSKDJG
+     * V
+     * DA
+     * FGAS
+     * DGQ
+     * WERASDVXZC
+     * V
+     * XZCV
+     * AS
+     * DF
+     * QWERASDV
+     *
+     */
     @SuppressLint("NotifyDataSetChanged")
     private fun initSubjectContents() {
         val currentSubject = homeViewModel.subject

@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentFillBlankQuizBinding
@@ -25,6 +26,7 @@ import com.example.cse_study_and_learn_application.model.FillBlankQuizJsonConten
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
+import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
@@ -39,41 +41,16 @@ import kotlinx.coroutines.launch
 class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private lateinit var binding: FragmentFillBlankQuizBinding
-    private var loadNextQuiz: (() -> Unit)? = null
-
-    private var userAnswer: ArrayList<String> = arrayListOf("", "", "")
+    private lateinit var answerAdapter: FillBlankAnswerAdapter
     private lateinit var answer: List<String>
     private lateinit var commentary: String
     private var quizId: Int? = null
     private var quizType: Int? = null
     private var image: Bitmap? = null
 
+    private var loadNextQuiz: (() -> Unit)? = null
     private var isAnswerSubmitted = false
     private var bottomSheet: BottomSheetGradingFragment? = null
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupUI(view)
-        val editTexts: MutableList<EditText> = mutableListOf(
-            binding.etAnswer1,
-            binding.etAnswer2,
-            binding.etAnswer3
-        )
-
-        for (et in editTexts) {
-            et.setOnTouchListenerForKeyboard()
-            et.setOnEditorActionListener { _, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_DONE ||
-                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
-                ) {
-                    onAnswerSubmit()
-                    true
-                } else {
-                    false
-                }
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,32 +73,18 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
                 binding.ivQuizImage.visibility = View.VISIBLE
                 loadImage()
             }
-            setupAnswerFields()
+
+            setupRecyclerView(answer.size)
         }
 
         return binding.root
     }
 
-    private fun setupAnswerFields() {
-        val editTexts = listOf(binding.etAnswer1, binding.etAnswer2, binding.etAnswer3)
-
-        editTexts.forEachIndexed { index, editText ->
-            if (index < answer.size) {
-                editText.visibility = View.VISIBLE
-                editText.setOnTouchListenerForKeyboard()
-                editText.setOnEditorActionListener { _, actionId, event ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE ||
-                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
-                    ) {
-                        onAnswerSubmit()
-                        true
-                    } else {
-                        false
-                    }
-                }
-            } else {
-                editText.visibility = View.GONE
-            }
+    private fun setupRecyclerView(answerCount: Int) {
+        answerAdapter = FillBlankAnswerAdapter(answerCount)
+        binding.rvAnswers.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = answerAdapter
         }
     }
 
@@ -140,89 +103,40 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     override fun onAnswerSubmit() {
         if (!isAnswerSubmitted) {
-            userAnswer.clear()
-            for (i in 0 until answer.size) {
-                when (i) {
-                    0 -> userAnswer.add(binding.etAnswer1.text.toString())
-                    1 -> userAnswer.add(binding.etAnswer2.text.toString())
-                    2 -> userAnswer.add(binding.etAnswer3.text.toString())
-                }
-            }
-        }
-
-        if (userAnswer.any { it.isBlank() }) {
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "모든 빈칸을 채워주세요.").show()
-        } else {
-            try {
-                if (!isAnswerSubmitted) {
+            val userAnswers = answerAdapter.getAnswers()
+            if (userAnswers.any { it.isBlank() }) {
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "모든 빈칸을 채워주세요.").show()
+            } else {
+                try {
                     isAnswerSubmitted = true
                     bottomSheet = BottomSheetGradingFragment.newInstance(
                         quizId = quizId!!,
-                        userAnswer = userAnswer.joinToString(","),
+                        userAnswer = userAnswers.joinToString(","),
                         answer = answer.joinToString(","),
-                        answerString = answer.mapIndexed { index, s -> "${index + 1}번 답: $s" }.joinToString("\n"),
+                        answerString = answer.mapIndexed { index, s -> "${('a' + index)}: $s" }.joinToString("\n"),
                         commentary = commentary,
                         quizType = quizType!!
                     )
                     bottomSheet?.setOnNextQuizListener {
                         loadNextQuiz?.invoke()
                     }
-                    disableEditTexts()
+                    disableAnswerInputs()
+                    bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
+                } catch (e: Exception) {
+                    Log.e("FillBlankQuizFragment", "onAnswerSubmit", e)
                 }
-                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
-            } catch (e: Exception) {
-                Log.e("FillBlankQuizFragment", "onAnswerSubmit", e)
             }
+        } else {
+            bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
         }
+    }
+
+    private fun disableAnswerInputs() {
+        answerAdapter.disableAllInputs()
     }
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
         loadNextQuiz = listener
-    }
-
-    private fun disableEditTexts() {
-        binding.etAnswer1.isEnabled = false
-        binding.etAnswer2.isEnabled = false
-        binding.etAnswer3.isEnabled = false
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupUI(view: View) {
-        if(view !is EditText) {
-            view.setOnTouchListener { _, _ ->
-                hideKeyboard()
-                false
-            }
-        }
-
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val innerView = view.getChildAt(i)
-                setupUI(innerView)
-            }
-        }
-    }
-
-    private fun hideKeyboard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun EditText.setOnTouchListenerForKeyboard() {
-        setOnTouchListener { v, event ->
-            v.onTouchEvent(event)
-            when (event.action) {
-                MotionEvent.ACTION_UP -> {
-                    if (v is EditText) {
-                        v.requestFocus()
-                        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
-                    }
-                }
-            }
-            true
-        }
     }
 
     companion object {

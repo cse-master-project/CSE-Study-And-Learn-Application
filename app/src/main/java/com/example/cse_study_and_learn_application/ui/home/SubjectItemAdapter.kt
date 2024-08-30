@@ -52,6 +52,28 @@ class SubjectItemAdapter(
         // 과목 타이틀, 문제 수 설정
         holder.bind(subject)
 
+        /**
+         * Init subject contents
+         *ASD;FKLJLKNVXCZ
+         *
+         * L;SDAKJFL;K
+         * VXCZLVLKANDLPVK
+         *
+         *
+         *
+         * FDALKGA;LSKDJG
+         * V
+         * DA
+         * FGAS
+         * DGQ
+         * WERASDVXZC
+         * V
+         * XZCV
+         * AS
+         * DF
+         * QWERASDV
+         *
+         */
         // 과목 이미지 설정
         try {
             val assetManager = holder.itemView.context.assets
