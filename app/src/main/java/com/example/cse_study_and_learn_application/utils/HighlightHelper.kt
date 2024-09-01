@@ -61,12 +61,17 @@ class HighlightHelper(
             }
 
             val location = IntArray(2)
-            targetView.getLocationInWindow(location)
+            // targetView.getLocationInWindow(location)
 
-            //Log.d("Highlight", "View location: ${location[0]}, ${location[1]}")
+            val parentLocation = IntArray(2)
+            (targetView.parent as View).getLocationOnScreen(parentLocation)
+            Lg.d("test", HighlightHelper::class.java.simpleName,
+                "ParentView location: X: ${parentLocation[0]}, Y: ${parentLocation[1]}")
+
+
+            targetView.getLocationOnScreen(location)
 
             val targetRect = Rect(location[0], location[1], location[0] + targetView.width, location[1] + targetView.height)
-            //Log.d("Highlight", "Target Rect: $targetRect")
 
             val helpOverlayView = HighlightView(context, targetRect, item.description, item.showPosition, heightThreshold, bubbleMargin.toFloat(), bubblePadding.toFloat(), item.scaleFactor).apply {
                 visibility = View.INVISIBLE

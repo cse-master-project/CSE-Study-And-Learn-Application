@@ -34,10 +34,13 @@ import com.example.cse_study_and_learn_application.utils.HighlightHelper
 import com.example.cse_study_and_learn_application.utils.HighlightItem
 import com.example.cse_study_and_learn_application.utils.HighlightPosition
 import com.example.cse_study_and_learn_application.utils.Lg
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import com.example.cse_study_and_learn_application.utils.dpToPx
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import kotlin.math.ceil
+import kotlin.math.round
 
 
 /**
@@ -98,6 +101,12 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             }
         }
 
+        val parentLocation = IntArray(2)
+        (binding.rvSubjects.parent as View).getLocationOnScreen(parentLocation)
+        Lg.d("test", HomeFragment::class.java.simpleName,
+            "ParentView location: X: ${parentLocation[0]}, Y: ${parentLocation[1]}")
+
+
         val highlightHelper = HighlightHelper(
             requireContext(),
             this,
@@ -123,8 +132,8 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 ),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(28),
-            bubblePadding = requireContext().dpToPx(10),
+            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.009).toInt()),
+            bubblePadding = requireContext().dpToPx(20),
             screenName = HomeFragment::class.java.name
         )
 

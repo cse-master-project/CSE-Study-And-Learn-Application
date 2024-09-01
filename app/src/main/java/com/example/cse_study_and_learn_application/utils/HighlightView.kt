@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.text.Layout
@@ -9,6 +10,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.cse_study_and_learn_application.R
 
+@SuppressLint("ViewConstructor")
 class HighlightView(
     context: Context,
     private val targetRect: Rect,
@@ -38,6 +40,7 @@ class HighlightView(
         setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
@@ -45,15 +48,13 @@ class HighlightView(
 
         val cornerRadius = 20f // 모서리 둥글기 반경
 
-        // heightThreshold를 사용하여 위치 조정
-        val adjustedTop = targetRect.top - heightThreshold
-        val adjustedBottom = targetRect.bottom - heightThreshold
-
+        val halfWidth = (targetRect.width() / 2) * scaleFactor
+        val halfHeight = (targetRect.height() / 2) * scaleFactor
         val expandedRect = RectF(
-            targetRect.left - (targetRect.width() * (scaleFactor - 1) / 2),
-            adjustedTop - (targetRect.height() * (scaleFactor - 1) / 2),
-            targetRect.right + (targetRect.width() * (scaleFactor - 1) / 2),
-            adjustedBottom + (targetRect.height() * (scaleFactor - 1) / 2)
+            targetRect.centerX() - halfWidth,
+            targetRect.centerY() - halfHeight - heightThreshold,
+            targetRect.centerX() + halfWidth,
+            targetRect.centerY() + halfHeight - heightThreshold
         )
 
         canvas.drawRoundRect(
