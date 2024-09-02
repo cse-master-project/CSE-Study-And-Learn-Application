@@ -109,9 +109,6 @@ class QuizActivity() : AppCompatActivity() {
 
             binding.btnGrading.setOnClickListener {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
-                    is GradingFragment -> {
-                        getQuiz()
-                    }
                     is MultipleChoiceQuizFragment -> currentFragment.onAnswerSubmit()
                     is ShortAnswerQuizFragment -> currentFragment.onAnswerSubmit()
                     is MatingQuizFragment -> currentFragment.onAnswerSubmit()

@@ -64,7 +64,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             val hasImg = it.getBoolean("hasImg")
             val jsonString = it.getString("contents")
             val content = Gson().fromJson(jsonString, FillBlankQuizJsonContent::class.java)
-            answer = content.answer
+            answer = content.answer[0].split(",")
             commentary = content.commentary
 
             binding.tvQuizText.text = content.quiz
@@ -74,14 +74,14 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
                 loadImage()
             }
 
-            setupRecyclerView(answer.size)
+            setupRecyclerView(answer)
         }
 
         return binding.root
     }
 
-    private fun setupRecyclerView(answerCount: Int) {
-        answerAdapter = FillBlankAnswerAdapter(answerCount)
+    private fun setupRecyclerView(answers: List<String>) {
+        answerAdapter = FillBlankAnswerAdapter(answers.toMutableList())
         binding.rvAnswers.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = answerAdapter
@@ -104,6 +104,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     override fun onAnswerSubmit() {
         if (!isAnswerSubmitted) {
             val userAnswers = answerAdapter.getAnswers()
+            Log.d("test", userAnswers.toString())
             if (userAnswers.any { it.isBlank() }) {
                 DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "모든 빈칸을 채워주세요.").show()
             } else {

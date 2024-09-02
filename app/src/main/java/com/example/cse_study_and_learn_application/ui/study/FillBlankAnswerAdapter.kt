@@ -7,17 +7,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cse_study_and_learn_application.databinding.ItemFillBlankAnswerBinding
 
-class FillBlankAnswerAdapter(private val answerCount: Int) :
+class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
     RecyclerView.Adapter<FillBlankAnswerAdapter.AnswerViewHolder>() {
-
-    private val answers = MutableList(answerCount) { "" }
 
     inner class AnswerViewHolder(private val binding: ItemFillBlankAnswerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int) {
-            binding.etAnswer.hint = "(${('a' + position)})"
-            binding.etAnswer.setText(answers[position])
+            binding.etAnswer.hint = "${position + 1} 번 답.."
+
             binding.etAnswer.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     answers[position] = s.toString()
@@ -31,7 +29,6 @@ class FillBlankAnswerAdapter(private val answerCount: Int) :
             binding.etAnswer.isEnabled = false
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnswerViewHolder {
         val binding = ItemFillBlankAnswerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AnswerViewHolder(binding)
@@ -49,7 +46,7 @@ class FillBlankAnswerAdapter(private val answerCount: Int) :
         }
     }
 
-    override fun getItemCount() = answerCount
+    override fun getItemCount() = answers.size
 
     fun getAnswers(): List<String> = answers
 

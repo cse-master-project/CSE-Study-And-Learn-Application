@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentBottomSheetGradingBinding
-import com.example.cse_study_and_learn_application.databinding.FragmentGradingBinding
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
@@ -120,7 +119,9 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
             }
             QuizType.FILL_BLANK_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                val formattedAnswer = answer.mapIndexed { index, c -> "${index + 1}번 정답: $c" }.joinToString("\n")
+                val formattedAnswer = answer.split(",")
+                    .mapIndexed { index, ans -> "${index + 1}번 정답: ${ans.trim()}" }
+                    .joinToString("\n")
                 updateUI(isCorrect, formattedAnswer, "")
                 resultSubmit(quizId, isCorrect)
             }
@@ -134,7 +135,7 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
     private fun updateUI(isCorrect: Boolean, answer: String, answerString: String) {
         binding.btnAnswer.text = if (isCorrect) "O" else "X"
         binding.btnAnswer.setBackgroundColor(ContextCompat.getColor(requireContext(), if (isCorrect) R.color.correct else R.color.incorrect))
-        binding.tvAnswer.text = if (answerString.isNotEmpty()) answerString else answer
+        binding.tvAnswer.text = answerString.ifEmpty { answer }
     }
 
     private fun resultSubmit(quizId: Int, isCorrect: Boolean) {
