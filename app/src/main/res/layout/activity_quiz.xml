@@ -75,6 +75,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:clickable="true"
         android:background="@drawable/bg_linearlayout_to_button"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <TextView

@@ -279,6 +279,5 @@ class QuizActivity() : AppCompatActivity() {
             reportDialog.show()
         }
     }
-
 }
 
