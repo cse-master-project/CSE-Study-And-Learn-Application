@@ -1,3 +1,4 @@
+import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -13,6 +14,10 @@ val properties: Properties = Properties().apply {
     load(project.rootProject.file("local.properties").inputStream())
 }
 
+val keystoreProperties: Properties = Properties().apply {
+    load(project.rootProject.file("keystore.properties").inputStream())
+}
+
 android {
     namespace = "com.example.cse_study_and_learn_application"
     compileSdk = 34
@@ -20,10 +25,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../keystore/release.keystore")
-            storePassword = "rlawkdwndyddudghks"
-            keyAlias = "cslu"
-            keyPassword = "rlawkdwndyddudghks"
+            storeFile = file (keystoreProperties["storeFile"]!!)
+            storePassword = keystoreProperties["storePassword"].toString()
+            keyAlias = keystoreProperties["keyAlias"].toString()
+            keyPassword = keystoreProperties["keyPassword"].toString()
         }
     }
 
