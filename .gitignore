@@ -13,6 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+keystore.properties
 
 # Ignore RetrofitInstance.kt
 /app/src/main/java/com/example/cse_study_and_learn_application/connector/RetrofitInstance.kt
+
