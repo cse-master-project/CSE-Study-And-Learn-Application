@@ -33,12 +33,22 @@
     <color name="gray_700">#616161</color>
     <color name="gray_800">#424242</color>
     <color name="gray_900">#212121</color>
-
-    <color name="selected_card_color">#4FC3F7</color>
+    <!--4FC3F7-->
+    <color name="selected_card_background">#4FF79B</color>
+    <color name="selected_card_number_background">#1DAC5D</color>
     <color name="default_card_color">#B3E5FC</color>
 
-    <color name="correct">#00ff00</color>
-    <color name="incorrect">#ff0000</color>
+    <color name="correct_card_background">#4FF79B</color>
+    <color name="correct_card_number_background">#1DAC5D</color>
+
+    <color name="incorrect_card_background">#F86161</color>
+    <color name="incorrect_card_number_background">#C62727</color>
+
+    <color name="incorrect_true_false">#ff0000</color>
 
     <color name="transparent">#00000000</color>
+
+    <color name="selected_number_color">#FFFFFF</color>
+
+
 </resources>
