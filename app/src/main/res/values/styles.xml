@@ -88,6 +88,8 @@
         <item name="android:textColorHint">@color/light_blue_300</item>
     </style>
 
-
+    <style name="QuizFontTheme" parent="@style/AppTheme">
+        <item name="android:fontFamily">@font/suit_light</item>
+    </style>
 
 </resources>

@@ -6,28 +6,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.study.MultipleChoiceQuizFragment">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/quiz_card"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline"
         app:cardElevation="8dp"
-        app:cardCornerRadius="50dp"
-        app:cardBackgroundColor="@color/material_dynamic_primary90">
+        app:cardCornerRadius="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
             <TextView
@@ -35,11 +29,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:text="다음중 어쩌고 저쩌고로 올바른 것은?"
+                android:layout_margin="40dp"
+                android:fontFamily="@font/suit_light"
+                android:lineSpacingExtra="10dp"
+                android:text="문제 설명"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="20dp" />
+                android:textSize="15dp" />
 
             <ImageView
                 android:id="@+id/iv_quiz_image"
@@ -56,10 +52,11 @@
         android:id="@+id/gl_answer_group"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline">
+        app:layout_constraintTop_toBottomOf="@id/quiz_card">
 
         <com.example.cse_study_and_learn_application.ui.view.LineDrawingView
             android:id="@+id/line_drawing_view"
