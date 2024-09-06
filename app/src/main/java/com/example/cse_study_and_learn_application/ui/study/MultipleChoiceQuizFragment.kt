@@ -126,6 +126,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         return binding.root
     }
 
+
+
     // 카드뷰 한 개만 선택
     private fun updateCardSelection(selectedCard:MaterialCardView, cards: List<MaterialCardView>) {
         cards.forEachIndexed { index, card ->
@@ -193,9 +195,11 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         }
     }
 
+    private fun updateButtonText() {
+        (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+    }
 
-
-    // 앱바의 채점 버튼 클릭
+    // 채점 버튼 클릭
     override fun onAnswerSubmit() {
         if (userAnswer == null) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해주세요.").show()
@@ -212,6 +216,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                         commentary = commentary,
                         quizType = quizType!!
                     )
+                    updateButtonText() // 버튼 텍스트 업데이트
                     bottomSheet?.setOnNextQuizListener {
                         loadNextQuiz?.invoke()
                     }

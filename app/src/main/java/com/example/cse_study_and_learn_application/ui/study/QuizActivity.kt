@@ -121,6 +121,13 @@ class QuizActivity() : AppCompatActivity() {
         }
     }
 
+    fun setGradingButtonText(text: String) {
+        binding.tvGrading.text = text
+    }
+
+    fun resetGradingButtonText() {
+        binding.tvGrading.text = "채점하기" // 또는 원래의 기본 텍스트
+    }
 
     private fun getQuiz() {
         if (isRandom) {
@@ -182,6 +189,7 @@ class QuizActivity() : AppCompatActivity() {
     }
 
     private fun loadNextQuiz() {
+        resetGradingButtonText()
         getQuiz()
     }
 
