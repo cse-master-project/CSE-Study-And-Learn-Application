@@ -66,6 +66,7 @@
             android:fontFamily="@font/suit_light"
             android:singleLine="true"
             android:imeOptions="actionDone"
+            android:background="@color/default_input_text_background"
             android:hint="정답..." />
     </com.google.android.material.textfield.TextInputLayout>
 
