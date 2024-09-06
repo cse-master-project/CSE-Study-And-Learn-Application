@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -56,7 +57,15 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     private var loadNextQuiz: (() -> Unit)? = null
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
-        loadNextQuiz = listener
+        loadNextQuiz = {
+            // 카드 색상 초기화
+            cards.forEach { card ->
+                card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background_color))
+            }
+            isAnswerSubmitted = false
+            userAnswer = null
+            listener.invoke()
+        }
     }
 
     override fun onCreateView(
@@ -119,8 +128,21 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
 
     // 카드뷰 한 개만 선택
     private fun updateCardSelection(selectedCard:MaterialCardView, cards: List<MaterialCardView>) {
-        cards.forEach { card ->
-            card.isChecked = card == selectedCard
+        cards.forEachIndexed { index, card ->
+            val isSelected = card == selectedCard
+            card.isChecked = isSelected
+
+            // 번호 TextView 찾기
+            val numberTextView = card.findViewById<TextView>(getNumberTextViewId(index))
+
+            // 선택 여부에 따라 색상 변경
+            if (isSelected) {
+                numberTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.selected_number_color))
+                numberTextView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_number_rounded_selected)
+            } else {
+                numberTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                numberTextView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_number_rounded)
+            }
         }
     }
 
@@ -135,6 +157,42 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         }
     }
 
+    private fun getNumberTextViewId(index: Int): Int {
+        return when (index) {
+            0 -> R.id.btn_1
+            1 -> R.id.btn_2
+            2 -> R.id.btn_3
+            3 -> R.id.btn_4
+            else -> throw IllegalArgumentException("Invalid index")
+        }
+    }
+
+    private fun updateCardColors() {
+        cards.forEachIndexed { index, card ->
+            val isCorrectAnswer = (index + 1).toString() == answer
+            val isUserAnswer = (index + 1).toString() == userAnswer
+            val numberTextView = card.findViewById<TextView>(getNumberTextViewId(index))
+
+            when {
+                isCorrectAnswer -> {
+                    card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.correct_card_background))
+                    numberTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    numberTextView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_number_rounded_correct)
+                }
+                isUserAnswer && !isCorrectAnswer -> {
+                    card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
+                    numberTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    numberTextView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_number_rounded_wrong)
+                }
+                else -> {
+                    card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.card_background_color))
+                    numberTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    numberTextView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_number_rounded)
+                }
+            }
+        }
+    }
+
 
 
     // 앱바의 채점 버튼 클릭
@@ -145,6 +203,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             try {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
+                    updateCardColors() // 카드 색상 업데이트
                     bottomSheet = BottomSheetGradingFragment.newInstance(
                         quizId = quizId!!,
                         userAnswer = userAnswer!!,

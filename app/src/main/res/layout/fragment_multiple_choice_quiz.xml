@@ -53,6 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,11 +65,12 @@
             android:id="@+id/cv_answer_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
             android:padding="4dp"
+            app:checkedIcon="@null"
             app:cardElevation="6dp"
             app:cardCornerRadius="15dp"
             app:cardBackgroundColor="@color/card_background_color">
@@ -76,17 +79,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
-                <Button
+                <TextView
                     android:id="@+id/btn_1"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="1"/>
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_button_number_rounded"
+                    android:text="1"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/tv_answer_1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/suit_light"
+                    android:gravity="center_vertical"
                     android:text="보기 1"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
@@ -99,11 +108,12 @@
             android:id="@+id/cv_answer_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             app:cardElevation="6dp"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
+            app:checkedIcon="@null"
             app:cardCornerRadius="15dp"
             app:cardBackgroundColor="@color/card_background_color">
             <LinearLayout
@@ -111,17 +121,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
-                <Button
+                <TextView
                     android:id="@+id/btn_2"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="2"/>
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_button_number_rounded"
+                    android:text="2"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/tv_answer_2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/suit_light"
+                    android:gravity="center_vertical"
                     android:text="보기 2"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
@@ -133,11 +149,12 @@
             android:id="@+id/cv_answer_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             app:cardElevation="6dp"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
+            app:checkedIcon="@null"
             app:cardCornerRadius="15dp"
             app:cardBackgroundColor="@color/card_background_color">
             <LinearLayout
@@ -145,17 +162,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
-                <Button
+                <TextView
                     android:id="@+id/btn_3"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="3"/>
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_button_number_rounded"
+                    android:text="3"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/tv_answer_3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/suit_light"
+                    android:gravity="center_vertical"
                     android:text="보기 3"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
@@ -167,11 +190,12 @@
             android:id="@+id/cv_answer_4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             app:cardElevation="6dp"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
+            app:checkedIcon="@null"
             app:cardCornerRadius="15dp"
             app:cardBackgroundColor="@color/card_background_color">
             <LinearLayout
@@ -179,17 +203,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
-                <Button
+                <TextView
                     android:id="@+id/btn_4"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="4"/>
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_button_number_rounded"
+                    android:text="4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
 
                 <TextView
                     android:id="@+id/tv_answer_4"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/suit_light"
+                    android:gravity="center_vertical"
                     android:text="보기 4"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"

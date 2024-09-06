@@ -1,6 +1,5 @@
 package com.example.cse_study_and_learn_application.ui.study
 
-import android.app.Activity
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
@@ -50,10 +49,6 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
             grading(quizId, userAnswer, answer)
         }
 
-        binding.btnNextQuiz.setOnClickListener {
-            dismiss() // BottomSheet를 닫습니다.
-            onNextQuizListener?.invoke() // 다음 문제 로드 콜백 호출
-        }
         return binding.root
     }
 
@@ -97,24 +92,20 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
         when (getQuizTypeFromInt(requireArguments().getInt("quizType"))) {
             QuizType.MULTIPLE_CHOICE_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                updateUI(isCorrect, answer, requireArguments().getString("answerString").toString())
                 resultSubmit(quizId, isCorrect)
             }
             QuizType.SHORT_ANSWER_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                updateUI(isCorrect, answer, "")
                 resultSubmit(quizId, isCorrect)
             }
             QuizType.MATING_QUIZ -> {
                 val userAnswerList = requireArguments().getStringArrayList("userAnswer")
                 val answerList = requireArguments().getStringArrayList("answer")
                 val isCorrect = userAnswerList != null && answerList != null && userAnswerList.toSet() == answerList.toSet()
-                updateUI(isCorrect, answerList?.joinToString("\n") ?: "", "")
                 resultSubmit(quizId, isCorrect)
             }
             QuizType.TRUE_FALSE_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                updateUI(isCorrect, answer, "")
                 resultSubmit(quizId, isCorrect)
             }
             QuizType.FILL_BLANK_QUIZ -> {
@@ -122,7 +113,6 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
                 val formattedAnswer = answer.split(",")
                     .mapIndexed { index, ans -> "${index + 1}번 정답: ${ans.trim()}" }
                     .joinToString("\n")
-                updateUI(isCorrect, formattedAnswer, "")
                 resultSubmit(quizId, isCorrect)
             }
             else -> {
@@ -130,12 +120,6 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
             }
         }
         binding.tvCommentary.text = requireArguments().getString("commentary")
-    }
-
-    private fun updateUI(isCorrect: Boolean, answer: String, answerString: String) {
-        binding.btnAnswer.text = if (isCorrect) "O" else "X"
-        binding.btnAnswer.setBackgroundColor(ContextCompat.getColor(requireContext(), if (isCorrect) R.color.correct else R.color.incorrect))
-        binding.tvAnswer.text = answerString.ifEmpty { answer }
     }
 
     private fun resultSubmit(quizId: Int, isCorrect: Boolean) {
