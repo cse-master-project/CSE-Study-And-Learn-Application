@@ -64,7 +64,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             }
             isAnswerSubmitted = false
             userAnswer = null
-            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+            (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             listener.invoke()
         }
     }
@@ -75,6 +76,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+        (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -215,6 +218,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                     isAnswerSubmitted = true
                     updateCardColors() // 카드 색상 업데이트
                     (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
+                    (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+                    (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
                     explanationDialog = BottomSheetGradingFragment.newInstance(
                         quizId = quizId!!,
                         userAnswer = userAnswer!!,
@@ -225,7 +230,6 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                     )
                     updateButtonText() // 버튼 텍스트 업데이트
                     explanationDialog?.setOnNextQuizListener {
-                        loadNextQuiz?.invoke()
                         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
                 }

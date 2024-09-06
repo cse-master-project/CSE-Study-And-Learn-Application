@@ -142,8 +142,12 @@ class QuizActivity() : AppCompatActivity() {
         binding.tvGrading.text = text
     }
 
-    fun resetGradingButtonText() {
+    private fun resetGradingButtonText() {
         binding.tvGrading.text = "채점하기" // 또는 원래의 기본 텍스트
+    }
+
+    fun setGradingButtonClickListener(listener: View.OnClickListener) {
+        binding.btnGrading.setOnClickListener(listener)
     }
 
     private fun getQuiz() {
