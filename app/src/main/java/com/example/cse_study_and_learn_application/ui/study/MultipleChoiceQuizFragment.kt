@@ -52,7 +52,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     private var options: List<String>? = null
 
     private var isAnswerSubmitted = false
-    private var bottomSheet: BottomSheetGradingFragment? = null
+    private var explanationDialog: BottomSheetGradingFragment? = null
 
     private var loadNextQuiz: (() -> Unit)? = null
 
@@ -64,6 +64,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             }
             isAnswerSubmitted = false
             userAnswer = null
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             listener.invoke()
         }
     }
@@ -73,6 +74,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
+        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -126,7 +128,11 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
         return binding.root
     }
 
-
+    fun showExplanationDialog() {
+        if (isAnswerSubmitted && explanationDialog != null) {
+            explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
+        }
+    }
 
     // 카드뷰 한 개만 선택
     private fun updateCardSelection(selectedCard:MaterialCardView, cards: List<MaterialCardView>) {
@@ -208,7 +214,8 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
                     updateCardColors() // 카드 색상 업데이트
-                    bottomSheet = BottomSheetGradingFragment.newInstance(
+                    (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
+                    explanationDialog = BottomSheetGradingFragment.newInstance(
                         quizId = quizId!!,
                         userAnswer = userAnswer!!,
                         answer = answer,
@@ -217,11 +224,11 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                         quizType = quizType!!
                     )
                     updateButtonText() // 버튼 텍스트 업데이트
-                    bottomSheet?.setOnNextQuizListener {
+                    explanationDialog?.setOnNextQuizListener {
                         loadNextQuiz?.invoke()
+                        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
                 }
-                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)
             }

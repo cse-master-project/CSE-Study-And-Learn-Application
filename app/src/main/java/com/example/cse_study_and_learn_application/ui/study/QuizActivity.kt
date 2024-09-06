@@ -117,8 +117,25 @@ class QuizActivity() : AppCompatActivity() {
                 }
 
             }
+
+            binding.btnCommentary.setOnClickListener {
+                when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
+                    is MultipleChoiceQuizFragment -> currentFragment.showExplanationDialog()
+                    /*
+                    is ShortAnswerQuizFragment -> currentFragment.showExplanationDialog()
+                    is MatingQuizFragment -> currentFragment.showExplanationDialog()
+                    is TrueFalseQuizFragment -> currentFragment.showExplanationDialog()
+                    is FillBlankQuizFragment -> currentFragment.showExplanationDialog()
+                    */
+                }
+            }
             getQuiz()
         }
+    }
+
+    // 해설 버튼 활성화/비활성화 메서드
+    fun setExplanationButtonEnabled(enabled: Boolean) {
+        binding.btnCommentary.isEnabled = enabled
     }
 
     fun setGradingButtonText(text: String) {
