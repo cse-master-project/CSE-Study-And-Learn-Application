@@ -108,42 +108,35 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     override fun onAnswerSubmit() {
+        val userAnswers = answerAdapter.getAnswers()
+        Log.d("useranswer", userAnswers.toString())
+        if (userAnswers.any { it.isBlank() }) {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "모든 빈칸을 채워주세요.").show()
+            return  // 빈 답변이 있으면 여기서 함수를 종료합니다.
+        }
         if (!isAnswerSubmitted) {
-            val userAnswers = answerAdapter.getAnswers()
-            if (userAnswers.any { it.isBlank() }) {
-                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "모든 빈칸을 채워주세요.").show()
-            } else {
-                try {
-                    if (!isAnswerSubmitted) {
-                        val userAnswers = answerAdapter.getAnswers()
-                        isAnswerSubmitted = true
-                        (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
-                        (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
-                        (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+            isAnswerSubmitted = true
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
+            (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+            (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
 
-                        // 정답 비교 및 색상 업데이트
-                        val isCorrect = updateAnswersAppearance(userAnswers)
+            // 정답 비교 및 색상 업데이트
+            val isCorrect = updateAnswersAppearance(userAnswers)
 
-                        // 문제 텍스트 업데이트
-                        updateQuizText()
+            // 문제 텍스트 업데이트
+            updateQuizText()
 
-                        (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+            (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
 
-
-                        explanationDialog = BottomSheetGradingFragment.newInstance(
-                            isCorrect = isCorrect,
-                            commentary = commentary
-                        )
-                        updateButtonText() // 버튼 텍스트 업데이트
-                        explanationDialog?.setOnNextQuizListener {
-                            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-                        }
-
-                    }
-                } catch (e: Exception) {
-                    Log.e("ShortAnswerQuizFragment", "onAnswerSubmit", e)
-                }
+            explanationDialog = BottomSheetGradingFragment.newInstance(
+                isCorrect = isCorrect,
+                commentary = commentary,
+            )
+            updateButtonText() // 버튼 텍스트 업데이트
+            explanationDialog?.setOnNextQuizListener {
+                (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             }
+            disableAnswerInputs()
         } else {
             // 이미 답변을 제출한 경우, 다음 문제로 넘어갑니다.
             loadNextQuiz?.invoke()
@@ -153,12 +146,17 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     private fun updateAnswersAppearance(userAnswers: List<String>): Boolean {
         var allCorrect = true
         userAnswers.forEachIndexed { index, userAnswer ->
-            val isCorrect = userAnswer.trim().equals(answer[index].trim(), ignoreCase = true)
-            if (isCorrect) {
-                answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.correct_card_background))
-            } else {
+            if (userAnswer.isBlank()) {
                 answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
                 allCorrect = false
+            } else {
+                val isCorrect = userAnswer.trim().equals(answer[index].trim(), ignoreCase = true)
+                if (isCorrect) {
+                    answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.correct_card_background))
+                } else {
+                    answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
+                    allCorrect = false
+                }
             }
         }
         return allCorrect
@@ -166,8 +164,8 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private fun updateQuizText() {
         var updatedText = originalQuizText
-        answer.forEachIndexed { index, correctAnswer ->
-            updatedText = updatedText.replaceFirst("(   )", "($correctAnswer)")
+        answer.forEachIndexed { _, correctAnswer ->
+            updatedText = updatedText.replaceFirst("()", "($correctAnswer)")
         }
         binding.tvQuizText.text = updatedText
     }
@@ -180,6 +178,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
         }
     }
+
 
     private fun disableAnswerInputs() {
         answerAdapter.disableAllInputs()
@@ -194,6 +193,10 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+
+            // 입력 필드 활성화
+            answerAdapter.enableAllInputs()
+
             listener.invoke()
         }
     }

@@ -45,8 +45,6 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
             val quizId = it.getInt("quizId")
             val userAnswer = it.getString("userAnswer").toString()
             val answer = it.getString("answer").toString()
-
-            grading(quizId, userAnswer, answer)
         }
 
         return binding.root
@@ -86,33 +84,6 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
             windowManager?.defaultDisplay?.getMetrics(displayMetrics)
             displayMetrics.heightPixels
         }
-    }
-
-    private fun grading(quizId: Int, userAnswer: String, answer: String) {
-        when (getQuizTypeFromInt(requireArguments().getInt("quizType"))) {
-
-            QuizType.SHORT_ANSWER_QUIZ -> {
-                val isCorrect = userAnswer == answer
-            }
-            QuizType.MATING_QUIZ -> {
-                val userAnswerList = requireArguments().getStringArrayList("userAnswer")
-                val answerList = requireArguments().getStringArrayList("answer")
-                val isCorrect = userAnswerList != null && answerList != null && userAnswerList.toSet() == answerList.toSet()
-            }
-            QuizType.TRUE_FALSE_QUIZ -> {
-                val isCorrect = userAnswer == answer
-            }
-            QuizType.FILL_BLANK_QUIZ -> {
-                val isCorrect = userAnswer == answer
-                val formattedAnswer = answer.split(",")
-                    .mapIndexed { index, ans -> "${index + 1}번 정답: ${ans.trim()}" }
-                    .joinToString("\n")
-            }
-            else -> {
-                Log.e("failure", "not found quiz type: ${requireArguments().getInt("quizType")}")
-            }
-        }
-        binding.tvCommentary.text = requireArguments().getString("commentary")
     }
 
     fun setOnNextQuizListener(listener: () -> Unit) {

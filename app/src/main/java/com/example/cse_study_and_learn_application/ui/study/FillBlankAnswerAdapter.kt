@@ -5,22 +5,25 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.util.rangeTo
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cse_study_and_learn_application.databinding.ItemFillBlankAnswerBinding
 
 class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
     RecyclerView.Adapter<FillBlankAnswerAdapter.AnswerViewHolder>() {
 
+    private val userAnswers = MutableList(answers.size) { "" }
+
     inner class AnswerViewHolder(private val binding: ItemFillBlankAnswerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int) {
             binding.etAnswer.hint = "${position + 1} 번 답.."
-            binding.etAnswer.setText("") // 초기에 빈 텍스트로 설정
+            binding.etAnswer.setText(userAnswers[position]) // 초기에 빈 텍스트로 설정
 
             binding.etAnswer.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    answers[position] = s.toString()
+                    userAnswers[position] = s.toString()
                 }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -38,11 +41,16 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
         fun setAnswerText(text: String) {
             binding.etAnswer.setText(text)
         }
+
+        fun enableInput() {
+            binding.etAnswer.isEnabled = true
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun resetAnswers() {
-        answers.replaceAll { "" }
+        userAnswers.clear()
+        userAnswers.addAll(List(itemCount) { "" })
         notifyDataSetChanged()
     }
 
@@ -62,6 +70,7 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
                 is String -> {
                     when (payloads[0]) {
                         "disable" -> holder.disableInput()
+                        "enable" -> holder.enableInput()
                         else -> holder.setAnswerText(payloads[0] as String)
                     }
                 }
@@ -73,7 +82,7 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
 
     override fun getItemCount() = answers.size
 
-    fun getAnswers(): List<String> = answers
+    fun getAnswers(): List<String> = userAnswers
 
     fun disableAllInputs() {
         answers.indices.forEach { position ->
@@ -85,8 +94,11 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
         notifyItemChanged(position, color)
     }
 
-    fun setItemText(position: Int, text: String) {
-        answers[position] = text
-        notifyItemChanged(position, text)
+    fun enableAllInputs() {
+        answers.indices.forEach { position ->
+            notifyItemChanged(position, "enable")
+        }
     }
+
+
 }
