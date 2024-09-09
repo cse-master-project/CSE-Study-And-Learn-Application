@@ -133,7 +133,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     override fun onAnswerSubmit() {
         userAnswer = binding.etAnswer.text.toString()
         if (userAnswer.isNullOrEmpty()) {
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 입력해주세요.").show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 입력해주세요.").show()
         } else {
             try {
                 if (!isAnswerSubmitted) {

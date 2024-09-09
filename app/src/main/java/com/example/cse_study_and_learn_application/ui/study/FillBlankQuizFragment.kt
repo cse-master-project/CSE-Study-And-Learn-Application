@@ -106,7 +106,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             val userAnswers = answerAdapter.getAnswers()
             Log.d("test", userAnswers.toString())
             if (userAnswers.any { it.isBlank() }) {
-                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "모든 빈칸을 채워주세요.").show()
+                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "모든 빈칸을 채워주세요.").show()
             } else {
                 try {
                     isAnswerSubmitted = true

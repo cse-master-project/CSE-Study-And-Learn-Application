@@ -211,7 +211,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     // 채점 버튼 클릭
     override fun onAnswerSubmit() {
         if (userAnswer == null) {
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "답을 선택해주세요.").show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해주세요.").show()
         } else {
             try {
                 if (!isAnswerSubmitted) {
