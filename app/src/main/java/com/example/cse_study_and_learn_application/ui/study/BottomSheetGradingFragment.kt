@@ -90,30 +90,23 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
 
     private fun grading(quizId: Int, userAnswer: String, answer: String) {
         when (getQuizTypeFromInt(requireArguments().getInt("quizType"))) {
-            QuizType.MULTIPLE_CHOICE_QUIZ -> {
-                val isCorrect = userAnswer == answer
-                resultSubmit(quizId, isCorrect)
-            }
+
             QuizType.SHORT_ANSWER_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                resultSubmit(quizId, isCorrect)
             }
             QuizType.MATING_QUIZ -> {
                 val userAnswerList = requireArguments().getStringArrayList("userAnswer")
                 val answerList = requireArguments().getStringArrayList("answer")
                 val isCorrect = userAnswerList != null && answerList != null && userAnswerList.toSet() == answerList.toSet()
-                resultSubmit(quizId, isCorrect)
             }
             QuizType.TRUE_FALSE_QUIZ -> {
                 val isCorrect = userAnswer == answer
-                resultSubmit(quizId, isCorrect)
             }
             QuizType.FILL_BLANK_QUIZ -> {
                 val isCorrect = userAnswer == answer
                 val formattedAnswer = answer.split(",")
                     .mapIndexed { index, ans -> "${index + 1}번 정답: ${ans.trim()}" }
                     .joinToString("\n")
-                resultSubmit(quizId, isCorrect)
             }
             else -> {
                 Log.e("failure", "not found quiz type: ${requireArguments().getInt("quizType")}")
@@ -122,37 +115,19 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
         binding.tvCommentary.text = requireArguments().getString("commentary")
     }
 
-    private fun resultSubmit(quizId: Int, isCorrect: Boolean) {
-        lifecycleScope.launch {
-            val response = ConnectorRepository().submitQuizResult(
-                token = AccountAssistant.getServerAccessToken(requireContext()),
-                quizId = quizId,
-                isCorrect = isCorrect
-            )
-        }
-    }
-
     fun setOnNextQuizListener(listener: () -> Unit) {
         onNextQuizListener = listener
     }
 
     companion object {
         fun newInstance(
-            quizId: Int,
-            userAnswer: String,
-            answer: String,
-            answerString: String,
+            isCorrect: Boolean,
             commentary: String,
-            quizType: Int
         ): BottomSheetGradingFragment {
             return BottomSheetGradingFragment().apply {
                 arguments = Bundle().apply {
-                    putInt("quizId", quizId)
-                    putString("userAnswer", userAnswer)
-                    putString("answer", answer)
-                    putString("answerString", answerString)
+                    putBoolean("isCorrect", isCorrect)
                     putString("commentary", commentary)
-                    putInt("quizType", quizType)
                 }
             }
         }

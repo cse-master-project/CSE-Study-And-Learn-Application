@@ -1,5 +1,6 @@
 package com.example.cse_study_and_learn_application.ui.study
 
+import android.annotation.SuppressLint
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
 
         fun bind(position: Int) {
             binding.etAnswer.hint = "${position + 1} 번 답.."
+            binding.etAnswer.setText("") // 초기에 빈 텍스트로 설정
 
             binding.etAnswer.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -28,7 +30,22 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
         fun disableInput() {
             binding.etAnswer.isEnabled = false
         }
+
+        fun setBackgroundColor(color: Int) {
+            binding.etAnswer.setBackgroundColor(color)
+        }
+
+        fun setAnswerText(text: String) {
+            binding.etAnswer.setText(text)
+        }
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun resetAnswers() {
+        answers.replaceAll { "" }
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnswerViewHolder {
         val binding = ItemFillBlankAnswerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AnswerViewHolder(binding)
@@ -39,8 +56,16 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
     }
 
     override fun onBindViewHolder(holder: AnswerViewHolder, position: Int, payloads: List<Any>) {
-        if (payloads.isNotEmpty() && payloads[0] == "disable") {
-            holder.disableInput()
+        if (payloads.isNotEmpty()) {
+            when (payloads[0]) {
+                is Int -> holder.setBackgroundColor(payloads[0] as Int)
+                is String -> {
+                    when (payloads[0]) {
+                        "disable" -> holder.disableInput()
+                        else -> holder.setAnswerText(payloads[0] as String)
+                    }
+                }
+            }
         } else {
             super.onBindViewHolder(holder, position, payloads)
         }
@@ -54,5 +79,14 @@ class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
         answers.indices.forEach { position ->
             notifyItemChanged(position, "disable")
         }
+    }
+
+    fun setItemBackgroundColor(position: Int, color: Int) {
+        notifyItemChanged(position, color)
+    }
+
+    fun setItemText(position: Int, text: String) {
+        answers[position] = text
+        notifyItemChanged(position, text)
     }
 }
