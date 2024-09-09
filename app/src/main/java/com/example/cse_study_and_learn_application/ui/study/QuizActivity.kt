@@ -237,6 +237,8 @@ class QuizActivity() : AppCompatActivity() {
             is FillBlankQuizFragment -> fragment.setLoadNextQuizListener { loadNextQuiz() }
         }
 
+
+
         fragmentTransaction.replace(R.id.fragmentContainerView, fragment)
         fragmentTransaction.commit()
 

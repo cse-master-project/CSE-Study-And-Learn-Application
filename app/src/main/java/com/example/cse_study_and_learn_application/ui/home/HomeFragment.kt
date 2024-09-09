@@ -278,35 +278,35 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
             QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐")
         temporalSubjects.add(subject)
 
-        try {
-            var eventType = parser.eventType
-            var id = 1
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG && parser.name == "subject") {
-                    val name = parser.getAttributeValue(null, "name")
-                    parser.next()
-                    val imgbg = parser.text.trim()
-                    val subj = QuizCategory(
-                        id,
-                        name,
-                        "images/subjects/$imgbg",
-                        "0문제 / 30문제",
-                        if (name.hashCode() % 2 == 0) "💡" else "⭐"
-                    )
-                    temporalSubjects.add(subj)
-                    id += 1
-
-                }
-
-                eventType = parser.next()
-            }
-        } catch (e: XmlPullParserException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            parser.close()
-        }
+//        try {
+//            var eventType = parser.eventType
+//            var id = 1
+//            while (eventType != XmlPullParser.END_DOCUMENT) {
+//                if (eventType == XmlPullParser.START_TAG && parser.name == "subject") {
+//                    val name = parser.getAttributeValue(null, "name")
+//                    parser.next()
+//                    val imgbg = parser.text.trim()
+//                    val subj = QuizCategory(
+//                        id,
+//                        name,
+//                        "images/subjects/$imgbg",
+//                        "0문제 / 30문제",
+//                        if (name.hashCode() % 2 == 0) "💡" else "⭐"
+//                    )
+//                    temporalSubjects.add(subj)
+//                    id += 1
+//
+//                }
+//
+//                eventType = parser.next()
+//            }
+//        } catch (e: XmlPullParserException) {
+//            e.printStackTrace()
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        } finally {
+//            parser.close()
+//        }
 
 
         homeViewModel.setInitSubjectCategories(temporalSubjects)    // 테스트용 init
