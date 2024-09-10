@@ -267,8 +267,6 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
                         drawLineForResult(pair, true)  // 정답인 경우 초록색
                     }
 
-
-
                     showGradedLinesOnly()
 
                     bottomSheet = BottomSheetGradingFragment.newInstance(
@@ -285,11 +283,10 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             }
 
             // "내 답 보기" 버튼 활성화
-            val myAnswerBtn = requireActivity().findViewById<LinearLayout>(R.id.btn_my_answer)
-            myAnswerBtn.visibility = View.VISIBLE
+            binding.btnMyAnswer.visibility = View.VISIBLE
 
             // "내 답 보기" 버튼을 꾹 누르면 나의 답을 보여줌
-            myAnswerBtn.setOnTouchListener { _, motionEvent ->
+            binding.btnMyAnswer.setOnTouchListener { _, motionEvent ->
                 when (motionEvent.action) {
                     MotionEvent.ACTION_DOWN -> {
                         // 채점된 선을 숨기고 내 답을 보여줌
@@ -317,7 +314,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
         for ((pair, isCorrect) in gradedLinesCopy) {
             drawLineForResult(pair, isCorrect)
-            Lg.d("test", MatingQuizFragment::class.java.simpleName, "$isCorrect")
+            // Lg.d("test", MatingQuizFragment::class.java.simpleName, "$isCorrect")
         }
     }
 

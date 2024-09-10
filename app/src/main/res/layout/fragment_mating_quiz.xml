@@ -7,14 +7,15 @@
     tools:context=".ui.study.MultipleChoiceQuizFragment">
 
     <TextView
+        android:visibility="invisible"
+        android:id="@+id/btn_my_answer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/quiz_card"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/quiz_card"
         android:background="@drawable/bg_rounded"
         android:elevation="10dp"
-        android:layout_marginTop="-40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
         android:padding="10dp"
         android:text="정답" />
