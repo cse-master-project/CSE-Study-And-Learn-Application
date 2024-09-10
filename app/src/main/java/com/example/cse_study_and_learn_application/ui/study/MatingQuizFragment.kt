@@ -255,15 +255,23 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             try {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
-
+                    val unCorrectAnswers = correctAnswers.toMutableList()
+                    val tmpCorrectAnswerPair = mutableListOf<Pair<Int, Int>>()
                     // 정답과 오답 비교
                     for (pair in selectedAnswers) {
                         if (correctAnswers.contains(pair)) {
-                            drawLineForResult(pair, true)  // 정답인 경우 초록색
-                        } else {
-                            drawLineForResult(pair, false) // 오답인 경우 빨간색
+                            tmpCorrectAnswerPair.add(pair)
+                            unCorrectAnswers.remove(pair)
                         }
                     }
+                    unCorrectAnswers.forEach { pair ->
+                        drawLineForResult(pair, false)
+                    }
+                    tmpCorrectAnswerPair.forEach { pair ->
+                        drawLineForResult(pair, true)  // 정답인 경우 초록색
+                    }
+
+
 
                     showGradedLinesOnly()
 
