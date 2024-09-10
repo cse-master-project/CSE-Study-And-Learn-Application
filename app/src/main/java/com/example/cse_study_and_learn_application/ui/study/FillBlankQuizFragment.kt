@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,16 +48,20 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     private var quizId: Int? = null
     private var quizType: Int? = null
     private var image: Bitmap? = null
+    private lateinit var originalQuizText: String
 
     private var loadNextQuiz: (() -> Unit)? = null
     private var isAnswerSubmitted = false
-    private var bottomSheet: BottomSheetGradingFragment? = null
+    private var explanationDialog: BottomSheetGradingFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFillBlankQuizBinding.inflate(inflater)
+        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+        (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -66,8 +71,9 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             val content = Gson().fromJson(jsonString, FillBlankQuizJsonContent::class.java)
             answer = content.answer[0].split(",")
             commentary = content.commentary
+            originalQuizText = content.quiz
 
-            binding.tvQuizText.text = content.quiz
+            binding.tvQuizText.text = originalQuizText
 
             if (hasImg) {
                 binding.ivQuizImage.visibility = View.VISIBLE
@@ -102,42 +108,97 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     override fun onAnswerSubmit() {
+        val userAnswers = answerAdapter.getAnswers()
+        Log.d("useranswer", userAnswers.toString())
+        if (userAnswers.any { it.isBlank() }) {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "모든 빈칸을 채워주세요.").show()
+            return  // 빈 답변이 있으면 여기서 함수를 종료합니다.
+        }
         if (!isAnswerSubmitted) {
-            val userAnswers = answerAdapter.getAnswers()
-            Log.d("test", userAnswers.toString())
-            if (userAnswers.any { it.isBlank() }) {
-                DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "모든 빈칸을 채워주세요.").show()
-            } else {
-                try {
-                    isAnswerSubmitted = true
-                    bottomSheet = BottomSheetGradingFragment.newInstance(
-                        quizId = quizId!!,
-                        userAnswer = userAnswers.joinToString(","),
-                        answer = answer.joinToString(","),
-                        answerString = answer.mapIndexed { index, s -> "${('a' + index)}: $s" }.joinToString("\n"),
-                        commentary = commentary,
-                        quizType = quizType!!
-                    )
-                    bottomSheet?.setOnNextQuizListener {
-                        loadNextQuiz?.invoke()
-                    }
-                    disableAnswerInputs()
-                    bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
-                } catch (e: Exception) {
-                    Log.e("FillBlankQuizFragment", "onAnswerSubmit", e)
-                }
+            isAnswerSubmitted = true
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
+            (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+            (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+
+            // 정답 비교 및 색상 업데이트
+            val isCorrect = updateAnswersAppearance(userAnswers)
+
+            // 문제 텍스트 업데이트
+            updateQuizText()
+
+            (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+
+            explanationDialog = BottomSheetGradingFragment.newInstance(
+                isCorrect = isCorrect,
+                commentary = commentary,
+            )
+            updateButtonText() // 버튼 텍스트 업데이트
+            explanationDialog?.setOnNextQuizListener {
+                (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             }
+            disableAnswerInputs()
         } else {
-            bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
+            // 이미 답변을 제출한 경우, 다음 문제로 넘어갑니다.
+            loadNextQuiz?.invoke()
         }
     }
+
+    private fun updateAnswersAppearance(userAnswers: List<String>): Boolean {
+        var allCorrect = true
+        userAnswers.forEachIndexed { index, userAnswer ->
+            if (userAnswer.isBlank()) {
+                answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
+                allCorrect = false
+            } else {
+                val isCorrect = userAnswer.trim().equals(answer[index].trim(), ignoreCase = true)
+                if (isCorrect) {
+                    answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.correct_card_background))
+                } else {
+                    answerAdapter.setItemBackgroundColor(index, ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
+                    allCorrect = false
+                }
+            }
+        }
+        return allCorrect
+    }
+
+    private fun updateQuizText() {
+        var updatedText = originalQuizText
+        answer.forEachIndexed { _, correctAnswer ->
+            updatedText = updatedText.replaceFirst("()", "($correctAnswer)")
+        }
+        binding.tvQuizText.text = updatedText
+    }
+
+    private fun updateButtonText() {
+        (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+    }
+    fun showExplanationDialog() {
+        if (isAnswerSubmitted && explanationDialog != null) {
+            explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
+        }
+    }
+
 
     private fun disableAnswerInputs() {
         answerAdapter.disableAllInputs()
     }
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
-        loadNextQuiz = listener
+        loadNextQuiz = {
+            // 상태 초기화
+            isAnswerSubmitted = false
+            answerAdapter.resetAnswers()
+            binding.tvQuizText.text = originalQuizText
+            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+            (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+
+            // 입력 필드 활성화
+            answerAdapter.enableAllInputs()
+
+            listener.invoke()
+        }
     }
 
     companion object {

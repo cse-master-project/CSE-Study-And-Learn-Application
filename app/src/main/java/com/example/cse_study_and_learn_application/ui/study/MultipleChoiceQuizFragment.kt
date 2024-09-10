@@ -220,18 +220,21 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                     (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
                     (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
                     (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+
+                    val isCorrect = userAnswer == answer
+                    (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+
+
+
                     explanationDialog = BottomSheetGradingFragment.newInstance(
-                        quizId = quizId!!,
-                        userAnswer = userAnswer!!,
-                        answer = answer,
-                        answerString = answerString,
+                        isCorrect = true,
                         commentary = commentary,
-                        quizType = quizType!!
                     )
                     updateButtonText() // 버튼 텍스트 업데이트
                     explanationDialog?.setOnNextQuizListener {
                         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
+
                 }
             } catch (e: Exception) {
                 Log.e("MultipleChoiceQuizFragment", "onAnswerSubmit", e)

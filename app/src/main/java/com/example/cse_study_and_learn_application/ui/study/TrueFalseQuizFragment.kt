@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -49,11 +50,16 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
     private var isAnswerSubmitted = false
     private var bottomSheet: BottomSheetGradingFragment? = null
 
+    private var explanationDialog: BottomSheetGradingFragment? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTrueFalseQuizBinding.inflate(inflater)
+        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+        (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -110,33 +116,73 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
 
     override fun onAnswerSubmit() {
         if (userAnswer == null) {
-            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해주세요.").show()
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해주세요.")
+                .show()
         } else {
             try {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
-                    bottomSheet = BottomSheetGradingFragment.newInstance(
-                        quizId = quizId!!,
-                        userAnswer = userAnswer!!,
-                        answer = answer,
-                        answerString = if (answer == "1") "참" else "거짓",
+                    (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
+                    (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+                    (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+
+                    val isCorrect = userAnswer == answer
+                    (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+
+                    updateRadioButtonsAppearance(isCorrect)
+
+                    explanationDialog = BottomSheetGradingFragment.newInstance(
+                        isCorrect = isCorrect,
                         commentary = commentary,
-                        quizType = quizType!!
                     )
-                    bottomSheet?.setOnNextQuizListener {
-                        loadNextQuiz?.invoke()
+                    explanationDialog?.setOnNextQuizListener {
+                        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
                     disableRadioButtons()
+                } else {
+                    // 이미 답변을 제출한 경우, 다음 문제로 넘어갑니다.
+                    loadNextQuiz?.invoke()
                 }
-                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("TrueFalseQuizFragment", "onAnswerSubmit", e)
             }
         }
     }
 
+    private fun updateRadioButtonsAppearance(isCorrect: Boolean) {
+        val correctAnswerButton = if (answer == "1") binding.rbTrue else binding.rbFalse
+        val incorrectAnswerButton = if (answer == "1") binding.rbFalse else binding.rbTrue
+
+        if (isCorrect) {
+            correctAnswerButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.correct_card_background))
+        } else {
+            correctAnswerButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.correct_card_background))
+            incorrectAnswerButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.incorrect_card_background))
+        }
+    }
+
+    fun showExplanationDialog() {
+        if (isAnswerSubmitted && explanationDialog != null) {
+            explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
+        }
+    }
+
     fun setLoadNextQuizListener(listener: () -> Unit) {
-        loadNextQuiz = listener
+        loadNextQuiz = {
+            // 상태 초기화
+            isAnswerSubmitted = false
+            userAnswer = null
+            binding.rbTrue.isChecked = false
+            binding.rbFalse.isChecked = false
+            binding.rbTrue.isEnabled = true
+            binding.rbFalse.isEnabled = true
+            binding.rbTrue.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
+            binding.rbFalse.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
+            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+            (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+            listener.invoke()
+        }
     }
 
     private fun disableRadioButtons() {

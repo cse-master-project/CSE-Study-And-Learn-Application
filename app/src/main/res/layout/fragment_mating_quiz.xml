@@ -6,6 +6,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.study.MultipleChoiceQuizFragment">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/quiz_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/quiz_card"
+        android:background="@drawable/bg_rounded"
+        android:elevation="10dp"
+        android:layout_marginTop="-40dp"
+        android:layout_marginEnd="30dp"
+        android:padding="10dp"
+        android:text="정답" />
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/quiz_card"
         android:layout_width="match_parent"
@@ -48,6 +61,8 @@
     </com.google.android.material.card.MaterialCardView>
 
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gl_answer_group"
         android:layout_width="match_parent"
@@ -63,8 +78,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             app:layout_constraintStart_toStartOf="parent"

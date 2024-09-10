@@ -133,12 +133,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         binding.rightRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.rightRecyclerView.adapter = rightAdapter
 
-
         return binding.root
     }
-
-
-
 
     private fun checkAndDrawLine() {
         if (leftSelectedPosition != null && rightSelectedPosition != null) {
@@ -276,12 +272,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
                     showGradedLinesOnly()
 
                     bottomSheet = BottomSheetGradingFragment.newInstance(
-                        quizId = quizId,
-                        userAnswer = selectedAnswers.joinToString(","),
-                        answer = correctAnswers.joinToString(","),
-                        answerString = "",
+                        isCorrect = true,
                         commentary = content.commentary,
-                        quizType = QuizType.MATING_QUIZ.ordinal
                     )
                     bottomSheet?.setOnNextQuizListener {
                         loadNextQuiz?.invoke()

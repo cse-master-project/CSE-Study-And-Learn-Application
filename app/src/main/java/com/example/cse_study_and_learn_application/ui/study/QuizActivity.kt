@@ -121,12 +121,11 @@ class QuizActivity() : AppCompatActivity() {
             binding.btnCommentary.setOnClickListener {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                     is MultipleChoiceQuizFragment -> currentFragment.showExplanationDialog()
-                    /*
                     is ShortAnswerQuizFragment -> currentFragment.showExplanationDialog()
-                    is MatingQuizFragment -> currentFragment.showExplanationDialog()
+                    //is MatingQuizFragment -> currentFragment.showExplanationDialog()
                     is TrueFalseQuizFragment -> currentFragment.showExplanationDialog()
                     is FillBlankQuizFragment -> currentFragment.showExplanationDialog()
-                    */
+
                 }
             }
             getQuiz()
@@ -244,6 +243,23 @@ class QuizActivity() : AppCompatActivity() {
 
     }
 
+    fun resultSubmit(quizId: Int, isCorrect: Boolean) {
+        lifecycleScope.launch {
+            try {
+                val response = ConnectorRepository().submitQuizResult(
+                    token = AccountAssistant.getServerAccessToken(this@QuizActivity),
+                    quizId = quizId,
+                    isCorrect = isCorrect
+                )
+                // 필요한 경우 응답 처리
+            } catch (e: Exception) {
+                Log.e("QuizActivity", "Error submitting quiz result", e)
+                // 에러 처리
+            }
+        }
+    }
+
+
     private fun showReportDialog(response: RandomQuiz?) {
         if (response != null) {
             val dialogView = layoutInflater.inflate(R.layout.dialog_quiz_report, null)
@@ -310,5 +326,7 @@ class QuizActivity() : AppCompatActivity() {
             reportDialog.show()
         }
     }
+
+
 }
 
