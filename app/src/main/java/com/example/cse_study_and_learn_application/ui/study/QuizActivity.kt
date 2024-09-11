@@ -252,6 +252,7 @@ class QuizActivity() : AppCompatActivity() {
                     quizId = quizId,
                     isCorrect = isCorrect
                 )
+                Log.i("response", response.toString())
                 // 필요한 경우 응답 처리
             } catch (e: Exception) {
                 Log.e("QuizActivity", "Error submitting quiz result", e)

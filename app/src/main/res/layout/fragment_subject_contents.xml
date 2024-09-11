@@ -215,7 +215,7 @@
                 android:checked="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="푼 문제 풀기" />
+                android:text="맞힌 문제 제외" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -48,7 +48,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
     private var hasUserQuiz: Boolean = true
     private var hasDefaultQuiz: Boolean = true
-    private var hasSolvedQuiz: Boolean = true
+    private var hasSolvedQuiz: Boolean = false
 
     private lateinit var highlightHelper: HighlightHelper
 
@@ -192,24 +192,6 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
     /**
      * Init subject contents
-     *ASD;FKLJLKNVXCZ
-     *
-     * L;SDAKJFL;K
-     * VXCZLVLKANDLPVK
-     *
-     *
-     *
-     * FDALKGA;LSKDJG
-     * V
-     * DA
-     * FGAS
-     * DGQ
-     * WERASDVXZC
-     * V
-     * XZCV
-     * AS
-     * DF
-     * QWERASDV
      *
      */
     @SuppressLint("NotifyDataSetChanged")
@@ -327,25 +309,23 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             }
 
             R.id.cb_already -> {
-                hasSolvedQuiz = binding.cbAlready.isChecked
+                hasSolvedQuiz = !binding.cbAlready.isChecked
+                Log.i("test", (binding.cbAlready.isChecked).toString())
             }
 
             R.id.rb_all_sel-> {
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
-                Log.d("test", "rb_all_sel click")
                 hasUserQuiz = true
                 hasDefaultQuiz = true
             }
 
             R.id.rb_custom_sel -> {
-                Log.d("test", "rb_custom_sel click")
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.USER)
                 hasUserQuiz = true
                 hasDefaultQuiz = false
             }
 
             R.id.rb_default_sel -> {
-                Log.d("test", "rb_default_sel click")
                 homeViewModel.getQuizLoad(requireContext(), Subcategory.DEFAULT)
                 hasUserQuiz = false
                 hasDefaultQuiz = true
