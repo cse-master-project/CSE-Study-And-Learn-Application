@@ -58,7 +58,6 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
     ): View {
         binding = FragmentTrueFalseQuizBinding.inflate(inflater)
         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
         (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {
@@ -178,7 +177,6 @@ class TrueFalseQuizFragment : Fragment(), AppBarImageButtonListener {
             binding.rbFalse.isEnabled = true
             binding.rbTrue.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
             binding.rbFalse.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
-            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             listener.invoke()

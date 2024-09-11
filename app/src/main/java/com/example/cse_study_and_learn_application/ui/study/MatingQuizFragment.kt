@@ -251,6 +251,11 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             try {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
+                    showGradedLinesOnly()
+
+                    (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+                    (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+
                     val unCorrectAnswers = correctAnswers.toMutableList()
                     val tmpCorrectAnswerPair = mutableListOf<Pair<Int, Int>>()
                     // 정답과 오답 비교
@@ -277,7 +282,6 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
                         loadNextQuiz?.invoke()
                     }
                 }
-                bottomSheet?.show(parentFragmentManager, bottomSheet?.tag)
             } catch (e: Exception) {
                 Log.e("MatingQuizFragment", "onAnswerSubmit", e)
             }
@@ -362,7 +366,19 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
-        loadNextQuiz = listener
+        loadNextQuiz = {
+            // 상태 초기화
+            isAnswerSubmitted = false
+            connectedPairs.clear()
+            gradedLines.clear()
+            binding.lineDrawingView.clearLines()
+            binding.btnMyAnswer.visibility = View.GONE
+
+            // 버튼 텍스트 초기화
+            (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+
+            listener.invoke()
+        }
     }
 
     companion object {

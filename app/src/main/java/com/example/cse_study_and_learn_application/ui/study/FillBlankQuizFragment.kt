@@ -60,7 +60,6 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     ): View {
         binding = FragmentFillBlankQuizBinding.inflate(inflater)
         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
         (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {
@@ -190,7 +189,6 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             isAnswerSubmitted = false
             answerAdapter.resetAnswers()
             binding.tvQuizText.text = originalQuizText
-            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
 

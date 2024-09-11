@@ -42,9 +42,8 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
         binding = FragmentBottomSheetGradingBinding.inflate(inflater)
 
         requireArguments().let {
-            val quizId = it.getInt("quizId")
-            val userAnswer = it.getString("userAnswer").toString()
-            val answer = it.getString("answer").toString()
+            val comment = it.getString("commentary").toString()
+            binding.tvCommentary.text = comment
         }
 
         return binding.root

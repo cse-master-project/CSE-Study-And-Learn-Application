@@ -64,7 +64,6 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
             }
             isAnswerSubmitted = false
             userAnswer = null
-            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             listener.invoke()
         }
@@ -76,7 +75,6 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
     ): View {
         binding = FragmentMultipleChoiceQuizBinding.inflate(inflater)
         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
         (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
 
         requireArguments().let {

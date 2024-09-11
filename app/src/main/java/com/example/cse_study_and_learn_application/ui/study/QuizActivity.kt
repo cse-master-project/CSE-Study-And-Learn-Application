@@ -188,6 +188,7 @@ class QuizActivity() : AppCompatActivity() {
                         "hasDefaultQuiz = ${hasDefaultQuiz}\n " +
                         "hasSolvedQuiz = ${hasSolvedQuiz}\n "
                 )
+                Log.i("Request", "hasUser = $hasUserQuiz, hasDefault = $hasDefaultQuiz, hasSolved=$hasSolvedQuiz")
                 val response = ConnectorRepository().getRandomQuiz(
                     token = AccountAssistant.getServerAccessToken(applicationContext),
                     subject = subjects,
