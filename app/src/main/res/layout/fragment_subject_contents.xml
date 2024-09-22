@@ -189,7 +189,7 @@
                     android:paddingStart="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="창작 문제" />
+                    android:text="유저 창작 문제" />
             </RadioGroup>
 
             <View

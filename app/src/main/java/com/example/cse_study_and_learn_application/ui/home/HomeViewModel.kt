@@ -10,14 +10,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
-import com.example.cse_study_and_learn_application.model.Quiz
+// import com.example.cse_study_and_learn_application.model.Quiz
 import com.example.cse_study_and_learn_application.model.QuizCategory
 import com.example.cse_study_and_learn_application.model.QuizContentCategory
 import com.example.cse_study_and_learn_application.model.QuizSubject
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.example.cse_study_and_learn_application.model.UserQuizResponse
+//import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
-import com.example.cse_study_and_learn_application.utils.Subcategory
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -33,10 +31,10 @@ import java.io.IOException
  */
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val context by lazy { application.applicationContext }
+    //private val context by lazy { application.applicationContext }
     private val connectorRepository = ConnectorRepository()
-    private val _userQuizResponses = MutableLiveData<List<UserQuizResponse>>()
-    val userQuizResponses: LiveData<List<UserQuizResponse>> get() = _userQuizResponses
+    //private val _userQuizResponses = MutableLiveData<List<UserQuizResponse>>()
+    //val userQuizResponses: LiveData<List<UserQuizResponse>> get() = _userQuizResponses
 
     private lateinit var _selectedSubject: QuizCategory
     val subject get() = _selectedSubject
@@ -52,18 +50,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 //    private val _quizResponseLiveData = MutableLiveData<QuizResponse>()
 //    val quizLiveData: LiveData<QuizResponse> = _quizResponseLiveData
 
-    private val _quizList = MutableLiveData<List<Quiz>>()
-    val quizList: LiveData<List<Quiz>> = _quizList
+    //private val _quizList = MutableLiveData<List<Quiz>>()
+    //val quizList: LiveData<List<Quiz>> = _quizList
 
-    private val _detailSubjects = MutableLiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>>()
-    val detailSubjects: LiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>> = _detailSubjects
+    //private val _detailSubjects = MutableLiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>>()
+    //val detailSubjects: LiveData<LinkedHashMap<String, MutableList<QuizContentCategory>>> = _detailSubjects
 
 
     val flexboxSelectedSubjects: MutableLiveData<MutableList<String>> by lazy {
         MutableLiveData<MutableList<String>>(mutableListOf())
     }
 
-    var currentDetailSubjectsList = MutableLiveData(mutableListOf<QuizContentCategory>())
+    var currentChapters = MutableLiveData(mutableListOf<QuizContentCategory>())
 
     private val _isAllSelected = MutableLiveData<Boolean>()
     val isAllSelected: LiveData<Boolean> = _isAllSelected
@@ -113,7 +111,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val id = subject.subjectId
                     val title = subject.subject
                     val bg = if (subjectThumbnailMap[title].isNullOrBlank()) "오류" else subjectThumbnailMap[title]
-                    val sub = QuizCategory(id, title, bg!!, subject.detailSubject.size.toString() + " 챕터", if (id % 2 == 0) "⭐" else "💡")
+                    val sub = QuizCategory(id, title, bg!!, subject.chapters.size.toString() + " 챕터", if (id % 2 == 0) "⭐" else "💡")
                     newCategories.add(sub)  // 카테고리 추가
                 }
                 _quizSubjectCategories.value = newCategories
@@ -136,72 +134,72 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // 현재 선택한 대분류의 중분류 불러오기
-    fun getCurrentDetailSubjects(): MutableList<QuizContentCategory> {
+    fun getCurrentChapters(): MutableList<QuizContentCategory> {
         val quizContentCategoryList = mutableListOf<QuizContentCategory>()
-        val detailSubjects = _quizSubjects.value?.find { it.subjectId == _selectedSubject.id && it.subject == _selectedSubject.title }
-        detailSubjects?.let {
-            for (detailSubject in it.detailSubject) {
-                quizContentCategoryList.add(QuizContentCategory(detailSubject, true))
+        val chapters = _quizSubjects.value?.find { it.subjectId == _selectedSubject.id && it.subject == _selectedSubject.title }
+        chapters?.let {
+            for (chapter in it.chapters) {
+                quizContentCategoryList.add(QuizContentCategory(chapter, true))
             }
         }
 
-        currentDetailSubjectsList.value = quizContentCategoryList
+        currentChapters.value = quizContentCategoryList
         checkAllSelected()
         return quizContentCategoryList
     }
 
-    fun getSelectedDetailSubjects(): List<QuizContentCategory> {
-        return currentDetailSubjectsList.value!!.filter { it.selected }
+    fun getSelectedChapters(): List<QuizContentCategory> {
+        return currentChapters.value!!.filter { it.selected }
     }
 
 
-    fun getQuizLoad(context: Context, quizType: Subcategory) {
-        viewModelScope.launch {
-            try {
-                val token = AccountAssistant.getServerAccessToken(context)
-
-                val userQuizResponse = UserQuizRequest(page = 0, size = 1000, sort = listOf("desc"))
-
-                val quizResponse = when(quizType) {
-                    Subcategory.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
-                    Subcategory.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
-                    Subcategory.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
-                }
-
-                _quizList.value = quizResponse.content
-                val detailSubject = LinkedHashMap<String, MutableList<QuizContentCategory>>()
-                for (quiz in _quizList.value!!) {
-                    detailSubject.getOrPut(quiz.subject) { mutableListOf() }.add(
-                        QuizContentCategory(quiz.detailSubject, true)
-                    )
-                }
-
-                _detailSubjects.value = detailSubject
-                Log.d("test", detailSubjects.value!!.toString())
-
-            } catch (e: Exception) {
-                Log.e("test", "getAllQuizzes error: $e")
-            }
-        }
-    }
+//    fun getQuizLoad(context: Context, quizType: Subcategory) {
+//        viewModelScope.launch {
+//            try {
+//                val token = AccountAssistant.getServerAccessToken(context)
+//
+//                val userQuizResponse = UserQuizRequest(page = 0, size = 1000, sort = listOf("desc"))
+//
+//                val quizResponse = when(quizType) {
+//                    Subcategory.ALL -> connectorRepository.getAllQuizzes(token, userQuizResponse)
+//                    Subcategory.USER -> connectorRepository.getUserQuizzes(token, userQuizResponse)
+//                    Subcategory.DEFAULT -> connectorRepository.getDefaultQuizzes(token, userQuizResponse)
+//                }
+//
+//                _quizList.value = quizResponse.content
+//                val detailSubject = LinkedHashMap<String, MutableList<QuizContentCategory>>()
+//                for (quiz in _quizList.value!!) {
+//                    detailSubject.getOrPut(quiz.subject) { mutableListOf() }.add(
+//                        QuizContentCategory(quiz.detailSubject, true)
+//                    )
+//                }
+//
+//                _detailSubjects.value = detailSubject
+//                Log.d("test", detailSubjects.value!!.toString())
+//
+//            } catch (e: Exception) {
+//                Log.e("test", "getAllQuizzes error: $e")
+//            }
+//        }
+//    }
 
 
     fun clickRecyclerItemCheck(title: String, selected: Boolean) {
-        currentDetailSubjectsList.value!!.first { it.title == title }.selected = selected
+        currentChapters.value!!.first { it.title == title }.selected = selected
         checkAllSelected()
     }
 
     fun setChangeCheckSetting(result: Boolean) {
         if (result) {
-            currentDetailSubjectsList.value!!.forEach { it.selected = true }
+            currentChapters.value!!.forEach { it.selected = true }
         } else {
-            currentDetailSubjectsList.value!!.forEach { it.selected = false }
+            currentChapters.value!!.forEach { it.selected = false }
         }
         checkAllSelected()
     }
 
     private fun checkAllSelected() {
-        _isAllSelected.value = currentDetailSubjectsList.value?.all { it.selected }
+        _isAllSelected.value = currentChapters.value?.all { it.selected }
     }
 
 

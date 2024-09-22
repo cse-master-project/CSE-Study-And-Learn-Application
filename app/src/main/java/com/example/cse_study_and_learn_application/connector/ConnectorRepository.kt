@@ -3,13 +3,13 @@ package com.example.cse_study_and_learn_application.connector
 import android.util.Log
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
 import com.example.cse_study_and_learn_application.model.NicknameRequest
-import com.example.cse_study_and_learn_application.model.QuizReport
+//import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
-import com.example.cse_study_and_learn_application.model.QuizResponse
+//import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.UserInfo
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
+//import com.example.cse_study_and_learn_application.model.UserQuizRequest
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
 import com.example.cse_study_and_learn_application.model.isSignedRequest
@@ -21,19 +21,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ConnectorRepository {
-    suspend fun getUserQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getUserQuizzes(
-            token,
-            userQuizRequest.page,
-            userQuizRequest.size,
-            userQuizRequest.sort)
-        if (response.isSuccessful) {
-            return response.body() ?: throw Exception("Empty response body")
-        } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get user quizzes: ${response.message()}\n$errorBody")
-        }
-    }
 
     suspend fun getUserRegistration(token: String, nickname: String): String {
         val requestBody = UserRegistrationRequest(token, nickname)
@@ -124,53 +111,22 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getReportedQuizzes(token: String): List<QuizReport> {
-        val response = RetrofitInstance.quizQueryApi.getReportedQuizzes(token)
-        if (response.isSuccessful) {
-            return response.body() ?: emptyList()
-        } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get reported quizzes: ${response.message()}\n$errorBody")
-        }
-    }
-
-    suspend fun getDefaultQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getDefaultQuizzes(
-            token,
-            userQuizRequest.page,
-            userQuizRequest.size,
-            userQuizRequest.sort)
-        if (response.isSuccessful) {
-            return response.body() ?: throw Exception("Empty response body")
-        } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get default quizzes: ${response.message()}\n$errorBody")
-        }
-    }
-
-    suspend fun getAllQuizzes(token: String, userQuizRequest: UserQuizRequest): QuizResponse {
-        val response = RetrofitInstance.quizQueryApi.getAllQuizzes(
-            token,
-            userQuizRequest.page,
-            userQuizRequest.size,
-            userQuizRequest.sort)
-        if (response.isSuccessful) {
-            return response.body() ?: throw Exception("Empty response body")
-        } else {
-            val errorBody = response.errorBody()?.string()
-            throw Exception("Failed to get all quizzes: ${response.message()}\n$errorBody")
-        }
-    }
 
     suspend fun getQuizImage(token: String, quizId: Int): ResponseBody {
         return RetrofitInstance.quizQueryApi.getQuizImage(token, quizId)
     }
 
-    suspend fun getRandomQuiz(token: String, subject: String, detailSubject: String, hasUserQuiz: Boolean = false, hasDefaultQuiz: Boolean = true, hasSolvedQuiz: Boolean = false): RandomQuiz {
+    suspend fun getRandomQuiz(
+        token: String,
+        subject: String,
+        chapters: List<String>,
+        hasUserQuiz: Boolean = false,
+        hasDefaultQuiz: Boolean = true,
+        hasSolvedQuiz: Boolean = false): RandomQuiz {
         val response = RetrofitInstance.quizQueryApi.getRandomQuiz(
             token = token,
             subject = subject,
-            detailSubject = detailSubject,
+            chapters = chapters,
             hasUserQuiz = hasUserQuiz,
             hasDefaultQuiz = hasDefaultQuiz,
             hasSolvedQuiz = hasSolvedQuiz
@@ -191,7 +147,7 @@ class ConnectorRepository {
         hasDefaultQuiz: Boolean = true,
         hasSolvedQuiz: Boolean = false
     ): RandomQuiz {
-        val response = RetrofitInstance.quizQueryApi.getRandomQuiz(
+        val response = RetrofitInstance.quizQueryApi.getRandomQuizOnlySubject(
             token = token,
             subjects = subject,
             hasUserQuiz = hasUserQuiz,
@@ -288,8 +244,8 @@ class ConnectorRepository {
         }
     }
 
-    suspend fun getQuizSubjects(token: String): List<QuizSubject> {
-        val response = RetrofitInstance.quizQueryApi.getQuizSubjects(token)
+    suspend fun getQuizSubjects(token: String, onlySubject: Boolean=false): List<QuizSubject> {
+        val response = RetrofitInstance.quizQueryApi.getQuizSubjects(token, onlySubject)
         if (response.isSuccessful) {
             return response.body() ?: emptyList()
         } else {

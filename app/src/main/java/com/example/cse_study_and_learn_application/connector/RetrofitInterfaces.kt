@@ -2,17 +2,13 @@ package com.example.cse_study_and_learn_application.connector
 
 import androidx.annotation.Keep
 import com.example.cse_study_and_learn_application.model.AccessTokenResponse
-import com.example.cse_study_and_learn_application.model.DefaultQuiz
 import com.example.cse_study_and_learn_application.model.NicknameRequest
-import com.example.cse_study_and_learn_application.model.QuizReport
 import com.example.cse_study_and_learn_application.model.QuizReportRequest
-import com.example.cse_study_and_learn_application.model.QuizResponse
 import com.example.cse_study_and_learn_application.model.QuizSubject
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.model.ServerLoginResponse
 import com.example.cse_study_and_learn_application.model.UserInfo
-import com.example.cse_study_and_learn_application.model.UserQuizRequest
-import com.example.cse_study_and_learn_application.model.UserQuizResponse
+// import com.example.cse_study_and_learn_application.model.UserQuizResponse
 import com.example.cse_study_and_learn_application.model.UserQuizStatistics
 import com.example.cse_study_and_learn_application.model.UserRegistrationRequest
 import com.example.cse_study_and_learn_application.model.isSignedRequest
@@ -38,70 +34,43 @@ import retrofit2.http.Query
  * @since 2024-04-28
  */
 interface QuizQueryApi {
-    @GET("/api/quiz/user")
-    suspend fun getUserQuizzes(
-        @Header("Authorization") token: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int,
-        @Query("sort") sort: List<String>
-    ): Response<QuizResponse>
-
-    @POST("/api/quiz/submit")
+    @POST("/api/v2/quiz/submit")
     suspend fun submitQuizResult(
         @Header("Authorization") token: String,
         @Body requestBody: Map<String, String>
     ): Response<Unit>
 
-    @GET("/api/quiz/report")
-    suspend fun getReportedQuizzes(
-        @Header("Authorization") token: String
-    ): Response<List<QuizReport>>
 
-    @GET("/api/quiz/default")
-    suspend fun getDefaultQuizzes(
-        @Header("Authorization") token: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int,
-        @Query("sort") sort: List<String>
-    ): Response<QuizResponse>
-
-    @GET("/api/quiz")
-    suspend fun getAllQuizzes(
-        @Header("Authorization") token: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int,
-        @Query("sort") sort: List<String>
-    ): Response<QuizResponse>
-
-    @GET("/api/quiz/{quizId}/image")
+    @GET("/api/v2/quiz/{quizId}/image")
     suspend fun getQuizImage(
         @Header("Authorization") token: String,
         @Path("quizId") quizId: Int
     ): ResponseBody
 
-    @GET("/api/quiz/random")
+    @GET("/api/v2/quiz/random")
     suspend fun getRandomQuiz(
         @Header("Authorization") token: String,
         @Query("subject") subject: String,
-        @Query("detailSubject") detailSubject: String,
+        @Query("chapters") chapters: List<String>,
         @Query("hasUserQuiz") hasUserQuiz: Boolean,
         @Query("hasDefaultQuiz") hasDefaultQuiz: Boolean,
         @Query("hasSolvedQuiz") hasSolvedQuiz: Boolean
     ): Response<RandomQuiz>
 
-    @POST("/api/quiz/report")
+    @POST("/api/v2/quiz/report")
     suspend fun reportQuiz(
         @Header("Authorization") token: String,
         @Body requestBody: QuizReportRequest
     ): Response<Unit>
 
-    @GET("/api/quiz/subject")
+    @GET("/api/v2/quiz/subject")
     suspend fun getQuizSubjects(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("onlySubject") onlySubject: Boolean
     ): Response<List<QuizSubject>>
 
-    @GET("api/quiz/random/only-subject")
-    suspend fun getRandomQuiz(
+    @GET("api/v2/quiz/random/only-subject")
+    suspend fun getRandomQuizOnlySubject(
         @Header("Authorization") token: String,
         @Query("subject") subjects: List<String>,
         @Query("hasUserQuiz") hasUserQuiz: Boolean,
@@ -112,48 +81,48 @@ interface QuizQueryApi {
 
 
 interface UserAccountApi {
-    @POST("/api/user/auth/google/sign-up")
+    @POST("/api/v2/user/auth/google/sign-up")
     suspend fun getRegisterUserAccount(
         @Body requestBody: UserRegistrationRequest
     ): Response<ServerLoginResponse>
 
-    @POST("/api/user/auth/google/login")
+    @POST("/api/v2/user/auth/google/login")
     suspend fun getUserLogin(
         @Body requestBody: String
     ): Response<ServerLoginResponse>
 
-    @PUT("/api/user/info/nickname")
+    @PUT("/api/v2/user/info/nickname")
     suspend fun setUserNickname(
         @Header("Authorization") token: String,
         @Body nicknameRequest: NicknameRequest
     ): Response<Unit>
 
-    @GET("/api/user/quiz-results")
+    @GET("/api/v2/user/quiz-results")
     suspend fun getUserQuizStatistics(
         @Header("Authorization") token: String
     ): Response<UserQuizStatistics>
 
-    @GET("/api/user/info")
+    @GET("/api/v2/user/info")
     suspend fun getUserInfo(
         @Header("Authorization") token: String
     ): Response<UserInfo>
 
-    @POST("/api/user/deactivate")
+    @POST("/api/v2/user/deactivate")
     suspend fun deactivateUser(
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    @POST("/api/user/auth/refresh")
+    @POST("/api/v2/user/auth/refresh")
     suspend fun refreshUserToken(
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    @POST("/api/user/auth/google/logout")
+    @POST("/api/v2/user/auth/google/logout")
     suspend fun logoutUser(
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    @POST("/api/user/auth/google/check")
+    @POST("/api/v2/user/auth/google/check")
     suspend fun isSigned(
         @Body request: isSignedRequest
     ): Response<isSignedResponse>

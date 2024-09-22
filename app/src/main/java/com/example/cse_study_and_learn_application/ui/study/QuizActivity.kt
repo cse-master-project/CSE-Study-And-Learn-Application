@@ -1,10 +1,5 @@
 package com.example.cse_study_and_learn_application.ui.study
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.opengl.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
@@ -12,12 +7,9 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.ImageButton
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.ActivityQuizBinding
@@ -47,7 +39,7 @@ class QuizActivity() : AppCompatActivity() {
 
     private var subjects: String? = null
     private var subjectList: ArrayList<String>? = null
-    private var detailSubject: String? = null
+    private var chapters: ArrayList<String>? = null
     private var hasUserQuiz by Delegates.notNull<Boolean>()
     private var hasDefaultQuiz by Delegates.notNull<Boolean>()
     private var hasSolvedQuiz by Delegates.notNull<Boolean>()
@@ -67,8 +59,8 @@ class QuizActivity() : AppCompatActivity() {
                 binding.tvTitle.text = "많은(?) 과목"
             } else {
                 subjects = it.getStringExtra("subject").toString()
-                detailSubject = it.getStringExtra("detailSubject").toString()
-                binding.tvTitle.text = subjects
+                chapters = it.getStringArrayListExtra("chapters")
+                // binding.tvTitle.text = subjects
             }
             hasUserQuiz = it.getBooleanExtra("hasUserQuiz", true)
             hasDefaultQuiz = it.getBooleanExtra("hasDefaultQuiz", true)
@@ -161,7 +153,7 @@ class QuizActivity() : AppCompatActivity() {
         if (isRandom) {
             requestRandomQuiz(subjectList!!)
         } else {
-            requestQuiz(subjects!!, detailSubject!!)
+            requestQuiz(subjects!!, chapters!!)
         }
     }
 
@@ -185,13 +177,13 @@ class QuizActivity() : AppCompatActivity() {
         }
     }
 
-    private fun requestQuiz(subjects: String, detailSubject: String){
+    private fun requestQuiz(subject: String, chapters: ArrayList<String>){
         lifecycleScope.launch {
             try {
                 Log.d("test",
                     "token = ${AccountAssistant.getServerAccessToken(applicationContext)}\n" +
-                        "subject = ${subjects}\n" +
-                        "detailSubject = ${detailSubject}\n " +
+                        "subject = ${subject}\n" +
+                        "chapters = ${chapters}\n " +
                         "hasUserQuiz = ${hasUserQuiz}\n " +
                         "hasDefaultQuiz = ${hasDefaultQuiz}\n " +
                         "hasSolvedQuiz = ${hasSolvedQuiz}\n "
@@ -199,14 +191,15 @@ class QuizActivity() : AppCompatActivity() {
                 Log.i("Request", "hasUser = $hasUserQuiz, hasDefault = $hasDefaultQuiz, hasSolved=$hasSolvedQuiz")
                 val response = ConnectorRepository().getRandomQuiz(
                     token = AccountAssistant.getServerAccessToken(applicationContext),
-                    subject = subjects,
-                    detailSubject = detailSubject,
+                    subject = subject,
+                    chapters = chapters,
                     hasUserQuiz = hasUserQuiz,
                     hasDefaultQuiz = hasDefaultQuiz,
                     hasSolvedQuiz = hasSolvedQuiz
                 )
                 Log.i("Server Response", "Get Random Quiz: $response")
                 quizResponse = response
+                binding.tvTitle.text = response.subject
                 showQuiz(response)
             } catch (e: Exception) {
                 Log.e("Server Response", "failed Load Quiz Data", e)

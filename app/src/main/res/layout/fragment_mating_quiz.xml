@@ -36,15 +36,15 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center">
 
                 <TextView
+                    app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/tv_quiz_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,11 +58,44 @@
                     android:textSize="15sp" />
 
                 <ImageView
+                    app:layout_constraintTop_toBottomOf="@+id/tv_quiz_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     android:id="@+id/iv_quiz_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
-            </LinearLayout>
+                    android:visibility="invisible" />
+
+                <!-- 왼쪽 RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/left_option_info_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/right_option_info_recyclerview"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_quiz_image"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    tools:listitem="@layout/item_mating_number" />
+
+                <!-- 오른쪽 RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/right_option_info_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintStart_toEndOf="@id/left_option_info_recyclerview"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_quiz_image"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    tools:listitem="@layout/item_mating_number" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>
 
