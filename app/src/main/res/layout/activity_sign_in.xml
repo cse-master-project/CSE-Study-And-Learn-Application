@@ -73,18 +73,7 @@
                 android:layout_marginTop="20dp"/>
 
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
-
-
-    <ImageView
-        android:id="@+id/iv_gnu_char"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        app:layout_constraintBottom_toTopOf="@id/login_panel"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="30dp"
-        android:src="@drawable/ic_launcher_background"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

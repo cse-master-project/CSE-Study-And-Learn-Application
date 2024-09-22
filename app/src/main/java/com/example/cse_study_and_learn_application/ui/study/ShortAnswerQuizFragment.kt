@@ -77,9 +77,11 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentShortAnswerQuizBinding.inflate(inflater)
-        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-        (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
-        (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+        (activity as? QuizActivity)?.apply {
+            setExplanationButtonEnabled(false)
+            setGradingButtonText("정답 확인")
+            setGradingButtonClickListener { onAnswerSubmit() }
+        }
 
         requireArguments().let {
             quizId = it.getInt("quizId")
@@ -150,10 +152,16 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                     updateQuizText()
 
                     updateButtonText() // 버튼 텍스트 업데이트
+
+                    // 여기서 explanationDialog를 초기화하고 표시합니다
+                    explanationDialog = BottomSheetGradingFragment.newInstance(
+                        isCorrect = isCorrect,
+                        commentary = commentary
+                    )
                     explanationDialog?.setOnNextQuizListener {
                         (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
-
+                    // explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
                 }
             } catch (e: Exception) {
                 Log.e("ShortAnswerQuizFragment", "onAnswerSubmit", e)
@@ -171,8 +179,20 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     fun showExplanationDialog() {
-        if (isAnswerSubmitted && explanationDialog != null) {
+        if (isAnswerSubmitted) {
+            if (explanationDialog == null) {
+                val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
+                explanationDialog = BottomSheetGradingFragment.newInstance(
+                    isCorrect = isCorrect,
+                    commentary = commentary
+                )
+                explanationDialog?.setOnNextQuizListener {
+                    (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+                }
+            }
             explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
+        } else {
+            DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "먼저 정답을 확인해주세요.").show()
         }
     }
 

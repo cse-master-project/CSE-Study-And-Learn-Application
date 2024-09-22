@@ -161,12 +161,6 @@ class SignInActivity : AppCompatActivity() {
             }
             Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
         }
-
-        val gifPath = "file:///android_asset/images/gnu/gnu_hi.gif"
-        Glide.with(this)
-            .asGif()
-            .load(gifPath)
-            .into(_binding.ivGnuChar)
     }
 
     private fun addListener() {

@@ -33,32 +33,36 @@
         app:cardElevation="8dp"
         app:cardCornerRadius="20dp">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/tv_quiz_text"
+            android:layout_height="match_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="40dp"
-                android:fontFamily="@font/suit_light"
-                android:lineSpacingExtra="10dp"
-                android:text="문제 설명"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="15dp" />
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/tv_quiz_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="40dp"
+                    android:fontFamily="@font/suit_light"
+                    android:lineSpacingExtra="10dp"
+                    android:text="문제 설명"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="15dp" />
 
-            <ImageView
-                android:id="@+id/iv_quiz_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/iv_quiz_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
 
-            </ImageView>
-        </LinearLayout>
+                </ImageView>
+            </LinearLayout>
+        </ScrollView>
     </com.google.android.material.card.MaterialCardView>
 
 

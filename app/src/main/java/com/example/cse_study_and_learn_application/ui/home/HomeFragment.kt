@@ -80,19 +80,12 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         setupRecyclerView()
         setupSearchView()
 
-        val gifPath = "file:///android_asset/images/gnu/gnu_hi.gif"
-        Glide.with(requireActivity())
-            .asGif()
-            .load(gifPath)
-            .into(binding.ivGnuChar)
-
         homeViewModel.setCategoryThumbnails(requireContext())   // 썸네일 리스트 초기화
 
         homeViewModel.quizSubjectCategories.observe(viewLifecycleOwner) { categories ->
             if (categories.isNotEmpty()) {
                 // 문제 카테고리 정보 사용
                 adapter.updateItem(categories)
-
             } else {
                 // 카테고리 정보 가져오기 실패 처리
                 // 오류 메시지 표시 등의 동작 수행

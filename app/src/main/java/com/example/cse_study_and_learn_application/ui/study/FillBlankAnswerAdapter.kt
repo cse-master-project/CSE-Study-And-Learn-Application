@@ -1,104 +1,85 @@
-package com.example.cse_study_and_learn_application.ui.study
-
-import android.annotation.SuppressLint
+import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.util.rangeTo
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cse_study_and_learn_application.R
 import com.example.cse_study_and_learn_application.databinding.ItemFillBlankAnswerBinding
+import com.google.android.material.textfield.TextInputLayout
 
-class FillBlankAnswerAdapter(private val answers: MutableList<String>) :
-    RecyclerView.Adapter<FillBlankAnswerAdapter.AnswerViewHolder>() {
+class FillBlankAnswerAdapter(private val context: Context, private val answerCount: Int) :
+    RecyclerView.Adapter<FillBlankAnswerAdapter.ViewHolder>() {
 
-    private val userAnswers = MutableList(answers.size) { "" }
+    private val userAnswers = MutableList(answerCount) { "" }
+    private val isCorrectList = MutableList(answerCount) { false }
+    private var isSubmitted = false
 
-    inner class AnswerViewHolder(private val binding: ItemFillBlankAnswerBinding) :
+    inner class ViewHolder(private val binding: ItemFillBlankAnswerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int) {
-            binding.etAnswer.hint = "${position + 1} 번 답.."
-            binding.etAnswer.setText(userAnswers[position]) // 초기에 빈 텍스트로 설정
+            binding.textInputLayout.hint = "빈칸 ${position + 1}"
+            binding.etAnswer.setText(userAnswers[position])
+            binding.etAnswer.isEnabled = !isSubmitted
+
+            if (isSubmitted) {
+                updateBackgroundColor(binding.textInputLayout, isCorrectList[position])
+            } else {
+                resetBackgroundColor(binding.textInputLayout)
+            }
 
             binding.etAnswer.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    userAnswers[position] = s.toString()
+                    if (!isSubmitted) {
+                        userAnswers[position] = s.toString()
+                    }
                 }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
         }
 
-        fun disableInput() {
-            binding.etAnswer.isEnabled = false
+        private fun updateBackgroundColor(textInputLayout: TextInputLayout, isCorrect: Boolean) {
+            val color = if (isCorrect) {
+                ContextCompat.getColor(context, R.color.correct_card_background)
+            } else {
+                ContextCompat.getColor(context, R.color.incorrect_card_background)
+            }
+            textInputLayout.boxBackgroundColor = color
         }
 
-        fun setBackgroundColor(color: Int) {
-            binding.etAnswer.setBackgroundColor(color)
-        }
-
-        fun setAnswerText(text: String) {
-            binding.etAnswer.setText(text)
-        }
-
-        fun enableInput() {
-            binding.etAnswer.isEnabled = true
+        private fun resetBackgroundColor(textInputLayout: TextInputLayout) {
+            textInputLayout.boxBackgroundColor = ContextCompat.getColor(context, android.R.color.transparent)
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun resetAnswers() {
-        userAnswers.clear()
-        userAnswers.addAll(List(itemCount) { "" })
-        notifyDataSetChanged()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnswerViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemFillBlankAnswerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AnswerViewHolder(binding)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: AnswerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
     }
 
-    override fun onBindViewHolder(holder: AnswerViewHolder, position: Int, payloads: List<Any>) {
-        if (payloads.isNotEmpty()) {
-            when (payloads[0]) {
-                is Int -> holder.setBackgroundColor(payloads[0] as Int)
-                is String -> {
-                    when (payloads[0]) {
-                        "disable" -> holder.disableInput()
-                        "enable" -> holder.enableInput()
-                        else -> holder.setAnswerText(payloads[0] as String)
-                    }
-                }
-            }
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
-        }
-    }
-
-    override fun getItemCount() = answers.size
+    override fun getItemCount() = answerCount
 
     fun getAnswers(): List<String> = userAnswers
 
-    fun disableAllInputs() {
-        answers.indices.forEach { position ->
-            notifyItemChanged(position, "disable")
+    fun submitAnswers(correctAnswers: List<String>) {
+        isSubmitted = true
+        correctAnswers.forEachIndexed { index, correctAnswer ->
+            isCorrectList[index] = userAnswers[index].trim().equals(correctAnswer.trim(), ignoreCase = true)
         }
+        notifyDataSetChanged()
     }
 
-    fun setItemBackgroundColor(position: Int, color: Int) {
-        notifyItemChanged(position, color)
+    fun resetAnswers() {
+        isSubmitted = false
+        userAnswers.fill("")
+        isCorrectList.fill(false)
+        notifyDataSetChanged()
     }
-
-    fun enableAllInputs() {
-        answers.indices.forEach { position ->
-            notifyItemChanged(position, "enable")
-        }
-    }
-
-
 }
