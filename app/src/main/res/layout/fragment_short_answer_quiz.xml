@@ -10,10 +10,11 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/quiz_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:layout_marginTop="50dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
+        android:maxHeight="200dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,12 +23,14 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
+
                 <TextView
                     android:id="@+id/tv_quiz_text"
                     android:layout_width="match_parent"
@@ -39,18 +42,15 @@
                     android:text="문제 설명"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
                 <ImageView
                     android:id="@+id/iv_quiz_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-                </ImageView>
+                    android:visibility="gone" />
             </LinearLayout>
         </ScrollView>
-
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textfield.TextInputLayout
