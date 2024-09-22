@@ -107,7 +107,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val imagePath = "subj_all_random.jpg"
 
                 val newCategories = mutableListOf<QuizCategory>()
-                newCategories.add(QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐"))
+                newCategories.add(QuizCategory(-1, "여러 과목 문제 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐"))
 
                 for (subject in subjects) {
                     val id = subject.subjectId

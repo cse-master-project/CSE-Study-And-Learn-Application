@@ -24,6 +24,7 @@ import com.example.cse_study_and_learn_application.databinding.ActivityQuizBindi
 import com.example.cse_study_and_learn_application.model.RandomQuiz
 import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
+import com.example.cse_study_and_learn_application.ui.view.ResultDialog
 import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
@@ -130,6 +131,13 @@ class QuizActivity() : AppCompatActivity() {
             }
             getQuiz()
         }
+    }
+
+    private fun showResultDialog(isCorrect: Boolean) {
+        Lg.d("test", QuizActivity::class.java.simpleName, "안떠?")
+        val result = if (isCorrect) ResultDialog.ResultType.SUCCESS else ResultDialog.ResultType.FAILURE
+        val resultDialog = ResultDialog(this, result)
+        resultDialog.show()
     }
 
     // 해설 버튼 활성화/비활성화 메서드
@@ -248,6 +256,9 @@ class QuizActivity() : AppCompatActivity() {
     fun resultSubmit(quizId: Int, isCorrect: Boolean) {
         lifecycleScope.launch {
             try {
+
+                showResultDialog(isCorrect)  // 채점 다이얼로그
+
                 val response = ConnectorRepository().submitQuizResult(
                     token = AccountAssistant.getServerAccessToken(this@QuizActivity),
                     quizId = quizId,

@@ -21,6 +21,7 @@ import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.utils.HighlightHelper
 import com.example.cse_study_and_learn_application.utils.HighlightItem
 import com.example.cse_study_and_learn_application.utils.HighlightPosition
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import com.example.cse_study_and_learn_application.utils.dpToPx
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.Entry
@@ -30,6 +31,7 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import kotlin.math.ceil
 
 /**
  * Statistics fragment
@@ -134,8 +136,8 @@ class StatisticsFragment : Fragment() {
                 ),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(26),
-            bubblePadding = requireContext().dpToPx(10),
+            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.0225).toInt()),
+            bubblePadding = requireContext().dpToPx(20),
             screenName = StatisticsFragment::class.java.name
         )
 

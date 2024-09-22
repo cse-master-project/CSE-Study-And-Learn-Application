@@ -23,7 +23,9 @@ import com.example.cse_study_and_learn_application.utils.HighlightItem
 import com.example.cse_study_and_learn_application.utils.HighlightPosition
 import com.example.cse_study_and_learn_application.utils.HighlightView
 import com.example.cse_study_and_learn_application.utils.Subcategory
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import com.example.cse_study_and_learn_application.utils.dpToPx
+import kotlin.math.ceil
 
 
 /**
@@ -119,8 +121,8 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 HighlightItem(R.id.fab_question_exe, "문제 풀기를 시작하려면 여기를 클릭하세요.", showPosition = HighlightPosition.UI_TOP),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(28),
-            bubblePadding = requireContext().dpToPx(10),
+            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.0225).toInt()),
+            bubblePadding = requireContext().dpToPx(20),
             screenName = SubjectContentsFragment::class.java.name
         )
 

@@ -1,2 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- 틀린 답변에 대한 GIF 파일 이름 배열 -->
+    <string-array name="wrong_answer_gifs">
+        <item>gnu_crying.gif</item>
+        <item>gnu_line.gif</item>
+        <item>gnu_wow.gif</item>
+        <item>gnu_hide.gif</item>
+    </string-array>
+
+    <!-- 맞은 답변에 대한 GIF 파일 이름 배열 -->
+    <string-array name="correct_answer_gifs">
+        <item>gnu_good.gif</item>
+        <item>gnu_habojago.gif</item>
+        <item>gnu_ok.gif</item>
+        <item>gnu_sinna.gif</item>
+    </string-array>
+</resources>

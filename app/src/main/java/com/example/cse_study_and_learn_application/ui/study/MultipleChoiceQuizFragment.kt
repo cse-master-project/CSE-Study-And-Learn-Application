@@ -220,6 +220,7 @@ class MultipleChoiceQuizFragment : Fragment(), AppBarImageButtonListener {
                     (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
 
                     val isCorrect = userAnswer == answer
+
                     (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
 
 

@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:src="@drawable/baseline_remove_red_eye_24" />
+                    android:src="@drawable/ic_space_dashboard_24_white" />
 
             </com.google.android.material.card.MaterialCardView>
 

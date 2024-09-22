@@ -54,6 +54,7 @@
 
     <!-- TrueFalseFragment -->
     <color name="incorrect_true_false">#ff0000</color>
+    <color name="incorrect_text_color">#D95454</color>
 
 
 
