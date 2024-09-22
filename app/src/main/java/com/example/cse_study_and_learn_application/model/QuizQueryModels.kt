@@ -41,7 +41,7 @@ data class MultipleChoiceQuizJsonContent(
 
 data class ShortAnswerQuizJsonContent(
     val quiz: String,
-    val answer: String,
+    val answer: List<String>,
     val commentary: String
 )
 

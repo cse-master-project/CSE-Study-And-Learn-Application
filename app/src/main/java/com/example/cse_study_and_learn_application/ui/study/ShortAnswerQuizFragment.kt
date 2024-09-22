@@ -46,7 +46,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     private var loadNextQuiz: (() -> Unit)? = null
 
     private var userAnswer: String? = null
-    private lateinit var answer: String
+    private lateinit var answer: List<String>
     private lateinit var commentary: String
     private var quizId: Int? = null
     private var quizType: Int? = null
@@ -143,7 +143,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                     (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
                     (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
 
-                    val isCorrect = userAnswer?.trim().equals(answer.trim(), ignoreCase = true)
+                    val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
                     (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
 
                     updateInputTextColor(isCorrect)

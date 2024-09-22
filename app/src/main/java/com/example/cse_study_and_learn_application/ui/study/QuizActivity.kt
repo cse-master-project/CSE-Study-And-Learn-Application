@@ -122,7 +122,7 @@ class QuizActivity() : AppCompatActivity() {
                 when(val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)) {
                     is MultipleChoiceQuizFragment -> currentFragment.showExplanationDialog()
                     is ShortAnswerQuizFragment -> currentFragment.showExplanationDialog()
-                    //is MatingQuizFragment -> currentFragment.showExplanationDialog()
+                    is MatingQuizFragment -> currentFragment.showExplanationDialog()
                     is TrueFalseQuizFragment -> currentFragment.showExplanationDialog()
                     is FillBlankQuizFragment -> currentFragment.showExplanationDialog()
 
@@ -208,6 +208,7 @@ class QuizActivity() : AppCompatActivity() {
             }
         }
     }
+
 
     private fun loadNextQuiz() {
         resetGradingButtonText()

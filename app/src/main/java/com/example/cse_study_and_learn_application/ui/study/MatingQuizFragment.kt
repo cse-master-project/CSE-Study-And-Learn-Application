@@ -1,7 +1,9 @@
 package com.example.cse_study_and_learn_application.ui.study
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,15 +14,19 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cse_study_and_learn_application.R
+import com.example.cse_study_and_learn_application.connector.ConnectorRepository
 import com.example.cse_study_and_learn_application.databinding.FragmentMatingQuizBinding
 import com.example.cse_study_and_learn_application.model.MatingQuizJsonContent
 import com.example.cse_study_and_learn_application.model.RandomQuiz
+import com.example.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.example.cse_study_and_learn_application.ui.other.DesignToast
 import com.example.cse_study_and_learn_application.utils.Lg
 import com.example.cse_study_and_learn_application.utils.QuizType
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 /**
  * Mating quiz fragment
@@ -38,7 +44,6 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     private var quizId = -1
     private var hasImg = false
-    private lateinit var jsonString: String
     private lateinit var content: MatingQuizJsonContent
 
     // 선택한 버튼의 위치를 저장할 변수
@@ -52,88 +57,95 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     private val connectedPairs: MutableSet<Pair<Int, Int>> = mutableSetOf()
 
     private var isAnswerSubmitted = false
-    private var bottomSheet: BottomSheetGradingFragment? = null
+    private var explanationDialog: BottomSheetGradingFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMatingQuizBinding.inflate(inflater)
+        setupUI()
+        return binding.root
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupUI() {
+        (activity as? QuizActivity)?.apply {
+            setExplanationButtonEnabled(false)
+            setGradingButtonText("정답 확인")
+            setGradingButtonClickListener { onAnswerSubmit() }
+        }
 
         requireArguments().let {
             quizId = it.getInt("quizId")
             hasImg = it.getBoolean("hasImg")
-            jsonString = it.getString("contents", "")
+            val jsonString = it.getString("contents", "")
             content = Gson().fromJson(jsonString, MatingQuizJsonContent::class.java)
+
+            binding.tvQuizText.text = content.quiz
 
             if (hasImg) {
                 binding.ivQuizImage.visibility = View.VISIBLE
+                loadImage()
             }
 
-            // 선 잇기 보기 표시
-            val quizWithOptions = StringBuilder()
-            quizWithOptions.append(content.quiz).append("\n\n")
-
-            quizWithOptions.append("보기:\n")
-            content.leftOption.forEachIndexed { idx, option ->
-                quizWithOptions.append(idx).append(": ").append(option).append(", ")
-            }
-            quizWithOptions.append("\n")
-
-            content.rightOption.forEachIndexed { idx, option ->
-                val charIdx = ('A' + idx)
-                quizWithOptions.append(charIdx).append(": ").append(option).append(", ")
-            }
-
-            binding.tvQuizText.text = quizWithOptions.toString()
-
-            // 선 잇기 버튼 리사이클러뷰 설정
-            val leftAdapter = MatingRecyclerViewAdapter(content.leftOption, true, object: MatingRecyclerViewAdapter.OnItemClickListener {
-                override fun onItemClick(position: Int, option: String?) {
-                    leftSelectedPosition = position
-                    checkAndDrawLine()
-                }
-            })
-
-            val rightAdapter = MatingRecyclerViewAdapter(content.rightOption, false, object: MatingRecyclerViewAdapter.OnItemClickListener {
-                override fun onItemClick(position: Int, option: String?) {
-                    rightSelectedPosition = position
-                    checkAndDrawLine()
-                }
-            })
-
-            binding.leftRecyclerView.layoutManager = LinearLayoutManager(context)
-            binding.leftRecyclerView.adapter = leftAdapter
-
-            binding.rightRecyclerView.layoutManager = LinearLayoutManager(context)
-            binding.rightRecyclerView.adapter = rightAdapter
+            setupRecyclerViews()
         }
 
-        val leftAdapter = MatingRecyclerViewAdapter(content.leftOption, true, object: MatingRecyclerViewAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int, option: String?) {
-                if (!isAnswerSubmitted) {
-                    leftSelectedPosition = position
-                    checkAndDrawLine()
+        binding.btnMyAnswer.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    showUserLinesOnly()
+                    true
                 }
+                MotionEvent.ACTION_UP -> {
+                    showGradedLinesOnly()
+                    true
+                }
+                else -> false
             }
-        })
+        }
+    }
 
-        val rightAdapter = MatingRecyclerViewAdapter(content.rightOption, false, object: MatingRecyclerViewAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int, option: String?) {
-                if (!isAnswerSubmitted) {
-                    rightSelectedPosition = position
-                    checkAndDrawLine()
-                }
+    private fun loadImage() {
+        lifecycleScope.launch {
+            try {
+                val response = ConnectorRepository().getQuizImage(AccountAssistant.getServerAccessToken(requireContext()), quizId)
+                val decoded = Base64.decode(response.string(), Base64.DEFAULT)
+                val image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                binding.ivQuizImage.setImageBitmap(image)
+            } catch (e: Exception) {
+                Log.e("MatingQuizFragment", "get Image Failure", e)
             }
-        })
+        }
+    }
+
+    private fun setupRecyclerViews() {
+        val leftAdapter = MatingRecyclerViewAdapter(content.leftOption, true,
+            object : MatingRecyclerViewAdapter.OnItemClickListener {
+                override fun onItemClick(position: Int, option: String?) {
+                    if (!isAnswerSubmitted) {
+                        leftSelectedPosition = position
+                        checkAndDrawLine()
+                    }
+                }
+            })
+
+        val rightAdapter = MatingRecyclerViewAdapter(content.rightOption, false,
+            object : MatingRecyclerViewAdapter.OnItemClickListener {
+                override fun onItemClick(position: Int, option: String?) {
+                    if (!isAnswerSubmitted) {
+                        rightSelectedPosition = position
+                        checkAndDrawLine()
+                    }
+                }
+            })
 
         binding.leftRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.leftRecyclerView.adapter = leftAdapter
 
         binding.rightRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.rightRecyclerView.adapter = rightAdapter
-
-        return binding.root
     }
 
     private fun checkAndDrawLine() {
@@ -152,6 +164,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             rightSelectedPosition = null
         }
     }
+
 
     // 선잇기
     private fun drawLineForSelectedPair(pair: Pair<Int, Int>) {
@@ -217,9 +230,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         // content.answer 배열에서 "인덱스t인덱스" 형식의 요소를 파싱하여 정답 리스트로 변환
         return content.answer.map { answer ->
             val parts = answer.split("t")
-            val leftIndex = parts[0].toInt() // 't' 앞의 왼쪽 인덱스
-            val rightIndex = parts[1].toInt() // 't' 뒤의 오른쪽 인덱스
-            Pair(leftIndex, rightIndex)
+            Pair(parts[0].toInt(), parts[1].toInt())
         }
     }
 
@@ -232,81 +243,67 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onAnswerSubmit() {
-
-        // 사용자가 선택한 답을 인덱스로 변환
-        val selectedAnswers = convertSelectedAnswersToIndex()
-
-        // 정답을 인덱스 형태로 변환
-        val correctAnswers = getAnswerAsIndexList()
-
-        Log.d("test", selectedAnswers.toString())  // 사용자 선택
-        Log.d("test", correctAnswers.toString())   // 정답 리스트
-        Log.d("test", content.leftOption.toString())   // 정답 리스트
-        Log.d("test", content.rightOption.toString())   // 정답 리스트
-
-
-        if (selectedAnswers.isEmpty()) {
+        if (connectedPairs.isEmpty()) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 선택해 주세요.").show()
         } else {
             try {
                 if (!isAnswerSubmitted) {
                     isAnswerSubmitted = true
-                    showGradedLinesOnly()
-
+                    (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
                     (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
                     (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
 
-                    val unCorrectAnswers = correctAnswers.toMutableList()
-                    val tmpCorrectAnswerPair = mutableListOf<Pair<Int, Int>>()
-                    // 정답과 오답 비교
-                    for (pair in selectedAnswers) {
-                        if (correctAnswers.contains(pair)) {
-                            tmpCorrectAnswerPair.add(pair)
-                            unCorrectAnswers.remove(pair)
-                        }
-                    }
-                    unCorrectAnswers.forEach { pair ->
-                        drawLineForResult(pair, false)
-                    }
-                    tmpCorrectAnswerPair.forEach { pair ->
-                        drawLineForResult(pair, true)  // 정답인 경우 초록색
-                    }
+                    val correctAnswers = getAnswerAsIndexList()
+                    val isCorrect = gradeAnswers(connectedPairs.toList(), correctAnswers)
+                    (activity as? QuizActivity)?.resultSubmit(quizId, isCorrect)
 
                     showGradedLinesOnly()
+                    updateButtonText()
 
-                    bottomSheet = BottomSheetGradingFragment.newInstance(
-                        isCorrect = true,
+                    explanationDialog = BottomSheetGradingFragment.newInstance(
+                        isCorrect = isCorrect,
                         commentary = content.commentary,
                     )
-                    bottomSheet?.setOnNextQuizListener {
-                        loadNextQuiz?.invoke()
+                    explanationDialog?.setOnNextQuizListener {
+                        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
                     }
+
+                    binding.btnMyAnswer.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 Log.e("MatingQuizFragment", "onAnswerSubmit", e)
             }
-
-            // "내 답 보기" 버튼 활성화
-            binding.btnMyAnswer.visibility = View.VISIBLE
-
-            // "내 답 보기" 버튼을 꾹 누르면 나의 답을 보여줌
-            binding.btnMyAnswer.setOnTouchListener { _, motionEvent ->
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        // 채점된 선을 숨기고 내 답을 보여줌
-                        showUserLinesOnly()
-                        true
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        // 내 답을 숨기고 채점된 선을 다시 보여줌
-                        showGradedLinesOnly()
-                        true
-                    }
-                    else -> false
-                }
-            }
-
         }
+    }
+
+    private fun updateButtonText() {
+        (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
+    }
+
+    fun showExplanationDialog() {
+        if (isAnswerSubmitted && explanationDialog != null) {
+            explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
+        }
+    }
+
+    private fun gradeAnswers(selectedAnswers: List<Pair<Int, Int>>, correctAnswers: List<Pair<Int, Int>>): Boolean {
+        gradedLines.clear()
+        var allCorrect = true
+        for (pair in selectedAnswers) {
+            val isCorrect = correctAnswers.contains(pair)
+            gradedLines.add(Pair(pair, isCorrect))
+            drawLineForResult(pair, isCorrect)
+            if (!isCorrect) allCorrect = false
+        }
+        // 선택되지 않은 정답도 표시
+        for (pair in correctAnswers) {
+            if (!selectedAnswers.contains(pair)) {
+                gradedLines.add(Pair(pair, true))
+                drawLineForResult(pair, true)
+                allCorrect = false
+            }
+        }
+        return allCorrect
     }
 
     // 사용자 선을 숨기고 채점된 선을 보여줌
@@ -367,16 +364,17 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
         loadNextQuiz = {
-            // 상태 초기화
             isAnswerSubmitted = false
             connectedPairs.clear()
             gradedLines.clear()
             binding.lineDrawingView.clearLines()
             binding.btnMyAnswer.visibility = View.GONE
 
-            // 버튼 텍스트 초기화
+            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+            (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
 
+            setupUI()
             listener.invoke()
         }
     }
@@ -384,7 +382,6 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     companion object {
         fun newInstance(response: RandomQuiz): MatingQuizFragment {
             val args = Bundle()
-
             val fragment = MatingQuizFragment()
             args.putInt("quizId", response.quizId)
             args.putString("contents", response.jsonContent)

@@ -18,7 +18,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
         android:padding="10dp"
-        android:text="정답" />
+        android:text="내 답" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/quiz_card"
