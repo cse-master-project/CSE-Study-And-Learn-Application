@@ -3,17 +3,18 @@ package com.example.cse_study_and_learn_application.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Rect
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.ceil
 
 class HighlightHelper(
     private val context: Context,
     private val fragment: Fragment,
     private val highlightItems: List<HighlightItem>,
-    private val heightThreshold: Int = 10, // 높이 쓰래시홀드
     private val bubbleMargin: Int = 50, // 말풍선 마진
     private val bubblePadding: Int = 20, // 말풍선 패딩
     private val debugMode: Boolean = false,
@@ -29,6 +30,22 @@ class HighlightHelper(
         fun clearHelpShown(context: Context) {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             prefs.edit().clear().apply()
+        }
+
+        // 해상도별로 heightThreshold 값을 동적으로 계산하는 함수
+        fun calculateHeightThreshold(context: Context): Int {
+            val displayMetrics: DisplayMetrics = context.resources.displayMetrics
+            val screenHeight = displayMetrics.heightPixels / displayMetrics.density // 화면 높이를 dp로 변환
+            val densityDpi = displayMetrics.densityDpi
+
+            // 밀도 및 해상도에 따른 heightThreshold 값을 설정
+            return when {
+                densityDpi >= DisplayMetrics.DENSITY_XXXHIGH -> (screenHeight * 0.2).toInt() // xxxhdpi 이상
+                densityDpi >= DisplayMetrics.DENSITY_XXHIGH -> (screenHeight * 0.12).toInt() // xxhdpi 이상
+                densityDpi >= DisplayMetrics.DENSITY_XHIGH -> (screenHeight * 0.09).toInt() // xhdpi
+                densityDpi >= DisplayMetrics.DENSITY_HIGH -> (screenHeight * 0.02).toInt()  // hdpi
+                else -> (screenHeight * 0.015).toInt() // 그 외 (mdpi 이하)
+            }
         }
     }
 
@@ -73,7 +90,7 @@ class HighlightHelper(
 
             val targetRect = Rect(location[0], location[1], location[0] + targetView.width, location[1] + targetView.height)
 
-            val helpOverlayView = HighlightView(context, targetRect, item.description, item.showPosition, heightThreshold, bubbleMargin.toFloat(), bubblePadding.toFloat(), item.scaleFactor).apply {
+            val helpOverlayView = HighlightView(context, targetRect, item.description, item.showPosition, calculateHeightThreshold(context), bubbleMargin.toFloat(), bubblePadding.toFloat(), item.scaleFactor).apply {
                 visibility = View.INVISIBLE
                 tag = "HighlightView$index"
             }

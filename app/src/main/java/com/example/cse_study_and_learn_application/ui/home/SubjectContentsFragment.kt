@@ -117,7 +117,6 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 HighlightItem(R.id.fab_question_exe, "문제 풀기를 시작하려면 여기를 클릭하세요.", showPosition = HighlightPosition.UI_TOP),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.0225).toInt()),
             bubblePadding = requireContext().dpToPx(20),
             screenName = SubjectContentsFragment::class.java.name
         )

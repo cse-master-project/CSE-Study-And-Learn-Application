@@ -121,7 +121,6 @@ class SettingFragment : Fragment() {
                 )
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.0225).toInt()),
             bubblePadding = requireContext().dpToPx(20),
             screenName = SettingFragment::class.java.name
         )
