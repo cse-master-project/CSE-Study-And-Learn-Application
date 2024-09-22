@@ -22,6 +22,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_lecture"
+        android:name="com.example.cse_study_and_learn_application.ui.test.LectureFragment"
+        android:label="강의"
+        tools:layout="@layout/fragment_lecture" />
+
+    <fragment
         android:id="@+id/navigation_statistics"
         android:name="com.example.cse_study_and_learn_application.ui.statistics.StatisticsFragment"
         android:label="@string/title_statistics"
