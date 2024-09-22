@@ -322,7 +322,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     override fun onSubjectItemClick(subject: QuizCategory) {
         homeViewModel.setSubject(subject)
 
-        if (subject.title == "문제 선택 풀기") {
+        if (subject.title == "여러 과목 문제 풀기") {
             val context = requireContext()
             val dialog = DialogQuizSelect(requireActivity())
 

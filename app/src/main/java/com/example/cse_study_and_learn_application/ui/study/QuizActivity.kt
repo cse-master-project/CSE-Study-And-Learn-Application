@@ -56,7 +56,7 @@ class QuizActivity() : AppCompatActivity() {
             isRandom = it.getBooleanExtra("isRandom", false)
             if (isRandom) {
                 subjectList = it.getStringArrayListExtra("subjectList")
-                binding.tvTitle.text = "많은(?) 과목"
+                // binding.tvTitle.text = "많은(?) 과목"
             } else {
                 subjects = it.getStringExtra("subject").toString()
                 chapters = it.getStringArrayListExtra("chapters")
@@ -126,7 +126,6 @@ class QuizActivity() : AppCompatActivity() {
     }
 
     private fun showResultDialog(isCorrect: Boolean) {
-        Lg.d("test", QuizActivity::class.java.simpleName, "안떠?")
         val result = if (isCorrect) ResultDialog.ResultType.SUCCESS else ResultDialog.ResultType.FAILURE
         val resultDialog = ResultDialog(this, result)
         resultDialog.show()
@@ -165,6 +164,7 @@ class QuizActivity() : AppCompatActivity() {
                 val token = AccountAssistant.getServerAccessToken(this@QuizActivity)
                 val response = ConnectorRepository().getRandomQuiz(token, subjects, hasDefaultQuiz, hasUserQuiz, hasSolvedQuiz)
                 quizResponse = response
+                binding.tvTitle.text = response.subject
                 showQuiz(response)
             } catch (e: Exception) {
                 // Handle the error
