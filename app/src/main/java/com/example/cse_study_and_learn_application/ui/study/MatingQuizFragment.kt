@@ -72,7 +72,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     private fun setupUI() {
         (activity as? QuizActivity)?.apply {
             setExplanationButtonEnabled(false)
-            setGradingButtonText("정답 확인")
+            setGradingButtonText("채점하기")
             setGradingButtonClickListener { onAnswerSubmit() }
         }
 
@@ -370,7 +370,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             binding.lineDrawingView.clearLines()
             binding.btnMyAnswer.visibility = View.GONE
 
-            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+            (activity as? QuizActivity)?.setGradingButtonText("채점하기")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
 
