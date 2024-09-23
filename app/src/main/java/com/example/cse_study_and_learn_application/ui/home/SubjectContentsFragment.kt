@@ -1,9 +1,7 @@
 package com.example.cse_study_and_learn_application.ui.home
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,9 +19,9 @@ import com.example.cse_study_and_learn_application.ui.study.QuizActivity
 import com.example.cse_study_and_learn_application.utils.HighlightHelper
 import com.example.cse_study_and_learn_application.utils.HighlightItem
 import com.example.cse_study_and_learn_application.utils.HighlightPosition
-import com.example.cse_study_and_learn_application.utils.HighlightView
-import com.example.cse_study_and_learn_application.utils.Subcategory
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import com.example.cse_study_and_learn_application.utils.dpToPx
+import kotlin.math.ceil
 
 
 /**
@@ -119,8 +117,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                 HighlightItem(R.id.fab_question_exe, "문제 풀기를 시작하려면 여기를 클릭하세요.", showPosition = HighlightPosition.UI_TOP),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(28),
-            bubblePadding = requireContext().dpToPx(10),
+            bubblePadding = requireContext().dpToPx(20),
             screenName = SubjectContentsFragment::class.java.name
         )
 
@@ -199,15 +196,15 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
         val currentSubject = homeViewModel.subject
         binding.tvTitle.text = currentSubject.title
 
-        val detailSubjects = homeViewModel.getCurrentDetailSubjects()
-        if (detailSubjects.isEmpty()) {
+        val chapters = homeViewModel.getCurrentChapters()
+        if (chapters.isEmpty()) {
             //Toast.makeText(requireContext(), "조건에 일치하는 문제가 없습니다.", Toast.LENGTH_SHORT).show()
 
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.ERROR, "조건에 일치하는 문제가 없습니다.").show()
             requireActivity().onBackPressed()
         }
 
-        adapter.changeDetailSubjects(detailSubjects.toList())
+        adapter.changeChapters(chapters.toList())
         adapter.notifyDataSetChanged()
 
     }
@@ -246,7 +243,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
                     dialogQuestMessage.setPositive {
                         // Toast.makeText(context, "네 클릭", Toast.LENGTH_SHORT).show()
                         dialogQuestMessage.dismiss()
-                        checkDetailQuizSend()
+                        checkChapterSend()
                     }
 
                     dialogQuestMessage.setNegative {
@@ -259,7 +256,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
 
                     dialogQuestMessage.show()
                 } else {
-                    checkDetailQuizSend()
+                    checkChapterSend()
                 }
 
             }
@@ -314,35 +311,32 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             }
 
             R.id.rb_all_sel-> {
-                homeViewModel.getQuizLoad(requireContext(), Subcategory.ALL)
                 hasUserQuiz = true
                 hasDefaultQuiz = true
             }
 
             R.id.rb_custom_sel -> {
-                homeViewModel.getQuizLoad(requireContext(), Subcategory.USER)
                 hasUserQuiz = true
                 hasDefaultQuiz = false
             }
 
             R.id.rb_default_sel -> {
-                homeViewModel.getQuizLoad(requireContext(), Subcategory.DEFAULT)
                 hasUserQuiz = false
                 hasDefaultQuiz = true
             }
         }
     }
 
-    private fun checkDetailQuizSend() {
+    private fun checkChapterSend() {
         val subject = homeViewModel.subject.title
-        val detailSubject = homeViewModel.getSelectedDetailSubjects()
+        val chapter = homeViewModel.getSelectedChapters()
         // Log.d("test", "detailSubject: ${detailSubject.toString()}")
 
-        if (detailSubject.isNotEmpty()) {
-            val temporaryDetailSubject = arrayListOf<String>()
+        if (chapter.isNotEmpty()) {
+            val temporaryChapters = arrayListOf<String>()
 
-            detailSubject.forEach {
-                temporaryDetailSubject.add(it.title)
+            chapter.forEach {
+                temporaryChapters.add(it.title)
             }
 
             // Log.d("detail", temporaryDetailSubject.toString())
@@ -350,7 +344,7 @@ class SubjectContentsFragment : Fragment(), OnClickListener {
             val i = Intent(requireContext(), QuizActivity::class.java)
             i.putExtra("isRandom", false)
             i.putExtra("subject", subject)
-            i.putExtra("detailSubject", temporaryDetailSubject.joinToString(","))
+            i.putStringArrayListExtra("chapters", temporaryChapters)
             i.putExtra("hasUserQuiz", hasUserQuiz)
             i.putExtra("hasDefaultQuiz", hasDefaultQuiz)
             i.putExtra("hasSolvedQuiz", hasSolvedQuiz)

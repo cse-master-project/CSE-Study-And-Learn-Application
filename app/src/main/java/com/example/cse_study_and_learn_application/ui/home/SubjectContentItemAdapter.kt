@@ -67,8 +67,8 @@ class SubjectContentItemAdapter(private var contents: List<QuizContentCategory>,
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun changeDetailSubjects(currentDetailSubjects: List<QuizContentCategory>) {
-        contents = currentDetailSubjects
+    fun changeChapters(currentChapters: List<QuizContentCategory>) {
+        contents = currentChapters
         // Log.d("test", "어댑터: $contents")
         notifyDataSetChanged()
     }

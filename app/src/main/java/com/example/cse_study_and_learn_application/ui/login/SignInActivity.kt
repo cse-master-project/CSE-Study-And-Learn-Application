@@ -133,7 +133,8 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivitySignInBinding.inflate(layoutInflater)
 
-        setGoogleButtonText(_binding.btnSignIn,"Google 계정으로 로그인")
+        // setGoogleButtonText(_binding.btnSignIn,"Google 계정으로 로그인")
+        _binding.btnSignIn.text = "Google 계정으로 로그인"
 
         addListener()
 

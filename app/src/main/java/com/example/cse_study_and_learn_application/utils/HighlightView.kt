@@ -8,6 +8,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.example.cse_study_and_learn_application.R
 
 @SuppressLint("ViewConstructor")
@@ -30,8 +31,10 @@ class HighlightView(
 
     private val textPaint = TextPaint().apply {
         color = Color.BLACK
-        textSize = 60f // 텍스트 크기를 60f로 설정
+        textSize = 45f // 텍스트 크기를 60f로 설정
         isAntiAlias = true
+        typeface = ResourcesCompat.getFont(context, R.font.hakgyoansim_dunggeunmiso_r)
+
     }
 
     private val borderColor = ContextCompat.getColor(context, R.color.light_blue_500) // XML 리소스에서 테두리 색상 가져오기
@@ -46,7 +49,7 @@ class HighlightView(
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
 
-        val cornerRadius = 20f // 모서리 둥글기 반경
+        val cornerRadius = 50f // 모서리 둥글기 반경
 
         val halfWidth = (targetRect.width() / 2) * scaleFactor
         val halfHeight = (targetRect.height() / 2) * scaleFactor

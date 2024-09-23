@@ -111,7 +111,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 ),
                 HighlightItem(
                     R.id.rv_subjects,
-                    "여기를 클릭해서 원하는 과목을 랜덤으로 선택해서 문제를 풀 수 있습니다.",
+                    "여기를 클릭해서 원하는 과목을 선택해서 랜덤으로 문제를 풀 수 있습니다.",
                     showPosition = HighlightPosition.UI_BOTTOM,
                     position = 0,
                     scaleFactor = 1.1f
@@ -125,7 +125,6 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
                 ),
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(ceil(requireContext().displayHeight() * 0.009).toInt()),
             bubblePadding = requireContext().dpToPx(20),
             screenName = HomeFragment::class.java.name
         )
@@ -268,7 +267,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
         val imagePath = "subj_all_random.jpg"
 
         val subject =
-            QuizCategory(-1, "문제 선택 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐")
+            QuizCategory(-1, "여러 과목 문제 풀기", "images/subjects/$imagePath", "과목을 고르세요", "⭐")
         temporalSubjects.add(subject)
 
 //        try {
@@ -322,7 +321,7 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
     override fun onSubjectItemClick(subject: QuizCategory) {
         homeViewModel.setSubject(subject)
 
-        if (subject.title == "문제 선택 풀기") {
+        if (subject.title == "여러 과목 문제 풀기") {
             val context = requireContext()
             val dialog = DialogQuizSelect(requireActivity())
 

@@ -23,6 +23,8 @@ import com.example.cse_study_and_learn_application.utils.getQuizTypeFromInt
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.noties.markwon.Markwon
+import io.noties.markwon.image.glide.GlideImagesPlugin
 import kotlinx.coroutines.launch
 
 /**
@@ -43,7 +45,13 @@ class BottomSheetGradingFragment : BottomSheetDialogFragment() {
 
         requireArguments().let {
             val comment = it.getString("commentary").toString()
-            binding.tvCommentary.text = comment
+
+            val markdown = Markwon.builder(requireActivity())
+                .usePlugin(GlideImagesPlugin.create(requireActivity()))
+                .build()
+
+            markdown.setMarkdown(binding.tvCommentary, comment)
+            // binding.tvCommentary.text = comment
         }
 
         return binding.root

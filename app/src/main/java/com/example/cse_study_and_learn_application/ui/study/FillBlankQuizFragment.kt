@@ -69,11 +69,13 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             val hasImg = it.getBoolean("hasImg")
             val jsonString = it.getString("contents")
             val content = Gson().fromJson(jsonString, FillBlankQuizJsonContent::class.java)
+            val creator = it.getString("creator")
             answer = content.answer[0].split(",")
             commentary = content.commentary
             originalQuizText = content.quiz
 
             binding.tvQuizText.text = originalQuizText
+            binding.tvCreator.text = "출제자: $creator"
 
             if (hasImg) {
                 binding.ivQuizImage.visibility = View.VISIBLE
@@ -177,6 +179,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             args.putInt("quizId", response.quizId)
             args.putString("contents", response.jsonContent)
             args.putBoolean("hasImg", response.hasImage)
+            args.putString("creator", response.creator)
             fragment.arguments = args
 
             return fragment

@@ -36,15 +36,15 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center">
 
                 <TextView
+                    app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/tv_quiz_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,26 +58,71 @@
                     android:textSize="15sp" />
 
                 <ImageView
+                    app:layout_constraintTop_toBottomOf="@+id/tv_quiz_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     android:id="@+id/iv_quiz_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
-            </LinearLayout>
+                    android:visibility="invisible" />
+
+                <!-- 왼쪽 RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/left_option_info_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/right_option_info_recyclerview"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_quiz_image"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    tools:listitem="@layout/item_mating_number" />
+
+                <!-- 오른쪽 RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/right_option_info_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintStart_toEndOf="@id/left_option_info_recyclerview"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_quiz_image"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    tools:listitem="@layout/item_mating_number" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>
 
-
+    <TextView
+        android:id="@+id/tv_creator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="출제자: 관리자"
+        android:textSize="11sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/rix_x_ladywatermelon_regular"
+        app:layout_constraintTop_toBottomOf="@id/quiz_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="end"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="15dp" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gl_answer_group"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/quiz_card">
+        app:layout_constraintTop_toBottomOf="@id/tv_creator">
 
         <com.example.cse_study_and_learn_application.ui.view.LineDrawingView
             android:id="@+id/line_drawing_view"

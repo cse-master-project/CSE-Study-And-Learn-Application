@@ -28,7 +28,9 @@ import com.example.cse_study_and_learn_application.ui.statistics.StatisticsFragm
 import com.example.cse_study_and_learn_application.utils.HighlightHelper
 import com.example.cse_study_and_learn_application.utils.HighlightItem
 import com.example.cse_study_and_learn_application.utils.HighlightPosition
+import com.example.cse_study_and_learn_application.utils.displayHeight
 import com.example.cse_study_and_learn_application.utils.dpToPx
+import kotlin.math.ceil
 
 /**
  * Setting fragment
@@ -119,8 +121,7 @@ class SettingFragment : Fragment() {
                 )
             ),
             debugMode = false,
-            heightThreshold = requireContext().dpToPx(26),
-            bubblePadding = requireContext().dpToPx(10),
+            bubblePadding = requireContext().dpToPx(20),
             screenName = SettingFragment::class.java.name
         )
 

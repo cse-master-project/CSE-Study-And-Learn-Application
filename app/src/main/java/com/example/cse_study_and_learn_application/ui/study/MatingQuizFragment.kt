@@ -82,6 +82,16 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             val jsonString = it.getString("contents", "")
             content = Gson().fromJson(jsonString, MatingQuizJsonContent::class.java)
 
+            // 왼쪽 RecyclerView (숫자가 증가)
+            val leftAdapter = MatingOptionAdapter(content.leftOption, true)
+            binding.leftOptionInfoRecyclerview.adapter = leftAdapter
+            binding.leftOptionInfoRecyclerview.layoutManager = LinearLayoutManager(context)
+
+            // 오른쪽 RecyclerView (알파벳이 증가)
+            val rightAdapter = MatingOptionAdapter(content.rightOption, false)
+            binding.rightOptionInfoRecyclerview.adapter = rightAdapter
+            binding.rightOptionInfoRecyclerview.layoutManager = LinearLayoutManager(context)
+
             binding.tvQuizText.text = content.quiz
 
             if (hasImg) {
@@ -289,20 +299,14 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     private fun gradeAnswers(selectedAnswers: List<Pair<Int, Int>>, correctAnswers: List<Pair<Int, Int>>): Boolean {
         gradedLines.clear()
         var allCorrect = true
-        for (pair in selectedAnswers) {
-            val isCorrect = correctAnswers.contains(pair)
-            gradedLines.add(Pair(pair, isCorrect))
-            drawLineForResult(pair, isCorrect)
-            if (!isCorrect) allCorrect = false
-        }
-        // 선택되지 않은 정답도 표시
+
+        // 정답만 gradedLines에 추가
         for (pair in correctAnswers) {
-            if (!selectedAnswers.contains(pair)) {
-                gradedLines.add(Pair(pair, true))
-                drawLineForResult(pair, true)
-                allCorrect = false
-            }
+            val isSelected = selectedAnswers.contains(pair)
+            gradedLines.add(Pair(pair, isSelected))
+            if (!isSelected) allCorrect = false
         }
+
         return allCorrect
     }
 
@@ -310,12 +314,13 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
     private fun showGradedLinesOnly() {
         binding.lineDrawingView.clearLines() // 기존 선 지우기
 
-        // gradedLines의 복사본을 사용하여 반복
-        val gradedLinesCopy = gradedLines.toList()
-
-        for ((pair, isCorrect) in gradedLinesCopy) {
-            drawLineForResult(pair, isCorrect)
-            // Lg.d("test", MatingQuizFragment::class.java.simpleName, "$isCorrect")
+        for ((pair, isSelected) in gradedLines) {
+            val color = if (isSelected) {
+                ContextCompat.getColor(requireContext(), R.color.correct_card_number_background)
+            } else {
+                ContextCompat.getColor(requireContext(), R.color.incorrect_true_false)
+            }
+            drawLineForResult(pair, color)
         }
     }
 
@@ -330,7 +335,7 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
         }
     }
 
-    private fun drawLineForResult(pair: Pair<Int, Int>, isCorrect: Boolean) {
+    private fun drawLineForResult(pair: Pair<Int, Int>, color: Int) {
         val leftViewHolder = binding.leftRecyclerView.findViewHolderForAdapterPosition(pair.first)
         val rightViewHolder = binding.rightRecyclerView.findViewHolderForAdapterPosition(pair.second)
 
@@ -353,11 +358,8 @@ class MatingQuizFragment : Fragment(), OnAnswerSubmitListener {
             val endXInView = endX - lineDrawingViewLocation[0]
             val endYInView = endY - lineDrawingViewLocation[1]
 
-            val color = if (isCorrect) ContextCompat.getColor(requireContext(), R.color.correct_card_number_background) else ContextCompat.getColor(requireContext(), R.color.incorrect_true_false)
             binding.lineDrawingView.addLine(startXInView.toFloat(), startYInView.toFloat(), endXInView.toFloat(), endYInView.toFloat(), color)
 
-            // 정답 여부와 함께 선을 저장
-            gradedLines.add(Pair(pair, isCorrect))
         }
     }
 
