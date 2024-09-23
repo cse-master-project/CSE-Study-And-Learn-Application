@@ -59,7 +59,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI(view)
-        val editTextAnswer = view.findViewById<EditText>(R.id.et_answer)
+        val editTextAnswer = view.findViewById<EditText>(R.id.etAnswer)
         editTextAnswer.setOnTouchListenerForKeyboard()
         editTextAnswer.setOnEditorActionListener { v, i, e ->
             if (i == EditorInfo.IME_ACTION_DONE ||
@@ -79,7 +79,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
         binding = FragmentShortAnswerQuizBinding.inflate(inflater)
         (activity as? QuizActivity)?.apply {
             setExplanationButtonEnabled(false)
-            setGradingButtonText("정답 확인")
+            setGradingButtonText("채점하기")
             setGradingButtonClickListener { onAnswerSubmit() }
         }
 
@@ -112,29 +112,14 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             }
         }
 
-        binding.etAnswer.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (!isAnswerSubmitted) {
-                    userAnswer = s.toString()
-                } else {
-                    // 이미 답변을 제출했다면 입력을 무시
-                    binding.etAnswer.removeTextChangedListener(this)
-                    binding.etAnswer.setText(userAnswer)
-                    binding.etAnswer.setSelection(userAnswer?.length ?: 0)
-                    binding.etAnswer.addTextChangedListener(this)
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
         return binding.root
     }
 
     // 앱바의 채점 버튼 클릭
     override fun onAnswerSubmit() {
+        hideKeyboard()
         userAnswer = binding.etAnswer.text.toString()
+        binding.etAnswer.isEnabled = false
         if (userAnswer.isNullOrEmpty()) {
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 입력해주세요.").show()
         } else {
@@ -203,7 +188,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             ContextCompat.getColor(requireContext(), R.color.incorrect_card_background)
         }
 
-        binding.etAnswer.backgroundTintList = ColorStateList.valueOf(color)
+        binding.textInputLayout.boxBackgroundColor = color
     }
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
@@ -214,7 +199,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             binding.etAnswer.setText("")
             binding.etAnswer.isEnabled = true
             binding.etAnswer.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.default_input_text_background))
-            (activity as? QuizActivity)?.setGradingButtonText("정답 확인")
+            (activity as? QuizActivity)?.setGradingButtonText("채점하기")
             (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
             (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             listener.invoke()

@@ -1,7 +1,9 @@
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +18,7 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
     private val isCorrectList = MutableList(answerCount) { false }
     private var isSubmitted = false
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class ViewHolder(private val binding: ItemFillBlankAnswerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
