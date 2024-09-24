@@ -116,6 +116,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     // 앱바의 채점 버튼 클릭
+    @SuppressLint("SetTextI18n")
     override fun onAnswerSubmit() {
         hideKeyboard()
         userAnswer = binding.etAnswer.text.toString()
@@ -132,6 +133,8 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
 
                     val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
                     (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+                    binding.tvAnswer.text = "정답 : ${answer[0]}"
+                    binding.tvAnswer.visibility = View.VISIBLE
 
                     updateInputTextColor(isCorrect)
                     updateQuizText()
