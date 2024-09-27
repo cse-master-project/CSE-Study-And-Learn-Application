@@ -124,7 +124,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_creator">
 
-        <com.example.cse_study_and_learn_application.ui.view.LineDrawingView
+        <com.cslu.cse_study_and_learn_application.ui.view.LineDrawingView
             android:id="@+id/line_drawing_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

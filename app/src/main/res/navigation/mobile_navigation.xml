@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.cse_study_and_learn_application.ui.home.HomeFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -23,13 +23,13 @@
 
     <fragment
         android:id="@+id/navigation_lecture"
-        android:name="com.example.cse_study_and_learn_application.ui.test.LectureFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.test.LectureFragment"
         android:label="강의"
         tools:layout="@layout/fragment_lecture" />
 
     <fragment
         android:id="@+id/navigation_statistics"
-        android:name="com.example.cse_study_and_learn_application.ui.statistics.StatisticsFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.statistics.StatisticsFragment"
         android:label="@string/title_statistics"
         tools:layout="@layout/fragment_statistics" >
         <action
@@ -42,7 +42,7 @@
 
     <fragment
         android:id="@+id/navigation_setting"
-        android:name="com.example.cse_study_and_learn_application.ui.setting.SettingFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.setting.SettingFragment"
         android:label="@string/title_setting"
         tools:layout="@layout/fragment_setting" >
         <action
@@ -57,7 +57,7 @@
     </fragment>
     <fragment
         android:id="@+id/subjectContentsFragment"
-        android:name="com.example.cse_study_and_learn_application.ui.home.SubjectContentsFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.home.SubjectContentsFragment"
         android:label="fragment_subject_contents"
         tools:layout="@layout/fragment_subject_contents" >
         <action
@@ -78,7 +78,7 @@
     </fragment>
     <fragment
         android:id="@+id/editUserInfoFragment"
-        android:name="com.example.cse_study_and_learn_application.ui.setting.EditUserInfoFragment"
+        android:name="com.cslu.cse_study_and_learn_application.ui.setting.EditUserInfoFragment"
         android:label="fragment_edit_user_info"
         tools:layout="@layout/fragment_edit_user_info" >
         <action

@@ -19,7 +19,7 @@ val keystoreProperties: Properties = Properties().apply {
 }
 
 android {
-    namespace = "com.example.cse_study_and_learn_application"
+    namespace = "com.cslu.cse_study_and_learn_application"
     compileSdk = 34
 
 
@@ -33,7 +33,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.cse_study_and_learn_application"
+        applicationId = "com.cslu.cse_study_and_learn_application"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
