@@ -5,6 +5,10 @@
     </style>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- 다크 모드 강제 비활성화 -->
+        <!-- 다크 모드 강제 비활성화 (API 레벨 29 이상) -->
+        <item name="android:forceDarkAllowed">false</item>
+
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/light_blue_500</item>
         <item name="colorPrimaryVariant">@color/light_blue_700</item>
