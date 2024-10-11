@@ -14,7 +14,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline"
         app:cardElevation="8dp"
         app:cardCornerRadius="20dp">
 
@@ -31,7 +30,7 @@
                 android:layout_margin="40dp"
                 android:fontFamily="@font/suit_light"
                 android:lineSpacingExtra="10dp"
-                android:text="인터넷은 미국 국방성이 군사정보의 공유를 목적으로 1969년 미국 내 4개 대학의 컴퓨터를 연결하여 구축된 ()이란 네트워크 시스템에서 시작되었다. 세계 최초로 패킷교환 방식에 의한 데이터 전송을 위하여 () 통신 프로토콜을 채택하였다."
+                android:text="문제."
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="15dp" />
