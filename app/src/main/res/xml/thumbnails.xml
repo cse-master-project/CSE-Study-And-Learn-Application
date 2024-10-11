@@ -2,16 +2,10 @@
 <subjects>
     <!-- 과목별 썸네일 매칭 -->
     <subject name="Python">subj_python.jpg</subject>
-    <subject name="python2">subj_python2.jpg</subject>
-    <subject name="C">subj_c.jpg</subject>
-    <subject name="컴퓨터 개론">subj_cpp.jpg</subject>
-    <subject name="android">subj_android.jpg</subject>
-    <subject name="algorithm">subj_algo.jpg</subject>
-    <subject name="ai">subj_ai.jpg</subject>
-    <subject name="sever">subj_sever.jpg</subject>
+    <subject name="C언어">cl.jpg</subject>
+    <subject name="컴퓨터 구조">subj_computer.jpg</subject>
     <subject name="웹프로그래밍">subj_web.jpg</subject>
-    <subject name="computer">subj_computer.jpg</subject>
     <subject name="JavaScript">subj_computer2.jpg</subject>
-    <subject name="확률과 통계">subj_math.jpg</subject>
-    <subject name="이산수학">subj_math2.jpg</subject>
+    <subject name="알고리즘">subj_cpp.jpg</subject>
+    <subject name="JAVA">java.jpg</subject>
 </subjects>
