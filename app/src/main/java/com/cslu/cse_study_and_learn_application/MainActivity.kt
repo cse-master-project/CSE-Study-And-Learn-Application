@@ -3,6 +3,7 @@ package com.cslu.cse_study_and_learn_application
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -103,6 +104,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+
+        val rootView = window.decorView.rootView as? ViewGroup
+        rootView?.let {
+            removeHighlightViews(it)
+        }
+
         when (navController.currentDestination?.id) {
             R.id.navigation_home -> {
                 if (System.currentTimeMillis() - lastBackPressTime < 2000) {
@@ -112,11 +119,23 @@ class MainActivity : AppCompatActivity() {
                     DesignToast.makeText(this, DesignToast.LayoutDesign.INFO, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
                 }
             }
-            R.id.navigation_statistics, R.id.navigation_setting -> {
+            R.id.navigation_statistics, R.id.navigation_setting, R.id.navigation_lecture -> {
                 navController.popBackStack(R.id.navigation_home, false)
             }
             else -> {
                 super.onBackPressed()
+            }
+        }
+    }
+
+    private fun removeHighlightViews(viewGroup: ViewGroup) {
+        for (i in viewGroup.childCount - 1 downTo 0) {
+            val child = viewGroup.getChildAt(i)
+            val tag = child.tag as? String
+            if (tag != null && tag.contains("HighlightView")) {
+                viewGroup.removeViewAt(i)
+            } else if (child is ViewGroup) {
+                removeHighlightViews(child) // 재귀 호출로 하위 뷰도 확인
             }
         }
     }

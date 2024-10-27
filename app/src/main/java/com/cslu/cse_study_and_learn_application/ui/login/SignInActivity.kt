@@ -13,14 +13,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.Keep
 import androidx.lifecycle.lifecycleScope
-import com.cslu.cse_study_and_learn_application.BuildConfig
 import com.cslu.cse_study_and_learn_application.MainActivity
-import com.cslu.cse_study_and_learn_application.R
 import com.cslu.cse_study_and_learn_application.connector.ConnectorRepository
 import com.cslu.cse_study_and_learn_application.databinding.ActivitySignInBinding
 import com.cslu.cse_study_and_learn_application.ui.other.DesignToast
 import com.cslu.cse_study_and_learn_application.ui.statistics.QuizViewModel
 import com.cslu.cse_study_and_learn_application.utils.Lg
+import com.cslu.cse_study_and_learn_application.BuildConfig
+import com.cslu.cse_study_and_learn_application.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
