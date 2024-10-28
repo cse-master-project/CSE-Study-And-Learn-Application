@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.cslu.cse_study_and_learn_application.BuildConfig
 import com.cslu.cse_study_and_learn_application.MainViewModel
 import com.cslu.cse_study_and_learn_application.R
 import com.cslu.cse_study_and_learn_application.databinding.FragmentSettingBinding
@@ -21,6 +23,7 @@ import com.cslu.cse_study_and_learn_application.utils.HighlightHelper
 import com.cslu.cse_study_and_learn_application.utils.HighlightItem
 import com.cslu.cse_study_and_learn_application.utils.HighlightPosition
 import com.cslu.cse_study_and_learn_application.utils.dpToPx
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * Setting fragment
@@ -175,6 +178,32 @@ class SettingFragment : Fragment() {
             }
 
             dialogQuestMessage.show()
+        }
+
+        binding.linServiceInfo.setOnClickListener {
+            // 서비스 정보 다이얼로그 생성 및 표시
+            val builder = MaterialAlertDialogBuilder(requireContext())
+            val dialogLayout = layoutInflater.inflate(R.layout.dialog_service_info, null)
+
+            // 다이얼로그 레이아웃에서 버전명을 설정
+            val versionTextView = dialogLayout.findViewById<TextView>(R.id.tv_version)
+            versionTextView.text = "앱 버전: ${BuildConfig.VERSION_NAME}"
+
+            builder.setView(dialogLayout)
+                .setPositiveButton("확인") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+
+        binding.linContactUs.setOnClickListener {
+            // 이메일 앱을 여는 인텐트를 사용하여 문의하기 기능 구현
+            val emailIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("jyh4282002@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "문의 사항")
+            }
+            startActivity(Intent.createChooser(emailIntent, "이메일 클라이언트를 선택하세요"))
         }
     }
 

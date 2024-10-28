@@ -41,7 +41,7 @@
         android:layout_marginVertical="10dp"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="@color/gray_300" />
+        android:background="@color/gray_500" />
 
     <LinearLayout
         android:layout_marginVertical="5dp"
@@ -75,6 +75,72 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:background="@color/gray_300" />
+
+    <LinearLayout
+        android:layout_marginVertical="5dp"
+        android:layout_marginHorizontal="5dp"
+        android:id="@+id/lin_service_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginHorizontal="10dp"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_info_24"/>
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="서비스 정보" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginVertical="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/gray_300" />
+
+    <LinearLayout
+        android:layout_marginVertical="5dp"
+        android:layout_marginHorizontal="5dp"
+        android:id="@+id/lin_contact_us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_marginHorizontal="10dp"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_contact_mail_24"/>
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="문의하기" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginVertical="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/gray_500" />
 
     <LinearLayout
         android:layout_marginVertical="5dp"
@@ -141,5 +207,6 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:background="@color/gray_300" />
+
 
 </LinearLayout>
