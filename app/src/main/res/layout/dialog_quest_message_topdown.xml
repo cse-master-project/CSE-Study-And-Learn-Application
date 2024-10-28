@@ -25,7 +25,9 @@
             android:textColor="@color/black"
             android:paddingHorizontal="15dp"
             android:paddingVertical="12dp"
-            android:layout_margin="15dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="15dp"
+
             android:text="전체 문제 풀기가 선택되었습니다.\n이대로 진행 하시겠습니까?" />
 
         <View
@@ -33,12 +35,10 @@
             app:layout_constraintTop_toBottomOf="@id/tv_quest"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginVertical="15dp"
+            android:layout_marginTop="15dp"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:background="#C5C5C5" />
-
-
 
         <TextView
             app:layout_constraintTop_toBottomOf="@id/view_horizontal"
@@ -48,17 +48,15 @@
             android:layout_height="wrap_content"
             android:textColor="@color/light_blue_500"
             android:textSize="16sp"
-            android:paddingVertical="5dp"
-            android:layout_marginTop="10dp"
+            android:paddingVertical="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="10dp"
-            android:layout_marginHorizontal="10dp"
-            android:text="네" />
+            android:text="네"
+            android:background="?attr/selectableItemBackground" />
 
         <View
             android:id="@+id/view_horizontal2"
-            android:layout_marginTop="10dp"
             app:layout_constraintTop_toBottomOf="@id/tv_positive"
             app:layout_constraintBottom_toTopOf="@id/tv_negative"
             android:layout_width="match_parent"
@@ -75,14 +73,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="5dp"
+            android:paddingVertical="15dp"
             android:textColor="@color/light_blue_500"
-            android:layout_margin="10dp"
             android:gravity="center"
             android:textSize="16sp"
-            android:text="아니요" />
-
-
+            android:text="아니요"
+            android:background="?attr/selectableItemBackground" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

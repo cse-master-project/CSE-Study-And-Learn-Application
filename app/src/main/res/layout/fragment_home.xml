@@ -93,7 +93,7 @@
         <TextView
             android:id="@+id/search_view_hint"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:padding="10dp"
             android:text="클릭하여 과목을 검색해보세요."
             android:textColor="@color/gray_600"

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
@@ -192,6 +193,11 @@ class HomeFragment : Fragment(), OnSubjectItemClickListener {
 
         // X 버튼 클릭 시 검색 취소 기능 추가
         val closeButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        closeButton.layoutParams = LinearLayout.LayoutParams(
+            resources.getDimensionPixelSize(R.dimen.dp_48),
+            resources.getDimensionPixelSize(R.dimen.dp_48)
+        )
+
         closeButton.setOnClickListener {
             searchView.setQuery("", false)
             searchView.clearFocus()
