@@ -180,14 +180,14 @@ class QuizActivity() : AppCompatActivity() {
     private fun requestQuiz(subject: String, chapters: ArrayList<String>){
         lifecycleScope.launch {
             try {
-                Log.d("test",
+                /*Log.d("test",
                     "token = ${AccountAssistant.getServerAccessToken(applicationContext)}\n" +
                         "subject = ${subject}\n" +
                         "chapters = ${chapters}\n " +
                         "hasUserQuiz = ${hasUserQuiz}\n " +
                         "hasDefaultQuiz = ${hasDefaultQuiz}\n " +
                         "hasSolvedQuiz = ${hasSolvedQuiz}\n "
-                )
+                )*/
                 Log.i("Request", "hasUser = $hasUserQuiz, hasDefault = $hasDefaultQuiz, hasSolved=$hasSolvedQuiz")
                 val response = ConnectorRepository().getRandomQuiz(
                     token = AccountAssistant.getServerAccessToken(applicationContext),

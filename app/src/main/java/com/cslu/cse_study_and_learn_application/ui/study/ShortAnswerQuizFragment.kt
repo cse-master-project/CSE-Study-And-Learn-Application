@@ -116,40 +116,42 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
     override fun onAnswerSubmit() {
         hideKeyboard()
         userAnswer = binding.etAnswer.text.toString()
-        binding.etAnswer.isEnabled = false
+
         if (userAnswer.isNullOrEmpty()) {
+            // 답변이 비어있으면 입력란을 비활성화하지 않고 사용자에게 알림만 표시
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 입력해주세요.").show()
-        } else {
-            try {
-                if (!isAnswerSubmitted) {
-                    isAnswerSubmitted = true
-                    (activity as? QuizActivity)?.setExplanationButtonEnabled(true)
-                    (activity as? QuizActivity)?.setGradingButtonText("다음 문제")
-                    (activity as? QuizActivity)?.setGradingButtonClickListener { loadNextQuiz?.invoke() }
+            return
+        }
 
-                    val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
-                    (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
-                    binding.tvAnswer.text = "정답 : ${answer[0]}"
-                    binding.tvAnswer.visibility = View.VISIBLE
+        binding.etAnswer.isEnabled = false
 
-                    updateInputTextColor(isCorrect)
-                    updateQuizText()
-
-                    updateButtonText() // 버튼 텍스트 업데이트
-
-                    // 여기서 explanationDialog를 초기화하고 표시합니다
-                    explanationDialog = BottomSheetGradingFragment.newInstance(
-                        isCorrect = isCorrect,
-                        commentary = commentary
-                    )
-                    explanationDialog?.setOnNextQuizListener {
-                        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-                    }
-                    // explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
-                }
-            } catch (e: Exception) {
-                Log.e("ShortAnswerQuizFragment", "onAnswerSubmit", e)
+        if (!isAnswerSubmitted) {
+            isAnswerSubmitted = true
+            (activity as? QuizActivity)?.apply {
+                setExplanationButtonEnabled(true)
+                setGradingButtonText("다음 문제")
+                setGradingButtonClickListener { loadNextQuiz?.invoke() }
             }
+
+            val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
+            (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
+            binding.tvAnswer.text = "정답 : ${answer[0]}"
+            binding.tvAnswer.visibility = View.VISIBLE
+
+            updateInputTextColor(isCorrect)
+            updateQuizText()
+
+            updateButtonText() // 버튼 텍스트 업데이트
+
+            // 여기서 explanationDialog를 초기화하고 표시합니다
+            explanationDialog = BottomSheetGradingFragment.newInstance(
+                isCorrect = isCorrect,
+                commentary = commentary
+            )
+            explanationDialog?.setOnNextQuizListener {
+                (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
+            }
+            // explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
         }
     }
 

@@ -61,7 +61,7 @@ data class TrueFalseQuizJsonContent(
 
 data class FillBlankQuizJsonContent(
     val quiz: String,
-    val answer: List<String>,
+    val answer: List<List<String>>,
     val commentary: String
 )
 

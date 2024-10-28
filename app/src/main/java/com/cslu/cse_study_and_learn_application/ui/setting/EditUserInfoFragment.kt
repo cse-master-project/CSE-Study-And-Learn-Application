@@ -13,16 +13,10 @@ import com.cslu.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.cslu.cse_study_and_learn_application.ui.other.DesignToast
 import com.cslu.cse_study_and_learn_application.ui.other.DialogQuestMessage
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditUserInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class EditUserInfoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -80,7 +74,7 @@ class EditUserInfoFragment : Fragment() {
         super.onResume()
         val userNickname = settingViewModel.userInfo.value?.nickname
         binding.etNickname.setText(userNickname)
-        Log.d("test", "userNickname: $userNickname")
+        // Log.d("test", "userNickname: $userNickname")
     }
 
     private fun initClickListener() {

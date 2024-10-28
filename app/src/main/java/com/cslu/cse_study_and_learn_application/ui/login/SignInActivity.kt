@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.Keep
@@ -45,6 +46,7 @@ class SignInActivity : AppCompatActivity() {
 
     private val quizViewModel: QuizViewModel by viewModels()
 
+    private val connectorRepository: ConnectorRepository = ConnectorRepository()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
@@ -60,65 +62,84 @@ class SignInActivity : AppCompatActivity() {
             val clientSecret = BuildConfig.server_client_secret
             val authCode = account.serverAuthCode
 
-            val connectorRepository = ConnectorRepository()
             lifecycleScope.launch {
                 try {
-                    val connectorRepository = ConnectorRepository()
                     connectorRepository.getAccessToken(grantType, clientId, clientSecret, authCode) { accessToken, error ->
                         if (error != null) {
-                            throw Exception("accessTokenResponse failure")
+                            handleError("Failed to get access token: ${error.message}")
                         } else {
-                            Log.d("test", "accessToken: $accessToken")
-                            AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
-                            lifecycleScope.launch {
-                                val isSignedUser = connectorRepository.isSignedUser(accessToken)
-                                if (isSignedUser) {
-                                    val serverAccessToken = connectorRepository.getUserLogin(accessToken)
-                                    AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
-                                    moveMainActivity()
-                                } else {
-                                    val builder = MaterialAlertDialogBuilder(this@SignInActivity)
-                                    val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
-                                    val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
-                                    val dialog = with (builder) {
-                                        setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
-                                        setView(dialogLayout)
-                                        setPositiveButton("확인") { _, _ ->
-                                            lifecycleScope.launch {
-                                                try {
-                                                    val registrationResponse = connectorRepository.getUserRegistration(
-                                                            token = accessToken,
-                                                            nickname = editText.text.toString()
-                                                        )
-                                                    AccountAssistant.setServerAccessToken(this@SignInActivity, registrationResponse)
-                                                    //Toast.makeText(this@SignInActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                                                    DesignToast.makeText(this@SignInActivity, DesignToast.LayoutDesign.SUCCESS, "회원가입을 성공하였습니다.").show()
-                                                    moveMainActivity()
-                                                } catch (e: Exception) {
-                                                    Log.e("SignInActivity", "Sign in failure", e)
-                                                }
-                                            }
+                            try {
+                                AccountAssistant.setAccessToken(this@SignInActivity, accessToken!!)
+                                lifecycleScope.launch {
+                                    try {
+                                        val isSignedUser = connectorRepository.isSignedUser(accessToken)
+                                        if (isSignedUser) {
+                                            val serverAccessToken = connectorRepository.getUserLogin(accessToken)
+                                            AccountAssistant.setServerAccessToken(this@SignInActivity, serverAccessToken)
+                                            moveMainActivity()
+                                        } else {
+                                            showSignUpDialog(accessToken)
                                         }
-                                        setNegativeButton("취소", null)
-                                        show()
-                                    }
-                                    dialog.window?.let { window ->
-                                        val params = window.attributes
-                                        params.height = (350* Resources.getSystem().displayMetrics.density).toInt()
-                                        window.attributes = params
+                                    } catch (e: Exception) {
+                                        handleError("Failed to determine signed user: ${e.message}")
                                     }
                                 }
-
+                            } catch (e: Exception) {
+                                handleError("Failed to set access token: ${e.message}")
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("SignInActivity", "호출 실패", e)
+                    handleError("Unexpected error during token fetching: ${e.message}")
+                } finally {
+                    // 로그인 처리 후 버튼 활성화
+                    _binding.btnSignIn.isEnabled = true
                 }
             }
         } catch (e: ApiException) {
-            Log.e(MainActivity::class.java.simpleName, e.stackTraceToString())
+            handleError("Google sign-in failed: ${e.localizedMessage}")
+            // 오류 발생 시 버튼 활성화
+            _binding.btnSignIn.isEnabled = true
         }
+    }
+
+    private fun showSignUpDialog(accessToken: String) {
+        val builder = MaterialAlertDialogBuilder(this@SignInActivity)
+        val dialogLayout = layoutInflater.inflate(R.layout.dialog_signup, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.et_nickname)
+        val dialog = with(builder) {
+            setTitle(Html.fromHtml("<b>회원 가입<b>", Html.FROM_HTML_MODE_LEGACY))
+            setView(dialogLayout)
+            setPositiveButton("확인") { _, _ ->
+                lifecycleScope.launch {
+                    try {
+                        val registrationResponse = connectorRepository.getUserRegistration(
+                            token = accessToken,
+                            nickname = editText.text.toString()
+                        )
+                        AccountAssistant.setServerAccessToken(this@SignInActivity, registrationResponse)
+                        DesignToast.makeText(this@SignInActivity, DesignToast.LayoutDesign.SUCCESS, "회원가입을 성공하였습니다.").show()
+                        moveMainActivity()
+                    } catch (e: Exception) {
+                        handleError("Registration failure: ${e.message}")
+                    }
+                }
+            }
+            setNegativeButton("취소", null)
+            show()
+        }
+        dialog.window?.let { window ->
+            val params = window.attributes
+            params.height = (350 * Resources.getSystem().displayMetrics.density).toInt()
+            window.attributes = params
+        }
+    }
+
+    private fun handleError(message: String) {
+        Log.e("SignInActivity", message)
+        Toast.makeText(this@SignInActivity, "서버측에 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+        // 오류 발생 시 버튼 활성화
+        _binding.btnSignIn.isEnabled = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,15 +175,18 @@ class SignInActivity : AppCompatActivity() {
                     requestGoogleLogin()
                 }
             }
-            Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
+            // Log.i("Server Response", "serverAccessToken: ${AccountAssistant.getServerAccessToken(this)}")
         }
     }
 
     private fun addListener() {
         _binding.btnSignIn.setOnClickListener {
+            // 로그인 시작 시 버튼 비활성화
+            _binding.btnSignIn.isEnabled = false
             requestGoogleLogin()
         }
     }
+
 
     private fun requestGoogleLogin() {
         googleSignInClient.signOut()

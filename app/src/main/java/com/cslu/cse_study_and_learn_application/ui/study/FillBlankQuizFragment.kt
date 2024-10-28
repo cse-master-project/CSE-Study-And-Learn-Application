@@ -19,21 +19,14 @@ import com.cslu.cse_study_and_learn_application.model.RandomQuiz
 import com.cslu.cse_study_and_learn_application.ui.login.AccountAssistant
 import com.cslu.cse_study_and_learn_application.ui.other.DesignToast
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 
-
-/**
- * Fill blank quiz fragment
- *
- * @constructor Create empty Fill blank quiz fragment
- * @author JYH
- * @since 2024-03-29
- */
 class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private lateinit var binding: FragmentFillBlankQuizBinding
     private lateinit var answerAdapter: FillBlankAnswerAdapter
-    private lateinit var answer: List<String>
+    private lateinit var answer: List<List<String>>
     private lateinit var commentary: String
     private var quizId: Int? = null
     private var quizType: Int? = null
@@ -48,37 +41,60 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFillBlankQuizBinding.inflate(inflater)
-        (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
-        (activity as? QuizActivity)?.setGradingButtonClickListener { onAnswerSubmit() }
+        binding = FragmentFillBlankQuizBinding.inflate(inflater, container, false)
+        setupQuizActivity()
 
-        requireArguments().let {
-            quizId = it.getInt("quizId")
-            quizType = it.getInt("quizType")
-            val hasImg = it.getBoolean("hasImg")
-            val jsonString = it.getString("contents")
-            val content = Gson().fromJson(jsonString, FillBlankQuizJsonContent::class.java)
-            val creator = it.getString("creator")
-            answer = content.answer[0].split(",")
-            commentary = content.commentary
-            originalQuizText = content.quiz
-
-            binding.tvQuizText.text = originalQuizText
-            binding.tvCreator.text = "출제자: $creator"
-
-            if (hasImg) {
-                binding.ivQuizImage.visibility = View.VISIBLE
-                loadImage()
-            }
-
-            setupRecyclerView(answer)
+        arguments?.let { bundle ->
+            parseArguments(bundle)
         }
 
         return binding.root
     }
 
-    private fun setupRecyclerView(answers: List<String>) {
-        answerAdapter = FillBlankAnswerAdapter(requireContext(), answers.size)
+    private fun setupQuizActivity() {
+        (activity as? QuizActivity)?.apply {
+            setExplanationButtonEnabled(false)
+            setGradingButtonClickListener { onAnswerSubmit() }
+        }
+    }
+
+    private fun parseArguments(bundle: Bundle) {
+        quizId = bundle.getInt("quizId")
+        quizType = bundle.getInt("quizType")
+        val hasImg = bundle.getBoolean("hasImg")
+        val jsonString = bundle.getString("contents") ?: ""
+        val creator = bundle.getString("creator") ?: "Unknown"
+
+        Log.d("test", "Quiz ID: $quizId")
+
+        val contentType = object : TypeToken<FillBlankQuizJsonContent>() {}.type
+        val content: FillBlankQuizJsonContent = Gson().fromJson(jsonString, contentType)
+        answer = content.answer
+        commentary = content.commentary
+        originalQuizText = content.quiz
+
+        setupUI(hasImg, creator)
+    }
+
+    private fun setupUI(hasImg: Boolean, creator: String) {
+        binding.tvQuizText.text = originalQuizText
+        updateQuizText()
+        binding.tvCreator.text = "출제자: $creator"
+
+        if (hasImg) {
+            binding.ivQuizImage.visibility = View.VISIBLE
+            loadImage()
+        }
+
+        setupRecyclerView(answer)
+    }
+
+    private fun setupRecyclerView(answers: List<List<String>>) {
+        // 각 빈칸의 정답 수를 계산하여 어댑터를 초기화합니다.
+        // 여기서는 전체 정답 수를 계산하여 각 빈칸을 채울 수 있도록 설정합니다.
+        val totalAnswers = answers.flatten().size
+        answerAdapter = FillBlankAnswerAdapter(requireContext(), totalAnswers)
+
         binding.rvAnswers.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = answerAdapter
@@ -93,7 +109,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
                 image = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
                 binding.ivQuizImage.setImageBitmap(image)
             } catch (e: Exception) {
-                Log.e("FillBlankQuizFragment", "get Image Failure", e)
+                Log.e("FillBlankQuizFragment", "Failed to load image", e)
             }
         }
     }
@@ -106,72 +122,87 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         }
 
         if (!isAnswerSubmitted) {
-            isAnswerSubmitted = true
-            (activity as? QuizActivity)?.apply {
-                setExplanationButtonEnabled(true)
-                setGradingButtonText("다음 문제")
-                setGradingButtonClickListener { loadNextQuiz?.invoke() }
-            }
-
-            answerAdapter.submitAnswers(answer)
-            updateQuizText()
-
-            val isCorrect = userAnswers.zip(answer).all { (user, correct) ->
-                user.trim().equals(correct.trim(), ignoreCase = true)
-            }
-            (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect)
-
-            explanationDialog = BottomSheetGradingFragment.newInstance(
-                isCorrect = isCorrect,
-                commentary = commentary,
-            )
+            handleAnswerSubmission(userAnswers)
         } else {
             loadNextQuiz?.invoke()
         }
     }
 
+    private fun handleAnswerSubmission(userAnswers: List<String>) {
+        isAnswerSubmitted = true
+        (activity as? QuizActivity)?.apply {
+            setExplanationButtonEnabled(true)
+            setGradingButtonText("다음 문제")
+            setGradingButtonClickListener { loadNextQuiz?.invoke() }
+        }
+
+        // answer는 List<List<String>> 형태이므로, 이를 flatten 하지 않고 그대로 전달
+        answerAdapter.submitAnswers(answer)
+        updateQuizText()
+
+        // 각 사용자의 답변이 해당 위치의 정답 리스트 중 하나와 일치하는지 확인
+        val isCorrect = userAnswers.zip(answer).all { (user, correctList) ->
+            correctList.any { correct -> user.trim().equals(correct.trim(), ignoreCase = true) }
+        }
+
+        (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect)
+
+        explanationDialog = BottomSheetGradingFragment.newInstance(
+            isCorrect = isCorrect,
+            commentary = commentary,
+        )
+    }
+
 
     private fun updateQuizText() {
-        var updatedText = originalQuizText
-        answer.forEachIndexed { _, correctAnswer ->
-            updatedText = updatedText.replaceFirst("()", "($correctAnswer)")
+        var updatedText = originalQuizText.replace("<<빈칸>>", "(   )")
+
+        // 정답이 제출된 후 정답으로 업데이트
+        if(isAnswerSubmitted) {
+            answer.forEach { correctAnswers ->
+                val correctAnswer = correctAnswers.joinToString(" / ") { "[$it]" }
+                updatedText = updatedText.replaceFirst("(   )", correctAnswer)
+            }
         }
+
         binding.tvQuizText.text = updatedText
     }
 
     fun showExplanationDialog() {
-        if (isAnswerSubmitted && explanationDialog != null) {
+        if (isAnswerSubmitted) {
             explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
         }
     }
 
     fun setLoadNextQuizListener(listener: () -> Unit) {
         loadNextQuiz = {
-            isAnswerSubmitted = false
-            answerAdapter.resetAnswers()
-            binding.tvQuizText.text = originalQuizText
-            (activity as? QuizActivity)?.apply {
-                setGradingButtonText("정답 확인")
-                setGradingButtonClickListener { onAnswerSubmit() }
-                setExplanationButtonEnabled(false)
-            }
+            resetQuizState()
             listener.invoke()
+        }
+    }
+
+    private fun resetQuizState() {
+        isAnswerSubmitted = false
+        answerAdapter.resetAnswers()
+        binding.tvQuizText.text = originalQuizText
+        (activity as? QuizActivity)?.apply {
+            setGradingButtonText("정답 확인")
+            setGradingButtonClickListener { onAnswerSubmit() }
+            setExplanationButtonEnabled(false)
         }
     }
 
     companion object {
         fun newInstance(response: RandomQuiz): FillBlankQuizFragment {
-            val args = Bundle()
-
-            val fragment = FillBlankQuizFragment()
-            args.putInt("quizType", response.quizType)
-            args.putInt("quizId", response.quizId)
-            args.putString("contents", response.jsonContent)
-            args.putBoolean("hasImg", response.hasImage)
-            args.putString("creator", response.creator)
-            fragment.arguments = args
-
-            return fragment
+            return FillBlankQuizFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("quizType", response.quizType)
+                    putInt("quizId", response.quizId)
+                    putString("contents", response.jsonContent)
+                    putBoolean("hasImg", response.hasImage)
+                    putString("creator", response.creator)
+                }
+            }
         }
     }
 }

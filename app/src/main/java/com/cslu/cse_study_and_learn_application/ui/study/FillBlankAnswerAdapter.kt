@@ -70,10 +70,13 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
 
     fun getAnswers(): List<String> = userAnswers
 
-    fun submitAnswers(correctAnswers: List<String>) {
+    // 수정된 부분
+    fun submitAnswers(correctAnswers: List<List<String>>) {
         isSubmitted = true
-        correctAnswers.forEachIndexed { index, correctAnswer ->
-            isCorrectList[index] = userAnswers[index].trim().equals(correctAnswer.trim(), ignoreCase = true)
+        correctAnswers.forEachIndexed { index, correctAnswerList ->
+            isCorrectList[index] = correctAnswerList.any { correctAnswer ->
+                userAnswers[index].trim().equals(correctAnswer.trim(), ignoreCase = true)
+            }
         }
         notifyDataSetChanged()
     }
