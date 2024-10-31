@@ -67,7 +67,7 @@
 
             <ImageView
                 android:layout_marginStart="5dp"
-                android:src="@mipmap/logo_foreground"
+                android:src="@mipmap/logo_update_foreground"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/view1"
