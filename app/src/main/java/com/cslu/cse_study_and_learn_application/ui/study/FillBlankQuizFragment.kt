@@ -65,7 +65,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         val jsonString = bundle.getString("contents") ?: ""
         val creator = bundle.getString("creator") ?: "Unknown"
 
-        Log.d("test", "Quiz ID: $quizId")
+        // Log.d("test", "Quiz ID: $quizId")
 
         val contentType = object : TypeToken<FillBlankQuizJsonContent>() {}.type
         val content: FillBlankQuizJsonContent = Gson().fromJson(jsonString, contentType)

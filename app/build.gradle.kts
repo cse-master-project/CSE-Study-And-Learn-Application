@@ -36,8 +36,8 @@ android {
         applicationId = "com.cslu.cse_study_and_learn_application"
         minSdk = 28
         targetSdk = 34
-        versionCode = 11
-        versionName = "2.0"
+        versionCode = 12
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -95,7 +95,7 @@ dependencies {
 
 
     // ext
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
