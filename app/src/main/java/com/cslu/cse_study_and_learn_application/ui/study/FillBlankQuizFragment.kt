@@ -92,8 +92,8 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     private fun setupRecyclerView(answers: List<List<String>>) {
-        val totalAnswers = answers.flatten().size
-        answerAdapter = FillBlankAnswerAdapter(requireContext(), totalAnswers)
+        // 각 빈칸에 대한 입력 필드를 생성하기 위해 answers.size를 사용합니다.
+        answerAdapter = FillBlankAnswerAdapter(requireContext(), answers.size)
 
         binding.rvAnswers.apply {
             layoutManager = LinearLayoutManager(context)
