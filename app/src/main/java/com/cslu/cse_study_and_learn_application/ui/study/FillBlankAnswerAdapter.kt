@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.cslu.cse_study_and_learn_application.R
 import com.cslu.cse_study_and_learn_application.databinding.ItemFillBlankAnswerBinding
+import com.cslu.cse_study_and_learn_application.utils.Lg
 import com.google.android.material.textfield.TextInputLayout
 
 class FillBlankAnswerAdapter(private val context: Context, private val answerCount: Int) :
@@ -24,6 +25,7 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
         fun bind(position: Int) {
             binding.textInputLayout.hint = "빈칸 ${position + 1}"
             binding.etAnswer.setText(userAnswers[position])
+            Lg.d("test", position.toString(), "Abac")
             binding.etAnswer.isEnabled = !isSubmitted
 
             if (isSubmitted) {
@@ -70,16 +72,18 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
 
     fun getAnswers(): List<String> = userAnswers
 
-    // 수정된 부분
     fun submitAnswers(correctAnswers: List<List<String>>) {
         isSubmitted = true
         correctAnswers.forEachIndexed { index, correctAnswerList ->
+            val processedUserAnswer = userAnswers[index].replace("\\s".toRegex(), "").lowercase()
             isCorrectList[index] = correctAnswerList.any { correctAnswer ->
-                userAnswers[index].trim().equals(correctAnswer.trim(), ignoreCase = true)
+                val processedCorrectAnswer = correctAnswer.replace("\\s".toRegex(), "").lowercase()
+                processedUserAnswer == processedCorrectAnswer
             }
         }
         notifyDataSetChanged()
     }
+
 
     fun resetAnswers() {
         isSubmitted = false
@@ -88,3 +92,5 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
         notifyDataSetChanged()
     }
 }
+
+

@@ -92,7 +92,6 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     private fun setupRecyclerView(answers: List<List<String>>) {
-        // 각 빈칸에 대한 입력 필드를 생성하기 위해 answers.size를 사용합니다.
         answerAdapter = FillBlankAnswerAdapter(requireContext(), answers.size)
 
         binding.rvAnswers.apply {
@@ -139,8 +138,12 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         answerAdapter.submitAnswers(answer)
         updateQuizText(userAnswers)
 
-        val isCorrect = userAnswers.zip(answer).all { (user, correctList) ->
-            correctList.any { correct -> user.trim().equals(correct.trim(), ignoreCase = true) }
+        val isCorrect = userAnswers.zip(answer).all { (userAnswer, correctList) ->
+            val processedUserAnswer = userAnswer.replace("\\s".toRegex(), "")
+            correctList.any { correctAnswer ->
+                val processedCorrectAnswer = correctAnswer.replace("\\s".toRegex(), "")
+                processedUserAnswer == processedCorrectAnswer
+            }
         }
 
         (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect)
@@ -153,31 +156,25 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private fun updateQuizText(userAnswers: List<String>) {
         // 초기 텍스트 설정
-        var updatedText = originalQuizText.replace("<<빈칸>>", "(   )")
+        var updatedText = originalQuizText
 
         if (isAnswerSubmitted) {
-            // 각 답변에 대해 빈칸을 올바른 답으로 대체
+            // 정답으로 빈칸을 대체
             answer.forEach { correctAnswers ->
-                val correctAnswer = correctAnswers.firstOrNull() ?: ""
-                val blankIndex = updatedText.indexOf("(   )")
-
-                if (blankIndex != -1) {
-                    // 빈칸을 올바른 답으로 대체
-                    updatedText = updatedText.replaceFirst("(   )", "[$correctAnswer]")
-                }
+                val correctAnswer = correctAnswers.firstOrNull() ?: "" // 정답 리스트의 첫 번째 항목 사용
+                updatedText = updatedText.replaceFirst("<<빈칸>>", "[$correctAnswer]")  // 정답으로 빈칸 대체
             }
 
             // 스팬 적용을 위해 SpannableString 생성
             val spannableString = SpannableString(updatedText)
 
-            // 각 답변 위치에 대해 스팬 적용
+            // 각 정답 위치에 대해 스팬 적용
             answer.forEach { correctAnswers ->
                 val correctAnswer = correctAnswers.firstOrNull() ?: ""
                 val answerIndex = updatedText.indexOf("[$correctAnswer]")
-
                 if (answerIndex != -1) {
                     spannableString.setSpan(
-                        ForegroundColorSpan(Color.GREEN),
+                        ForegroundColorSpan(Color.GREEN), // 정답이므로 항상 녹색
                         answerIndex,
                         answerIndex + "[$correctAnswer]".length,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -188,11 +185,10 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             // TextView에 SpannableString 설정
             binding.tvQuizText.text = spannableString
         } else {
-            binding.tvQuizText.text = updatedText
+            // 정답 제출 전 기본 텍스트 설정
+            binding.tvQuizText.text = updatedText.replace("<<빈칸>>", "(   )")
         }
     }
-
-
 
 
 
@@ -234,3 +230,4 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         }
     }
 }
+

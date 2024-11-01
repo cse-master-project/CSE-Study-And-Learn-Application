@@ -132,11 +132,11 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                 setGradingButtonClickListener { loadNextQuiz?.invoke() }
             }
 
-            // 사용자 입력 전처리: 공백 제거
-            val preprocessedUserAnswer = userAnswer!!.replace("\\s".toRegex(), "")
+            // 사용자 입력 전처리: 모든 공백과 대괄호 제거
+            val preprocessedUserAnswer = userAnswer!!.replace("\\s".toRegex(), "").replace("[", "").replace("]", "")
 
-            // 정답 문자열을 쉼표로 분리하여 리스트 생성
-            val possibleAnswers = answer.firstOrNull()?.split(",")?.map { it.trim() } ?: emptyList()
+            // 정답 리스트 전처리
+            val possibleAnswers = answer.map { it.replace("\\s".toRegex(), "").replace("[", "").replace("]", "") }
 
             // 정답 비교
             val isCorrect = possibleAnswers.any { correctAnswer ->
@@ -144,7 +144,9 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             }
 
             (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
-            binding.tvAnswer.text = "정답 : ${possibleAnswers.joinToString(", ")}"
+
+            // 정답을 대괄호 없이 표시
+            binding.tvAnswer.text = "정답 : ${answer.joinToString(", ") { it.trim() }.replace("[", "").replace("]", "")}"
             binding.tvAnswer.visibility = View.VISIBLE
 
             updateInputTextColor(isCorrect)
@@ -161,6 +163,8 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             }
         }
     }
+
+
 
 
     private fun updateQuizText() {
