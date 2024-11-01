@@ -58,13 +58,12 @@
                     android:textSize="15sp" />
 
                 <ImageView
-                    app:layout_constraintTop_toBottomOf="@+id/tv_quiz_text"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:id="@+id/iv_quiz_image"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ivQuizImage"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible" />
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone" />
 
                 <!-- 왼쪽 RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView

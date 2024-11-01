@@ -45,9 +45,11 @@
                     android:textSize="15sp" />
 
                 <ImageView
-                    android:id="@+id/iv_quiz_image"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ivQuizImage"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
                     android:visibility="gone" />
             </LinearLayout>
         </ScrollView>
