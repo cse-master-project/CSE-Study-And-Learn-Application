@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import com.cslu.cse_study_and_learn_application.BaseActivity
 import com.cslu.cse_study_and_learn_application.R
 import com.cslu.cse_study_and_learn_application.connector.ConnectorRepository
 import com.cslu.cse_study_and_learn_application.databinding.ActivityQuizBinding
@@ -34,7 +35,7 @@ import kotlin.properties.Delegates
  * @author JYH
  * @since 2024-03-22
  */
-class QuizActivity() : AppCompatActivity() {
+class QuizActivity() : BaseActivity() {
     private lateinit var binding: ActivityQuizBinding
 
     private var subjects: String? = null

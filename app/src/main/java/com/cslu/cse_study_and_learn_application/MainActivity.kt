@@ -23,7 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
  * @autor kjy
  * @since 2024-03-05
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
