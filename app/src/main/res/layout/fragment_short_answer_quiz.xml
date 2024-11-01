@@ -81,14 +81,17 @@
             android:id="@+id/etAnswer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:fontFamily="@font/suit_light"
             android:hint="답..."
-            android:maxLines="1"
+            android:maxLines="5"
+            android:scrollHorizontally="false"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            android:gravity="top|start" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <TextView
         android:id="@+id/tvAnswer"

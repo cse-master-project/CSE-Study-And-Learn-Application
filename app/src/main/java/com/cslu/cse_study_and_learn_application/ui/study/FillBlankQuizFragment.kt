@@ -3,7 +3,11 @@ package com.cslu.cse_study_and_learn_application.ui.study
 import FillBlankAnswerAdapter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -65,8 +69,6 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         val jsonString = bundle.getString("contents") ?: ""
         val creator = bundle.getString("creator") ?: "Unknown"
 
-        // Log.d("test", "Quiz ID: $quizId")
-
         val contentType = object : TypeToken<FillBlankQuizJsonContent>() {}.type
         val content: FillBlankQuizJsonContent = Gson().fromJson(jsonString, contentType)
         answer = content.answer
@@ -78,7 +80,7 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
 
     private fun setupUI(hasImg: Boolean, creator: String) {
         binding.tvQuizText.text = originalQuizText
-        updateQuizText()
+        updateQuizText(listOf())
         binding.tvCreator.text = "출제자: $creator"
 
         if (hasImg) {
@@ -90,8 +92,6 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
     }
 
     private fun setupRecyclerView(answers: List<List<String>>) {
-        // 각 빈칸의 정답 수를 계산하여 어댑터를 초기화합니다.
-        // 여기서는 전체 정답 수를 계산하여 각 빈칸을 채울 수 있도록 설정합니다.
         val totalAnswers = answers.flatten().size
         answerAdapter = FillBlankAnswerAdapter(requireContext(), totalAnswers)
 
@@ -136,11 +136,9 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
             setGradingButtonClickListener { loadNextQuiz?.invoke() }
         }
 
-        // answer는 List<List<String>> 형태이므로, 이를 flatten 하지 않고 그대로 전달
         answerAdapter.submitAnswers(answer)
-        updateQuizText()
+        updateQuizText(userAnswers)
 
-        // 각 사용자의 답변이 해당 위치의 정답 리스트 중 하나와 일치하는지 확인
         val isCorrect = userAnswers.zip(answer).all { (user, correctList) ->
             correctList.any { correct -> user.trim().equals(correct.trim(), ignoreCase = true) }
         }
@@ -153,20 +151,50 @@ class FillBlankQuizFragment : Fragment(), AppBarImageButtonListener {
         )
     }
 
-
-    private fun updateQuizText() {
+    private fun updateQuizText(userAnswers: List<String>) {
+        // 초기 텍스트 설정
         var updatedText = originalQuizText.replace("<<빈칸>>", "(   )")
 
-        // 정답이 제출된 후 정답으로 업데이트
-        if(isAnswerSubmitted) {
+        if (isAnswerSubmitted) {
+            // 각 답변에 대해 빈칸을 올바른 답으로 대체
             answer.forEach { correctAnswers ->
-                val correctAnswer = correctAnswers.joinToString(" / ") { "[$it]" }
-                updatedText = updatedText.replaceFirst("(   )", correctAnswer)
-            }
-        }
+                val correctAnswer = correctAnswers.firstOrNull() ?: ""
+                val blankIndex = updatedText.indexOf("(   )")
 
-        binding.tvQuizText.text = updatedText
+                if (blankIndex != -1) {
+                    // 빈칸을 올바른 답으로 대체
+                    updatedText = updatedText.replaceFirst("(   )", "[$correctAnswer]")
+                }
+            }
+
+            // 스팬 적용을 위해 SpannableString 생성
+            val spannableString = SpannableString(updatedText)
+
+            // 각 답변 위치에 대해 스팬 적용
+            answer.forEach { correctAnswers ->
+                val correctAnswer = correctAnswers.firstOrNull() ?: ""
+                val answerIndex = updatedText.indexOf("[$correctAnswer]")
+
+                if (answerIndex != -1) {
+                    spannableString.setSpan(
+                        ForegroundColorSpan(Color.GREEN),
+                        answerIndex,
+                        answerIndex + "[$correctAnswer]".length,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+
+            // TextView에 SpannableString 설정
+            binding.tvQuizText.text = spannableString
+        } else {
+            binding.tvQuizText.text = updatedText
+        }
     }
+
+
+
+
 
     fun showExplanationDialog() {
         if (isAnswerSubmitted) {
