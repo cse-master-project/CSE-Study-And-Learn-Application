@@ -118,7 +118,6 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
         userAnswer = binding.etAnswer.text.toString()
 
         if (userAnswer.isNullOrEmpty()) {
-            // 답변이 비어있으면 입력란을 비활성화하지 않고 사용자에게 알림만 표시
             DesignToast.makeText(requireContext(), DesignToast.LayoutDesign.INFO, "답을 입력해주세요.").show()
             return
         }
@@ -133,17 +132,21 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                 setGradingButtonClickListener { loadNextQuiz?.invoke() }
             }
 
-            val isCorrect = answer.any { it.trim().equals(userAnswer?.trim(), ignoreCase = true) }
+            // 공백을 구분하지 않도록 처리
+            val preprocessedUserAnswer = userAnswer!!.replace("\\s".toRegex(), "")
+            val isCorrect = answer.any { correctAnswer ->
+                correctAnswer.replace("\\s".toRegex(), "") == preprocessedUserAnswer
+            }
+
             (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
-            binding.tvAnswer.text = "정답 : ${answer[0]}"
+            binding.tvAnswer.text = "정답 : ${answer.joinToString(", ")}"
             binding.tvAnswer.visibility = View.VISIBLE
 
             updateInputTextColor(isCorrect)
             updateQuizText()
 
-            updateButtonText() // 버튼 텍스트 업데이트
+            updateButtonText()
 
-            // 여기서 explanationDialog를 초기화하고 표시합니다
             explanationDialog = BottomSheetGradingFragment.newInstance(
                 isCorrect = isCorrect,
                 commentary = commentary
@@ -151,7 +154,6 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             explanationDialog?.setOnNextQuizListener {
                 (activity as? QuizActivity)?.setExplanationButtonEnabled(false)
             }
-            // explanationDialog?.show(parentFragmentManager, explanationDialog?.tag)
         }
     }
 
