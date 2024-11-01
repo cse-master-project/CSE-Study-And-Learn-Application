@@ -71,7 +71,7 @@
             android:gravity="center"
             android:textSize="60sp"
             android:textStyle="bold"
-            android:textColor="@color/material_dynamic_primary40"
+            android:textColor="@color/system_accent1_600"
             android:text="O"
             android:button="@drawable/bg_true_radio_button_selector"
             android:layout_margin="20dp"/>
