@@ -137,7 +137,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun handleError(message: String) {
         Log.e("SignInActivity", message)
-        Toast.makeText(this@SignInActivity, "서버측에 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@SignInActivity, "로그인에 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
         // 오류 발생 시 버튼 활성화
         _binding.btnSignIn.isEnabled = true
     }
