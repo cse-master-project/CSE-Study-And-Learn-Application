@@ -25,7 +25,6 @@ class FillBlankAnswerAdapter(private val context: Context, private val answerCou
         fun bind(position: Int) {
             binding.textInputLayout.hint = "빈칸 ${position + 1}"
             binding.etAnswer.setText(userAnswers[position])
-            Lg.d("test", position.toString(), "Abac")
             binding.etAnswer.isEnabled = !isSubmitted
 
             if (isSubmitted) {
