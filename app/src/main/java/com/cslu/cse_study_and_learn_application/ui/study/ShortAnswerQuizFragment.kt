@@ -132,14 +132,19 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
                 setGradingButtonClickListener { loadNextQuiz?.invoke() }
             }
 
-            // 공백을 구분하지 않도록 처리
+            // 사용자 입력 전처리: 공백 제거
             val preprocessedUserAnswer = userAnswer!!.replace("\\s".toRegex(), "")
-            val isCorrect = answer.any { correctAnswer ->
-                correctAnswer.replace("\\s".toRegex(), "") == preprocessedUserAnswer
+
+            // 정답 문자열을 쉼표로 분리하여 리스트 생성
+            val possibleAnswers = answer.firstOrNull()?.split(",")?.map { it.trim() } ?: emptyList()
+
+            // 정답 비교
+            val isCorrect = possibleAnswers.any { correctAnswer ->
+                correctAnswer == preprocessedUserAnswer
             }
 
             (activity as? QuizActivity)?.resultSubmit(quizId!!, isCorrect) // 결과 제출
-            binding.tvAnswer.text = "정답 : ${answer.joinToString(", ")}"
+            binding.tvAnswer.text = "정답 : ${possibleAnswers.joinToString(", ")}"
             binding.tvAnswer.visibility = View.VISIBLE
 
             updateInputTextColor(isCorrect)
@@ -156,6 +161,7 @@ class ShortAnswerQuizFragment : Fragment(), AppBarImageButtonListener {
             }
         }
     }
+
 
     private fun updateQuizText() {
         val updatedText = originalQuizText.replace("(   )", "($answer)")
