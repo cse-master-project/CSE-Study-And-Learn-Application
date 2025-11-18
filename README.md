@@ -7,7 +7,7 @@ Kotiln 기반의 안드로이드 애플리케이션으로 백엔드와 상호작
 ## 기술 스택
 
 - **Language**: Kotiln
-- **Build Tool**: Android 스튜디오 Dolphin | 2021.3.1
+- **Build Tool**: Android 스튜디오 Dolphin | 2021.3.1 | Kotiln
 
 <br>
 
